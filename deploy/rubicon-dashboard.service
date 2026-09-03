@@ -29,10 +29,14 @@ Environment=NODE_ENV=production
 Environment=HOST=0.0.0.0
 Environment=PORT=4000
 
+# node/npm liegen hier unter dem Nutzer, nicht systemweit unter /usr/bin —
+# systemd startet mit einem eigenen, knappen PATH, der das sonst nicht faende.
+Environment=PATH=/home/pi/.local/node/bin:/usr/local/bin:/usr/bin:/bin
+
 # Geheimnisse können statt in data/config.json auch hier stehen:
 # EnvironmentFile=-/home/pi/rubicon/.env
 
-ExecStart=/usr/bin/npm start
+ExecStart=/home/pi/.local/node/bin/npm start
 Restart=always
 RestartSec=5
 
