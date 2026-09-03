@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      {idle && <IdleScreen onWake={wake} />}
+      {idle && <IdleScreen onWake={wake} shift={night.shift} />}
       <NightOverlay night={night} />
       <TimerOverlay />
       <TouchKeyboard aktiv={tastatur} />

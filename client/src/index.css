@@ -514,10 +514,13 @@
     to   { opacity: 0; transform: scale(0.96); }
   }
 
-  /* Langsame Fahrt, laeuft ueber die volle Standzeit des Bildes. */
+  /*
+   * Langsame Fahrt, laeuft ueber die volle Standzeit des Bildes (die Dauer
+   * setzt transitionSpec() dynamisch anhand des Wechselintervalls).
+   */
   @keyframes tr-kenburns {
-    from { transform: scale(1.02) translate(0, 0); }
-    to   { transform: scale(1.14) translate(-2%, -1.5%); }
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(-2.5%, -2%); }
   }
 
   @keyframes tr-blur-in {

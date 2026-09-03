@@ -1,5 +1,5 @@
 import { AlertTriangle, Clock3 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { PhotoItem } from '@shared/types';
 import { api } from '@/lib/api';
 import { useDashboard } from '@/lib/store';
@@ -11,13 +11,44 @@ import { PhotoSlideshow } from './PhotoSlideshow';
 import { Portal } from '../Portal';
 
 /**
+ * Farbvariablen fest auf Dunkel fixiert — unabhaengig vom Tag/Nacht-Theme des
+ * uebrigen Dashboards.
+ *
+ * Das Farbsystem dreht Text- und Flaechenfarben im hellen Theme bewusst um
+ * (dunkler Text auf hellem Grund), aber der Gradient, der die Lesbarkeit über
+ * Fotos sichert, ist immer Schwarz. Tagsueber traf das dann aufeinander:
+ * dunkler Text auf einem durch den Overlay ebenfalls verdunkelten Grund —
+ * kaum lesbar. Ein Ruhebildschirm soll ohnehin immer dunkel sein, das ist
+ * schonender fuer die Augen nachts und fuer das Display bei einem hellen,
+ * grossflaechigen Vollbild tagsueber.
+ */
+const DARK_VARS: CSSProperties = {
+  ['--surface-900' as string]: '5 5 5',
+  ['--surface-800' as string]: '8 8 8',
+  ['--ink-50' as string]: '250 250 250',
+  ['--ink-100' as string]: '244 244 245',
+  ['--ink-300' as string]: '212 212 216',
+  ['--ink-400' as string]: '161 161 170',
+  ['--ink-500' as string]: '113 113 122',
+  ['--ink-600' as string]: '82 82 91',
+  ['--accent' as string]: '255 90 31',
+};
+
+/**
  * Ruhebildschirm.
  *
  * Wenn das Panel eine Weile nicht bedient wurde, bleibt nur das Wesentliche:
  * Uhrzeit, Wetter und was heute noch ansteht. Dahinter läuft die Diashow.
  * Alles andere verschwindet — ein Panel im Flur soll im Ruhezustand ruhig sein.
  */
-export function IdleScreen({ onWake }: { onWake: () => void }) {
+export function IdleScreen({
+  onWake,
+  shift,
+}: {
+  onWake: () => void;
+  /** Einbrennschutz-Versatz in Pixeln — siehe useNightMode(). */
+  shift?: { x: number; y: number };
+}) {
   const { config, weather, calendar, trash } = useDashboard();
   const now = useClock(false);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
@@ -52,6 +83,7 @@ export function IdleScreen({ onWake }: { onWake: () => void }) {
     <Portal>
       <div
         className="fixed inset-0 z-[75] overflow-hidden bg-surface-900 animate-fade-in"
+        style={DARK_VARS}
         onPointerDown={onWake}
       >
         {hasPhotos && slideshow && (
@@ -79,7 +111,19 @@ export function IdleScreen({ onWake }: { onWake: () => void }) {
           }}
         />
 
-        <div className="relative flex h-full flex-col justify-between p-[4vh]">
+        {/*
+          Einbrennschutz: Nur der Text-/Ziffernbereich wandert — genau das ist
+          die grossflaechige, kontrastreiche, sonst stundenlang unbewegte
+          Flaeche. Der Bildhintergrund bewegt sich bereits über die Diashow.
+          Dieselbe Transition-Dauer wie im uebrigen Dashboard (useNightMode).
+        */}
+        <div
+          className="relative flex h-full flex-col justify-between p-[4vh]"
+          style={{
+            transform: shift ? `translate(${shift.x}px, ${shift.y}px)` : undefined,
+            transition: 'transform 4s linear',
+          }}
+        >
           {/* Oben: Uhr und Datum */}
           {idle?.showClock !== false && (
             <div>

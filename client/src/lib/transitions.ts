@@ -50,6 +50,8 @@ export const TRANSITIONS: TransitionSpec[] = [
     label: 'Ken Burns',
     hint: 'Langsame Fahrt über das Bild, überblendet.',
     duration: 1800,
+    // Platzhalter — transitionSpec() setzt die echte Dauer anhand des
+    // Wechselintervalls ein, siehe dort. Ohne Angabe: 24s Standardwert.
     enter: `tr-fade-in 1800ms ${EASE} both, tr-kenburns 24s linear both`,
     leave: `tr-fade-out 1800ms ${EASE} both`,
   },
@@ -193,12 +195,29 @@ export const TRANSITIONS: TransitionSpec[] = [
 
 export const TRANSITION_BY_ID = new Map(TRANSITIONS.map((entry) => [entry.id, entry]));
 
-export function transitionSpec(id: SlideTransition): TransitionSpec {
-  return TRANSITION_BY_ID.get(id) ?? (TRANSITIONS[0] as TransitionSpec);
+/**
+ * Bei Ken Burns die 24s-Platzhalterdauer durch das tatsächliche
+ * Wechselintervall ersetzen.
+ *
+ * Ohne das lief die Fahrt über eine feste Dauer, unabhängig davon, wie lange
+ * ein Bild überhaupt zu sehen war — bei kürzeren Intervallen wechselte das
+ * Bild, bevor die Bewegung spürbar wurde, bei längeren blieb sie am Ende
+ * einfach stehen.
+ */
+function withIntervalDuration(spec: TransitionSpec, intervalSeconds?: number): TransitionSpec {
+  if (spec.id !== 'ken-burns' || !intervalSeconds) return spec;
+  const seconds = Math.max(4, intervalSeconds);
+  return { ...spec, enter: spec.enter.replace('24s', `${seconds}s`) };
+}
+
+export function transitionSpec(id: SlideTransition, intervalSeconds?: number): TransitionSpec {
+  const spec = TRANSITION_BY_ID.get(id) ?? (TRANSITIONS[0] as TransitionSpec);
+  return withIntervalDuration(spec, intervalSeconds);
 }
 
 /** Zufälliger Effekt — für den Modus "bei jedem Wechsel ein anderer". */
-export function randomTransition(exclude?: SlideTransition): TransitionSpec {
+export function randomTransition(exclude?: SlideTransition, intervalSeconds?: number): TransitionSpec {
   const pool = TRANSITIONS.filter((entry) => entry.id !== exclude);
-  return pool[Math.floor(Math.random() * pool.length)] as TransitionSpec;
+  const spec = pool[Math.floor(Math.random() * pool.length)] as TransitionSpec;
+  return withIntervalDuration(spec, intervalSeconds);
 }

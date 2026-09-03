@@ -31,14 +31,20 @@ export function PhotoSlideshow({
 
   const [index, setIndex] = useState(0);
   const [previous, setPrevious] = useState<number | null>(null);
-  const [spec, setSpec] = useState<TransitionSpec>(() => transitionSpec(config.transition));
+  const [spec, setSpec] = useState<TransitionSpec>(() =>
+    transitionSpec(config.transition, config.intervalSeconds),
+  );
   const timer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (order.length < 2) return;
 
     const advance = () => {
-      setSpec(config.randomTransition ? randomTransition() : transitionSpec(config.transition));
+      setSpec(
+        config.randomTransition
+          ? randomTransition(undefined, config.intervalSeconds)
+          : transitionSpec(config.transition, config.intervalSeconds),
+      );
       setPrevious(index);
       setIndex((current) => (current + 1) % order.length);
     };
