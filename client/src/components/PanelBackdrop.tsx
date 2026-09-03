@@ -75,12 +75,23 @@ function render(variant: BackdropVariant, tint: string) {
     case 'timeline':
       return (
         <>
+          {/*
+            transform: translateY(%) bezieht sich in CSS auf die Hoehe des
+            Elements SELBST, nicht auf die des Panels — ein fest 6rem hohes
+            Element haette die Zeitlinie also nur ueber diese 6rem wandern
+            lassen und mitten im (viel hoeheren) Panel neu begonnen. Deshalb
+            hier: das Element nimmt die volle Panelhoehe ein (inset-0), und
+            das sichtbare Band wandert per background-position — das bezieht
+            sich korrekt auf die tatsaechliche Elementgroesse.
+          */}
           <div
-            className="absolute inset-x-0 h-24"
+            className="absolute inset-0"
             style={{
-              background: `linear-gradient(180deg, transparent, ${tint}, transparent)`,
+              backgroundImage: `linear-gradient(180deg, transparent, ${tint}, transparent)`,
+              backgroundSize: '100% 22%',
+              backgroundRepeat: 'no-repeat',
               opacity: 0.16,
-              animation: 'bd-timeline 26s linear infinite',
+              animation: 'bd-timeline-band 26s linear infinite',
             }}
           />
           {[0.18, 0.38, 0.58, 0.78].map((top) => (

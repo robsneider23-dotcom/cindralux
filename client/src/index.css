@@ -454,10 +454,19 @@
 /* in der GPU, ohne die CPU zu belasten.                                */
 /* ------------------------------------------------------------------ */
 @layer utilities {
-  /* Agenda: eine Zeitlinie wandert langsam nach unten. */
+  /* Regen: einzelne Tropfen fallen als schmale Linie durchs ganze Panel. */
   @keyframes bd-timeline {
     from { transform: translateY(-12%); }
     to   { transform: translateY(112%); }
+  }
+  /*
+   * Agenda: ein Lichtband wandert langsam durch die volle Panelhoehe.
+   * background-position bezieht sich (anders als transform) korrekt auf die
+   * tatsaechliche Groesse des Elements — siehe PanelBackdrop.tsx.
+   */
+  @keyframes bd-timeline-band {
+    from { background-position-y: -22%; }
+    to   { background-position-y: 122%; }
   }
   /* Kalender: das Raster driftet diagonal. */
   @keyframes bd-grid {
