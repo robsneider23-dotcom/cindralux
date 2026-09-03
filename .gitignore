@@ -19,5 +19,9 @@ data/timers.json
 # Einkaufsliste und Notizen — persönlicher Laufzeitinhalt
 data/lists.json
 
+# Rotierende config.json-Sicherungen (gzip, nicht verschlüsselt) — siehe
+# deploy/backup-config.sh
+data/backups/
+
 # Die Beispieldatei enthält ausschließlich Platzhalter und gehört ins Repo:
 !data/config.example.json
