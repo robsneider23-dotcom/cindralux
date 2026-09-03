@@ -40,9 +40,32 @@ export function useIdle(enabled: boolean, afterSeconds: number): {
       arm();
     };
 
+    /*
+     * pointermove zaehlt nur bei echter Bewegung.
+     *
+     * Manche Touch-Panels senden bei Naeherung oder elektrischem Rauschen
+     * pointermove-Events, ohne dass jemand den Bildschirm beruehrt hat —
+     * dabei bleibt die Position (fast) gleich. Ohne diese Schwelle haelt so
+     * ein Panel den Ruhemodus dauerhaft wach, obwohl niemand davorsteht.
+     * pointerdown/touchstart bleiben Schwellen-frei: ein echter Tipp zaehlt
+     * immer.
+     */
+    let lastX: number | null = null;
+    let lastY: number | null = null;
+    const MOVE_THRESHOLD_PX = 4;
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (lastX !== null && lastY !== null) {
+        const moved = Math.hypot(event.clientX - lastX, event.clientY - lastY);
+        if (moved < MOVE_THRESHOLD_PX) return;
+      }
+      lastX = event.clientX;
+      lastY = event.clientY;
+      onActivity();
+    };
+
     const events: Array<keyof WindowEventMap> = [
       'pointerdown',
-      'pointermove',
       'keydown',
       'wheel',
       'touchstart',
@@ -50,10 +73,12 @@ export function useIdle(enabled: boolean, afterSeconds: number): {
     for (const name of events) {
       window.addEventListener(name, onActivity, { passive: true });
     }
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
 
     return () => {
       window.clearTimeout(timer.current);
       for (const name of events) window.removeEventListener(name, onActivity);
+      window.removeEventListener('pointermove', onPointerMove);
     };
   }, [arm]);
 
