@@ -116,6 +116,15 @@
     height: 100%;
   }
 
+  /*
+   * Basis-Schriftgröße angehoben (Browser-Standard 16px). Praktisch der
+   * gesamte Text im Dashboard und im Ruhebildschirm ist in rem oder
+   * clamp(...rem...) gesetzt — diese eine Stelle skaliert beides mit.
+   */
+  html {
+    font-size: 18px;
+  }
+
   body {
     @apply bg-surface-900 text-zinc-300 font-sans;
     margin: 0;
