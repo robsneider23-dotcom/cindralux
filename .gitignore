@@ -1,0 +1,20 @@
+node_modules/
+dist/
+*.log
+
+# ------------------------------------------------------------------
+# Lokale Laufzeitdaten — enthalten Geheimnisse und persönliche Daten
+# ------------------------------------------------------------------
+# config.json enthält u.a. die private ICS-Adresse des Kalenders, den
+# Home-Assistant-Token, den OpenAI-Key und das Google-Refresh-Token.
+data/config.json
+
+# Kalendercache: enthält die tatsächlichen Termine
+data/cache/
+data/cache/*.json
+
+# Gestellte Wecker
+data/timers.json
+
+# Die Beispieldatei enthält ausschließlich Platzhalter und gehört ins Repo:
+!data/config.example.json

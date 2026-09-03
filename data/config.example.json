@@ -1,0 +1,281 @@
+{
+  "calendars": [
+    {
+      "id": "google-private",
+      "name": "Privat",
+      "color": "#ff7a1a",
+      "url": "YOUR_PRIVATE_ICS_URL",
+      "enabled": true,
+      "provider": "google"
+    },
+    {
+      "id": "familie",
+      "name": "Familie",
+      "color": "#ff5a1f",
+      "url": "",
+      "enabled": true
+    },
+    {
+      "id": "arbeit",
+      "name": "Arbeit",
+      "color": "#22d3ee",
+      "url": "",
+      "enabled": true
+    },
+    {
+      "id": "privat",
+      "name": "Privat",
+      "color": "#a78bfa",
+      "url": "",
+      "enabled": true
+    },
+    {
+      "id": "sport",
+      "name": "Sport & Termine",
+      "color": "#34d399",
+      "url": "",
+      "enabled": true
+    }
+  ],
+  "trashRules": [
+    {
+      "id": "restmuell",
+      "kind": "restmuell",
+      "label": "Restmüll",
+      "color": "#a1a1aa",
+      "weekday": 3,
+      "everyNWeeks": 2,
+      "anchorDate": "2026-01-07",
+      "enabled": true
+    },
+    {
+      "id": "bio",
+      "kind": "bio",
+      "label": "Biotonne",
+      "color": "#84cc16",
+      "weekday": 2,
+      "everyNWeeks": 1,
+      "anchorDate": "2026-01-06",
+      "enabled": true
+    },
+    {
+      "id": "papier",
+      "kind": "papier",
+      "label": "Papier",
+      "color": "#38bdf8",
+      "weekday": 5,
+      "everyNWeeks": 4,
+      "anchorDate": "2026-01-09",
+      "enabled": true
+    },
+    {
+      "id": "gelber-sack",
+      "kind": "gelber-sack",
+      "label": "Gelber Sack",
+      "color": "#fbbf24",
+      "weekday": 1,
+      "everyNWeeks": 2,
+      "anchorDate": "2026-01-05",
+      "enabled": true
+    }
+  ],
+  "trash": {
+    "source": "rules",
+    "icsUrl": "YOUR_WASTE_CALENDAR_ICS_URL",
+    "icsContent": "",
+    "icsFileName": ""
+  },
+  "calendarView": {
+    "defaultView": "woche",
+    "autoReturnMinutes": 5
+  },
+  "weather": {
+    "locationName": "Berlin",
+    "latitude": 52.52,
+    "longitude": 13.405,
+    "timezone": "Europe/Berlin"
+  },
+  "homeAssistant": {
+    "baseUrl": "http://homeassistant.local:8123",
+    "token": "YOUR_HA_LONG_LIVED_TOKEN"
+  },
+  "google": {
+    "clientId": "YOUR_GOOGLE_OAUTH_CLIENT_ID",
+    "clientSecret": "YOUR_GOOGLE_OAUTH_CLIENT_SECRET",
+    "refreshToken": "",
+    "account": ""
+  },
+  "ai": {
+    "baseUrl": "https://api.openai.com/v1",
+    "apiKey": "YOUR_OPENAI_API_KEY",
+    "model": "gpt-4o-mini",
+    "systemPrompt": "Du bist RUBICON, der Assistent eines persönlichen Home Command Centers. Antworte auf Deutsch, sachlich, knapp und ohne Floskeln. Der Text erscheint auf einem Touchscreen aus 1–2 Metern Entfernung: kurze Sätze, maximal fünf Zeilen, keine Markdown-Überschriften.",
+    "realtime": {
+      "enabled": true,
+      "model": "gpt-realtime",
+      "voice": "marin",
+      "sessionUrl": "https://api.openai.com/v1/realtime/client_secrets",
+      "callUrl": "https://api.openai.com/v1/realtime/calls",
+      "transcriptionModel": "gpt-4o-transcribe"
+    },
+    "gptLive": {
+      "enabled": true,
+      "url": "https://chatgpt.com",
+      "mode": "browser-tab",
+      "command": "brave --app=https://chatgpt.com"
+    }
+  },
+  "smartHomeActions": [
+    {
+      "id": "alles-aus",
+      "label": "Alles aus",
+      "hint": "Ganze Wohnung",
+      "icon": "power-off",
+      "kind": "scene",
+      "domain": "light",
+      "service": "turn_off",
+      "entityId": "all",
+      "accent": "#ff3c12"
+    },
+    {
+      "id": "wohnzimmer-licht",
+      "label": "Wohnzimmer",
+      "hint": "3 Lampen",
+      "icon": "lamp",
+      "kind": "toggle",
+      "domain": "light",
+      "service": "turn_on",
+      "serviceOff": "turn_off",
+      "entityId": "light.wohnzimmer",
+      "accent": "#ff5a1f"
+    },
+    {
+      "id": "kueche-licht",
+      "label": "Küche",
+      "hint": "Deckenlicht",
+      "icon": "kitchen",
+      "kind": "toggle",
+      "domain": "light",
+      "service": "turn_on",
+      "serviceOff": "turn_off",
+      "entityId": "light.kueche",
+      "accent": "#fbbf24"
+    },
+    {
+      "id": "film-modus",
+      "label": "Film-Modus",
+      "hint": "Licht dimmen",
+      "icon": "movie",
+      "kind": "scene",
+      "domain": "scene",
+      "service": "turn_on",
+      "entityId": "scene.film_modus",
+      "accent": "#a78bfa"
+    },
+    {
+      "id": "nachtmodus",
+      "label": "Nachtmodus",
+      "hint": "Alles sichern",
+      "icon": "night",
+      "kind": "scene",
+      "domain": "scene",
+      "service": "turn_on",
+      "entityId": "scene.nachtmodus",
+      "accent": "#22d3ee"
+    },
+    {
+      "id": "heizung",
+      "label": "Heizung",
+      "hint": "21 °C Komfort",
+      "icon": "heating",
+      "kind": "toggle",
+      "domain": "climate",
+      "service": "turn_on",
+      "serviceOff": "turn_off",
+      "entityId": "climate.wohnzimmer",
+      "accent": "#f97316"
+    }
+  ],
+  "sensors": [
+    {
+      "id": "temp-wohnzimmer",
+      "label": "Wohnzimmer",
+      "entityId": "sensor.wohnzimmer_temperature",
+      "icon": "temperature",
+      "decimals": 1,
+      "enabled": true
+    },
+    {
+      "id": "temp-aussen",
+      "label": "Außen",
+      "entityId": "sensor.aussen_temperature",
+      "icon": "temperature",
+      "decimals": 1,
+      "enabled": true
+    },
+    {
+      "id": "humidity-wohnzimmer",
+      "label": "Luftfeuchte",
+      "entityId": "sensor.wohnzimmer_humidity",
+      "icon": "humidity",
+      "decimals": 0,
+      "enabled": true
+    },
+    {
+      "id": "fenster-bad",
+      "label": "Badfenster",
+      "entityId": "binary_sensor.bad_fenster",
+      "icon": "window",
+      "alertStates": [
+        "on",
+        "open"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "haustuer",
+      "label": "Haustür",
+      "entityId": "binary_sensor.haustuer",
+      "icon": "door",
+      "alertStates": [
+        "on",
+        "open",
+        "unlocked"
+      ],
+      "enabled": false
+    },
+    {
+      "id": "strom",
+      "label": "Verbrauch",
+      "entityId": "sensor.hausverbrauch_power",
+      "icon": "power",
+      "decimals": 0,
+      "enabled": true
+    },
+    {
+      "id": "solar",
+      "label": "PV-Ertrag",
+      "entityId": "sensor.solar_power",
+      "icon": "solar",
+      "decimals": 0,
+      "enabled": false
+    }
+  ],
+  "appearance": {
+    "themeMode": "ember",
+    "background": "",
+    "backgroundOpacity": 0.5,
+    "showSeconds": true,
+    "reducedMotion": false,
+    "night": {
+      "enabled": true,
+      "startHour": 22,
+      "endHour": 6,
+      "dimLevel": 0.25,
+      "clockOnly": false,
+      "wakeSeconds": 45
+    },
+    "burnInProtection": true
+  },
+  "calendarRefreshMinutes": 15
+}

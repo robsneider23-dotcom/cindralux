@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff5a1f" stop-opacity="1"/><stop offset="100%" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient>
+    <linearGradient id="h" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff5a1f" stop-opacity="0"/><stop offset="50%" stop-color="#ff5a1f" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient></defs>
+  <line x1="960" y1="497" x2="-3070" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-2915" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-2760" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-2605" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-2450" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-2295" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-2140" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1985" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1830" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1675" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1520" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1365" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1210" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-1055" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-900" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-745" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-590" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-435" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-280" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="-125" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="30" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="185" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="340" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="495" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="650" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="805" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="960" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="1115" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="1270" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="1425" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="1580" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="1735" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="1890" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2045" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2200" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2355" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2510" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2665" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2820" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="2975" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="3130" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="3285" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="3440" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="3595" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="3750" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="3905" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4060" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4215" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4370" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4525" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4680" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4835" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="960" y1="497" x2="4990" y2="1320" stroke="url(#v)" stroke-width="1.4" opacity="0.5"/>
+  <line x1="0" y1="497.0" x2="1920" y2="497.0" stroke="url(#h)" stroke-width="1.4" opacity="0.216"/>
+  <line x1="0" y1="497.7" x2="1920" y2="497.7" stroke="url(#h)" stroke-width="1.4" opacity="0.232"/>
+  <line x1="0" y1="499.2" x2="1920" y2="499.2" stroke="url(#h)" stroke-width="1.4" opacity="0.249"/>
+  <line x1="0" y1="501.6" x2="1920" y2="501.6" stroke="url(#h)" stroke-width="1.4" opacity="0.265"/>
+  <line x1="0" y1="505.1" x2="1920" y2="505.1" stroke="url(#h)" stroke-width="1.4" opacity="0.281"/>
+  <line x1="0" y1="509.6" x2="1920" y2="509.6" stroke="url(#h)" stroke-width="1.4" opacity="0.297"/>
+  <line x1="0" y1="515.3" x2="1920" y2="515.3" stroke="url(#h)" stroke-width="1.4" opacity="0.313"/>
+  <line x1="0" y1="522.3" x2="1920" y2="522.3" stroke="url(#h)" stroke-width="1.4" opacity="0.329"/>
+  <line x1="0" y1="530.7" x2="1920" y2="530.7" stroke="url(#h)" stroke-width="1.4" opacity="0.346"/>
+  <line x1="0" y1="540.4" x2="1920" y2="540.4" stroke="url(#h)" stroke-width="1.4" opacity="0.362"/>
+  <line x1="0" y1="551.7" x2="1920" y2="551.7" stroke="url(#h)" stroke-width="1.4" opacity="0.378"/>
+  <line x1="0" y1="564.4" x2="1920" y2="564.4" stroke="url(#h)" stroke-width="1.4" opacity="0.394"/>
+  <line x1="0" y1="578.7" x2="1920" y2="578.7" stroke="url(#h)" stroke-width="1.4" opacity="0.410"/>
+  <line x1="0" y1="594.7" x2="1920" y2="594.7" stroke="url(#h)" stroke-width="1.4" opacity="0.426"/>
+  <line x1="0" y1="612.3" x2="1920" y2="612.3" stroke="url(#h)" stroke-width="1.4" opacity="0.443"/>
+  <line x1="0" y1="631.6" x2="1920" y2="631.6" stroke="url(#h)" stroke-width="1.4" opacity="0.459"/>
+  <line x1="0" y1="652.8" x2="1920" y2="652.8" stroke="url(#h)" stroke-width="1.4" opacity="0.475"/>
+  <line x1="0" y1="675.7" x2="1920" y2="675.7" stroke="url(#h)" stroke-width="1.4" opacity="0.491"/>
+  <line x1="0" y1="700.5" x2="1920" y2="700.5" stroke="url(#h)" stroke-width="1.4" opacity="0.507"/>
+  <line x1="0" y1="727.2" x2="1920" y2="727.2" stroke="url(#h)" stroke-width="1.4" opacity="0.524"/>
+  <line x1="0" y1="755.8" x2="1920" y2="755.8" stroke="url(#h)" stroke-width="1.4" opacity="0.540"/>
+  <line x1="0" y1="786.4" x2="1920" y2="786.4" stroke="url(#h)" stroke-width="1.4" opacity="0.556"/>
+  <line x1="0" y1="819.0" x2="1920" y2="819.0" stroke="url(#h)" stroke-width="1.4" opacity="0.572"/>
+  <line x1="0" y1="853.6" x2="1920" y2="853.6" stroke="url(#h)" stroke-width="1.4" opacity="0.588"/>
+  <line x1="0" y1="890.4" x2="1920" y2="890.4" stroke="url(#h)" stroke-width="1.4" opacity="0.604"/>
+  <line x1="0" y1="929.2" x2="1920" y2="929.2" stroke="url(#h)" stroke-width="1.4" opacity="0.621"/>
+  <line x1="0" y1="970.2" x2="1920" y2="970.2" stroke="url(#h)" stroke-width="1.4" opacity="0.637"/>
+  <line x1="0" y1="1013.4" x2="1920" y2="1013.4" stroke="url(#h)" stroke-width="1.4" opacity="0.653"/>
+  <line x1="0" y1="1058.8" x2="1920" y2="1058.8" stroke="url(#h)" stroke-width="1.4" opacity="0.669"/>
+  <line x1="0" y1="1106.4" x2="1920" y2="1106.4" stroke="url(#h)" stroke-width="1.4" opacity="0.685"/>
+  <line x1="0" y1="1156.3" x2="1920" y2="1156.3" stroke="url(#h)" stroke-width="1.4" opacity="0.701"/>
+  <line x1="0" y1="1208.5" x2="1920" y2="1208.5" stroke="url(#h)" stroke-width="1.4" opacity="0.718"/>
+  <line x1="0" y1="1263.1" x2="1920" y2="1263.1" stroke="url(#h)" stroke-width="1.4" opacity="0.734"/>
+  <line x1="0" y1="497" x2="1920" y2="497" stroke="#ff5a1f" stroke-width="2" opacity="0.95"/>
+</svg>

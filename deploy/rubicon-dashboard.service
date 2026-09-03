@@ -1,0 +1,51 @@
+# systemd-Unit für den Rubicon-Server.
+#
+# Ablegen als /etc/systemd/system/rubicon-dashboard.service
+# Danach:  sudo systemctl daemon-reload && sudo systemctl enable --now rubicon-dashboard
+#
+# Läuft als normaler Nutzer, nicht als root — der Dienst braucht keine
+# Sonderrechte, und data/config.json enthält Geheimnisse.
+
+[Unit]
+Description=Rubicon Home Command Center
+Documentation=file:///home/pi/rubicon/docs/raspberry-pi.md
+# Erst starten, wenn das Netz steht: Kalender und Wetter werden beim Start geholt.
+After=network-online.target
+Wants=network-online.target
+
+# Unbegrenzt neu starten: Nach einem Stromausfall soll das Panel von allein
+# zurückkommen, auch wenn die ersten Versuche scheitern (z.B. Netz noch nicht da).
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/rubicon
+
+# 0.0.0.0 macht das Dashboard auch vom Handy im WLAN erreichbar.
+# Für reinen Kiosk-Betrieb 127.0.0.1 eintragen — dann kommt niemand sonst dran.
+Environment=NODE_ENV=production
+Environment=HOST=0.0.0.0
+Environment=PORT=4000
+
+# Geheimnisse können statt in data/config.json auch hier stehen:
+# EnvironmentFile=-/home/pi/rubicon/.env
+
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+
+# Etwas Härtung — der Dienst schreibt nur in sein eigenes Verzeichnis.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/pi/rubicon/data
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rubicon
+
+[Install]
+WantedBy=multi-user.target

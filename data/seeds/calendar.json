@@ -1,0 +1,38 @@
+{
+  "_comment": "Demo-Termine fuer das Dashboard, solange keine ICS-URL hinterlegt ist. dayOffset ist relativ zum heutigen Tag, damit die Daten nie veralten. Zeiten als HH:MM in lokaler Zeit.",
+  "events": [
+    { "calendarId": "arbeit", "title": "Daily Standup", "dayOffset": 0, "start": "09:00", "end": "09:15", "location": "Teams" },
+    { "calendarId": "arbeit", "title": "Review Sprint 24", "dayOffset": 0, "start": "11:00", "end": "12:00", "location": "Besprechung 2" },
+    { "calendarId": "familie", "title": "Kita Abholung", "dayOffset": 0, "start": "15:30", "end": "16:00" },
+    { "calendarId": "privat", "title": "Paketannahme Nachbarn", "dayOffset": 0, "start": "18:00", "end": "18:30" },
+    { "calendarId": "sport", "title": "Lauftraining 8 km", "dayOffset": 0, "start": "19:30", "end": "20:30", "location": "Volkspark" },
+
+    { "calendarId": "arbeit", "title": "Daily Standup", "dayOffset": 1, "start": "09:00", "end": "09:15", "location": "Teams" },
+    { "calendarId": "arbeit", "title": "Kundentermin Meyer GmbH", "dayOffset": 1, "start": "10:30", "end": "12:00", "location": "Vor Ort" },
+    { "calendarId": "familie", "title": "Elternabend", "dayOffset": 1, "start": "19:00", "end": "20:30", "location": "Grundschule" },
+
+    { "calendarId": "privat", "title": "Zahnarzt Kontrolle", "dayOffset": 2, "start": "08:15", "end": "09:00", "location": "Praxis Dr. Weber" },
+    { "calendarId": "arbeit", "title": "Architektur-Runde", "dayOffset": 2, "start": "14:00", "end": "15:30" },
+    { "calendarId": "sport", "title": "Krafttraining", "dayOffset": 2, "start": "18:00", "end": "19:15" },
+
+    { "calendarId": "familie", "title": "Oma Geburtstag", "dayOffset": 3, "allDay": true },
+    { "calendarId": "arbeit", "title": "Quartalsplanung", "dayOffset": 3, "start": "09:30", "end": "11:30" },
+    { "calendarId": "privat", "title": "Werkstatt: Reifenwechsel", "dayOffset": 3, "start": "16:00", "end": "17:00" },
+
+    { "calendarId": "arbeit", "title": "Homeoffice", "dayOffset": 4, "allDay": true },
+    { "calendarId": "sport", "title": "Schwimmen", "dayOffset": 4, "start": "07:00", "end": "08:00", "location": "Stadtbad" },
+    { "calendarId": "familie", "title": "Kino: Familienabend", "dayOffset": 4, "start": "17:45", "end": "20:00" },
+
+    { "calendarId": "privat", "title": "Wochenendeinkauf", "dayOffset": 5, "start": "10:00", "end": "11:30" },
+    { "calendarId": "familie", "title": "Grillen bei Tom & Lisa", "dayOffset": 5, "start": "17:00", "end": "22:00", "location": "Seestraße 14" },
+
+    { "calendarId": "sport", "title": "Volkslauf 10 km", "dayOffset": 6, "start": "09:00", "end": "11:00", "location": "Sportpark" },
+    { "calendarId": "privat", "title": "Brunch", "dayOffset": 6, "start": "11:30", "end": "13:00" },
+
+    { "calendarId": "arbeit", "title": "Betriebsversammlung", "dayOffset": 7, "start": "10:00", "end": "11:30" },
+    { "calendarId": "familie", "title": "Kinderarzt U-Untersuchung", "dayOffset": 7, "start": "14:30", "end": "15:15" },
+
+    { "calendarId": "privat", "title": "Urlaub Nordsee", "dayOffset": 9, "allDay": true, "days": 4 },
+    { "calendarId": "arbeit", "title": "Deployment-Fenster", "dayOffset": 11, "start": "20:00", "end": "23:00" }
+  ]
+}

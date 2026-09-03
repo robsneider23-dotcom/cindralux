@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="640" height="640" aria-hidden="true">
+  <!-- Grossflaechiges, sehr dezentes Wasserzeichen fuer die Dashboard-Ecke. -->
+  <polygon points="32,4 56.2,18 56.2,46 32,60 7.8,46 7.8,18"
+           fill="none" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="6" y1="32" x2="58" y2="32" stroke="#ff5a1f" stroke-width="0.7" stroke-dasharray="3 4"/>
+  <polyline points="24,46 39,32 24,18" fill="none" stroke="#ff5a1f"
+            stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

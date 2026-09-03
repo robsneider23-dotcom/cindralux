@@ -1,0 +1,10 @@
+# Erlaubt dem Dashboard, den Pi neu zu starten und herunterzufahren.
+#
+# Installieren:
+#   sudo cp ~/rubicon/deploy/rubicon-power.sudoers /etc/sudoers.d/rubicon-power
+#   sudo chmod 440 /etc/sudoers.d/rubicon-power
+#
+# Absichtlich eng gefasst: nur diese beiden Befehle, ohne Argumente, ohne
+# Passwort. Kein allgemeines sudo-Recht. Läuft der Dienst unter einem anderen
+# Benutzer als "pi", die erste Spalte anpassen.
+pi ALL=(root) NOPASSWD: /sbin/reboot "", /sbin/poweroff ""

@@ -1,0 +1,648 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Basis                                                               */
+/* ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    color-scheme: dark;
+    /* Wird von ThemeProvider je nach Theme-Modus gesetzt. */
+    /*
+     * Farbpalette als RGB-Tripel (ohne rgb(), damit Tailwind die Deckkraft
+     * ergaenzen kann). Dunkel ist die Vorgabe; das helle Design ueberschreibt
+     * nur diese Variablen — kein einziger Klassenname im Code aendert sich.
+     *
+     * --hairline und --shade sind die Basis fuer white/x und black/x:
+     * Haarlinien und Abdunklungen. Im hellen Design drehen sie sich um.
+     */
+    --surface-900: 5 5 5;
+    --surface-800: 8 8 8;
+    --surface-700: 13 13 13;
+    --surface-600: 17 17 17;
+    --surface-500: 22 22 22;
+    --surface-400: 28 28 28;
+    --surface-300: 36 36 36;
+
+    --ink-50: 250 250 250;
+    --ink-100: 244 244 245;
+    --ink-200: 228 228 231;
+    --ink-300: 212 212 216;
+    --ink-400: 161 161 170;
+    --ink-500: 113 113 122;
+    --ink-600: 82 82 91;
+    --ink-700: 63 63 70;
+    --ink-800: 39 39 42;
+    --ink-900: 24 24 27;
+
+    --hairline: 255 255 255;
+    --shade: 0 0 0;
+
+    --signal-ok: 52 211 153;
+    --signal-warn: 251 191 36;
+    --signal-err: 244 63 94;
+    --signal-info: 34 211 238;
+    --signal-idle: 113 113 122;
+  }
+
+  /*
+   * Helles Design.
+   *
+   * Bewusst keine reine Umkehrung: Ein Panel an der Wand wird bei Tageslicht
+   * gelesen, deshalb sind die Flaechen nicht blendend weiss, sondern leicht
+   * warm gebrochen. Die Textstufen drehen sich um (--ink-50 wird dunkel),
+   * damit derselbe Klassenname weiterhin „am kraeftigsten" bedeutet.
+   */
+  html[data-theme='light'] {
+    --surface-900: 246 245 243;
+    --surface-800: 250 249 247;
+    --surface-700: 255 255 254;
+    --surface-600: 252 251 249;
+    --surface-500: 248 247 244;
+    --surface-400: 241 240 236;
+    --surface-300: 232 231 226;
+
+    /*
+     * Deutlich dunkler als eine blosse Umkehrung der dunklen Palette.
+     * Nachgemessen: Mit den gespiegelten Werten erreichten gedaempfte Texte
+     * nur 1,6 bis 3,7:1 Kontrast — lesbarer Text braucht 4,5:1. Die Stufen
+     * 400 bis 700 tragen die meiste Beschriftung und liegen deshalb tiefer,
+     * als es auf Dunkel noetig waere.
+     */
+    --ink-50: 17 17 20;
+    --ink-100: 28 28 32;
+    --ink-200: 40 40 46;
+    --ink-300: 52 52 58;
+    --ink-400: 70 70 78;
+    --ink-500: 88 88 96;
+    --ink-600: 104 104 113;
+    --ink-700: 124 124 134;
+    --ink-800: 176 176 185;
+    --ink-900: 212 212 218;
+
+    /* Haarlinien werden dunkel, Abdunklungen bleiben dunkel (Overlays). */
+    --hairline: 24 24 27;
+    --shade: 40 38 35;
+
+    /*
+     * Signalfarben deutlich dunkler: Das helle Amber erreicht auf Weiss nur
+     * 1,4:1 Kontrast — unlesbar. Diese Werte liegen ueber den 4,5:1, die
+     * kleiner Text mindestens braucht.
+     */
+    --signal-ok: 4 120 87;
+    --signal-warn: 180 83 9;
+    --signal-err: 190 18 60;
+    --signal-info: 14 116 144;
+    --signal-idle: 82 82 91;
+
+    --accent: 255 90 31;
+    --accent-soft: 255 138 82;
+    --accent-hot: 255 60 18;
+    --grid-line: rgb(var(--hairline) / 0.02);
+    /* Deckkraft des Rubicon-Hintergrunds, aus den Einstellungen. */
+    --backdrop-opacity: 0.5;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface-900 text-zinc-300 font-sans;
+    margin: 0;
+    overflow: hidden;
+    /* Touchscreen: kein Text-Markieren beim Wischen, kein Gummiband-Scroll. */
+    user-select: none;
+    overscroll-behavior: none;
+  }
+
+  input,
+  textarea {
+    user-select: text;
+  }
+
+  /*
+   * Bildschirmtastatur: Sie soll nichts verdecken, sondern Platz wegnehmen.
+   * TouchKeyboard meldet seine Höhe an --osk-height; alles, was den ganzen
+   * Bildschirm füllt, endet dann oberhalb davon. Die Regel ist bewusst
+   * global statt in jedem Overlay einzeln — es sind elf Stück, und ein
+   * vergessenes fiele erst am Panel auf.
+   */
+  :root {
+    --osk-height: 0px;
+  }
+
+  body.osk-open .fixed.inset-0:not(.osk-ignore),
+  body.osk-open .fixed.inset-x-0.bottom-0:not(.osk-ignore) {
+    bottom: var(--osk-height);
+  }
+
+  /* Breite, gut treffbare Scrollbalken — 6px sind am Finger nicht bedienbar. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--hairline) / 0.16) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--hairline) / 0.09);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.3);
+    color: rgb(var(--ink-50));
+  }
+
+  /*
+   * Global, nicht nur auf Schaltflächen: Ohne touch-action wartet der Browser
+   * nach jeder Berührung rund 300 ms ab, ob ein Doppeltipp zum Zoomen folgt.
+   * Auf einem Kiosk-Panel ohne Zoom ist das reine Verzögerung — und sie trifft
+   * alles, was keine <button> ist: Kalendertage, Listenzeilen, Kacheln.
+   */
+  html,
+  body {
+    touch-action: manipulation;
+  }
+
+  button {
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgb(var(--accent) / 0.6);
+    outline-offset: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Komponenten-Primitive                                               */
+/* ------------------------------------------------------------------ */
+@layer components {
+  /*
+   * Panel — Instrument statt Karte. Hairline-Rand, Innenschatten,
+   * Ember-Eckwinkel oben links als wiederkehrende Signatur.
+   */
+  .panel {
+    position: relative;
+    border-radius: 3px;
+    border: 1px solid rgb(var(--hairline) / 0.06);
+    background:
+      radial-gradient(130% 90% at 50% -25%, rgb(var(--hairline) / 0.04), transparent 62%),
+      linear-gradient(180deg, rgb(var(--surface-500) / 0.62) 0%, rgb(var(--surface-800) / 0.74) 100%);
+    backdrop-filter: blur(14px) saturate(120%);
+    box-shadow: theme('boxShadow.panel');
+    overflow: hidden;
+  }
+
+  .panel::before,
+  .panel::after {
+    content: '';
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    pointer-events: none;
+  }
+  .panel::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid rgb(var(--accent) / 0.55);
+    border-left: 1px solid rgb(var(--accent) / 0.55);
+  }
+  .panel::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1px solid rgb(var(--hairline) / 0.16);
+    border-right: 1px solid rgb(var(--hairline) / 0.16);
+  }
+
+  .panel-head {
+    @apply flex items-center justify-between gap-3 px-4 py-2.5 shrink-0;
+    border-bottom: 1px solid rgb(var(--hairline) / 0.055);
+    background: linear-gradient(180deg, rgb(var(--hairline) / 0.03), transparent);
+  }
+
+  .label {
+    @apply text-2xs uppercase tracking-label text-zinc-500 font-medium;
+  }
+
+  .label-dim {
+    @apply text-3xs uppercase tracking-label text-zinc-600;
+  }
+
+  /* Alle Zahlen laufen tabellarisch, damit die Uhr nicht zappelt. */
+  .digits {
+    @apply font-mono;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .hair {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--hairline) / 0.08) 15%,
+      rgb(var(--hairline) / 0.08) 85%,
+      transparent
+    );
+  }
+
+  /*
+   * Touch-Flaeche. Der aktive Zustand ist der wichtigste Zustand:
+   * Hover gibt es auf einem Touchscreen nicht.
+   */
+  .touchable {
+    @apply relative select-none transition-all duration-200 ease-calm;
+    touch-action: manipulation;
+    min-height: 56px;
+  }
+  .touchable:active {
+    transform: scale(0.975);
+    box-shadow: theme('boxShadow.press');
+  }
+
+  /* Grosser Standard-Button. */
+  .btn {
+    @apply touchable inline-flex items-center justify-center gap-2 rounded-[3px] border px-4;
+    @apply text-2xs uppercase tracking-wide2 font-medium;
+    border-color: rgb(var(--hairline) / 0.09);
+    background: rgb(var(--hairline) / 0.028);
+    color: rgb(var(--ink-300));
+  }
+  .btn:active {
+    border-color: rgb(var(--accent) / 0.6);
+    background: rgb(var(--accent) / 0.14);
+    color: rgb(var(--accent-soft));
+  }
+  .btn:disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .btn-accent {
+    border-color: rgb(var(--accent) / 0.45);
+    background: rgb(var(--accent) / 0.12);
+    color: rgb(var(--accent-soft));
+  }
+  .btn-accent:active {
+    background: rgb(var(--accent) / 0.26);
+  }
+
+  /* Eingabefelder — hoch genug fuer Finger und Bildschirmtastatur. */
+  .field {
+    @apply w-full rounded-[3px] border px-3.5 text-sm text-zinc-200 transition-colors duration-200;
+    min-height: 52px;
+    border-color: rgb(var(--hairline) / 0.09);
+    background: rgb(var(--shade) / 0.35);
+  }
+  /* Flache Panels (z.B. 1024x600) brauchen jeden Pixel Hoehe. */
+  @media (max-height: 720px) {
+    .field {
+      min-height: 46px;
+    }
+  }
+  .field::placeholder {
+    @apply text-zinc-600;
+  }
+  .field:focus {
+    border-color: rgb(var(--accent) / 0.5);
+    background: rgb(var(--shade) / 0.5);
+    outline: none;
+  }
+
+  /*
+   * Regler mit dunkler Spur. Ohne eigene Regeln zeigt der Browser eine helle
+   * Standard-Spur, die auf der dunklen Oberflaeche wie ein Fehler wirkt.
+   */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 44px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--hairline) / 0.09);
+  }
+  .slider::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--hairline) / 0.09);
+  }
+  .slider::-moz-range-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--accent));
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -9px;
+    height: 24px;
+    width: 24px;
+    border-radius: 999px;
+    background: rgb(var(--accent));
+    box-shadow: 0 0 0 4px rgb(var(--accent) / 0.18), 0 0 16px rgb(var(--accent) / 0.7);
+  }
+  .slider::-moz-range-thumb {
+    height: 24px;
+    width: 24px;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(var(--accent));
+    box-shadow: 0 0 0 4px rgb(var(--accent) / 0.18), 0 0 16px rgb(var(--accent) / 0.7);
+  }
+
+  /* Farbiger Kalender-Balken links am Termin. */
+  .event-bar {
+    @apply w-[3px] shrink-0 rounded-full;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilities                                                           */
+/* ------------------------------------------------------------------ */
+@layer utilities {
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      180deg,
+      rgb(var(--hairline) / 0.016) 0px,
+      rgb(var(--hairline) / 0.016) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* Prozedurale Filmkoernung — kein Bild-Asset noetig. */
+  .noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.26;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: soft-light;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 54px 54px;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 28px rgb(var(--accent) / 0.4);
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(180deg, #000 84%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 84%, transparent 100%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Hintergrundbewegung je Panel                                        */
+/*                                                                      */
+/* Jedes Fenster bekommt eine eigene, sehr ruhige Bewegung — damit man  */
+/* auf einen Blick erkennt, wo man ist, und ein leeres Panel nicht tot  */
+/* wirkt. Bewusst nur transform und opacity: beides laeuft auf dem Pi   */
+/* in der GPU, ohne die CPU zu belasten.                                */
+/* ------------------------------------------------------------------ */
+@layer utilities {
+  /* Agenda: eine Zeitlinie wandert langsam nach unten. */
+  @keyframes bd-timeline {
+    from { transform: translateY(-12%); }
+    to   { transform: translateY(112%); }
+  }
+  /* Kalender: das Raster driftet diagonal. */
+  @keyframes bd-grid {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(54px, 54px); }
+  }
+  /* Wetter: schraege Schlieren ziehen durch. */
+  @keyframes bd-drift {
+    from { transform: translate(-25%, -10%); }
+    to   { transform: translate(25%, 10%); }
+  }
+  /* Smart Home: konzentrische Impulse aus der Mitte. */
+  @keyframes bd-pulse {
+    0%   { transform: scale(0.35); opacity: 0; }
+    18%  { opacity: 0.5; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  /* Messwerte: ein Abtaststrahl laeuft waagerecht durch. */
+  @keyframes bd-sweep-x {
+    from { transform: translateX(-60%); }
+    to   { transform: translateX(160%); }
+  }
+  /* Assistent: zwei Lichter kreisen gegenlaeufig. */
+  @keyframes bd-orbit {
+    from { transform: rotate(0deg) translateX(18%) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(18%) rotate(-360deg); }
+  }
+  /* Timer: ein Ring dreht sich. */
+  @keyframes bd-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  /* Funken steigen auf und verglimmen. */
+  @keyframes bd-ember-rise {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    12%  { opacity: 0.5; }
+    100% { transform: translateY(-115%) translateX(14px); opacity: 0; }
+  }
+  /* Muell: ruhiges Atmen. */
+  @keyframes bd-breathe {
+    0%, 100% { transform: scale(1); opacity: 0.35; }
+    50%      { transform: scale(1.12); opacity: 0.7; }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Übergänge der Diashow                                               */
+/*                                                                      */
+/* Alle in einem Stil: dieselbe Kurve wie im Dashboard, lange Dauern,   */
+/* keine Sprünge. Nur transform, opacity, filter und clip-path — alles  */
+/* Eigenschaften, die der Browser ohne Layout-Neuberechnung animiert.   */
+/* ------------------------------------------------------------------ */
+@layer utilities {
+  @keyframes tr-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes tr-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+  @keyframes tr-fade-zoom-in {
+    from { opacity: 0; transform: scale(1.08); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes tr-fade-zoom-out {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.96); }
+  }
+
+  /* Langsame Fahrt, laeuft ueber die volle Standzeit des Bildes. */
+  @keyframes tr-kenburns {
+    from { transform: scale(1.02) translate(0, 0); }
+    to   { transform: scale(1.14) translate(-2%, -1.5%); }
+  }
+
+  @keyframes tr-blur-in {
+    from { opacity: 0; filter: blur(26px); transform: scale(1.05); }
+    to   { opacity: 1; filter: blur(0); transform: scale(1); }
+  }
+  @keyframes tr-blur-out {
+    from { opacity: 1; filter: blur(0); }
+    to   { opacity: 0; filter: blur(18px); }
+  }
+
+  /* Ember-Schimmer: kurz warm ueberstrahlt, dann normal. */
+  @keyframes tr-glow-in {
+    0%   { opacity: 0; filter: brightness(2.4) saturate(1.8) blur(12px); }
+    45%  { opacity: 1; filter: brightness(1.5) saturate(1.4) blur(2px); }
+    100% { opacity: 1; filter: none; }
+  }
+
+  @keyframes tr-slide-in-right { from { transform: translateX(100%); } to { transform: none; } }
+  @keyframes tr-slide-in-left  { from { transform: translateX(-100%); } to { transform: none; } }
+  @keyframes tr-slide-in-bottom{ from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes tr-slide-in-top   { from { transform: translateY(-100%); } to { transform: none; } }
+
+  @keyframes tr-push-out-left { from { transform: none; } to { transform: translateX(-100%); } }
+  @keyframes tr-push-out-up   { from { transform: none; } to { transform: translateY(-100%); } }
+
+  @keyframes tr-wipe-left {
+    from { clip-path: inset(0 0 0 100%); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes tr-wipe-right {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes tr-wipe-up {
+    from { clip-path: inset(100% 0 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes tr-wipe-diagonal {
+    from { clip-path: polygon(0 0, 0 0, -40% 100%, -40% 100%); }
+    to   { clip-path: polygon(0 0, 140% 0, 100% 100%, 0 100%); }
+  }
+  @keyframes tr-wipe-circle {
+    from { clip-path: circle(0% at 50% 50%); }
+    to   { clip-path: circle(75% at 50% 50%); }
+  }
+
+  /* Lamellen: acht Streifen, die gemeinsam aufgehen. */
+  @keyframes tr-blinds-v {
+    from {
+      clip-path: polygon(
+        0 0,0 0,0 100%,0 100%, 12.5% 0,12.5% 0,12.5% 100%,12.5% 100%,
+        25% 0,25% 0,25% 100%,25% 100%, 37.5% 0,37.5% 0,37.5% 100%,37.5% 100%,
+        50% 0,50% 0,50% 100%,50% 100%, 62.5% 0,62.5% 0,62.5% 100%,62.5% 100%,
+        75% 0,75% 0,75% 100%,75% 100%, 87.5% 0,87.5% 0,87.5% 100%,87.5% 100%);
+    }
+    to {
+      clip-path: polygon(
+        0 0,12.5% 0,12.5% 100%,0 100%, 12.5% 0,25% 0,25% 100%,12.5% 100%,
+        25% 0,37.5% 0,37.5% 100%,25% 100%, 37.5% 0,50% 0,50% 100%,37.5% 100%,
+        50% 0,62.5% 0,62.5% 100%,50% 100%, 62.5% 0,75% 0,75% 100%,62.5% 100%,
+        75% 0,87.5% 0,87.5% 100%,75% 100%, 87.5% 0,100% 0,100% 100%,87.5% 100%);
+    }
+  }
+  @keyframes tr-blinds-h {
+    from {
+      clip-path: polygon(
+        0 0,100% 0,100% 0,0 0, 0 20%,100% 20%,100% 20%,0 20%,
+        0 40%,100% 40%,100% 40%,0 40%, 0 60%,100% 60%,100% 60%,0 60%,
+        0 80%,100% 80%,100% 80%,0 80%);
+    }
+    to {
+      clip-path: polygon(
+        0 0,100% 0,100% 20%,0 20%, 0 20%,100% 20%,100% 40%,0 40%,
+        0 40%,100% 40%,100% 60%,0 60%, 0 60%,100% 60%,100% 80%,0 80%,
+        0 80%,100% 80%,100% 100%,0 100%);
+    }
+  }
+
+  @keyframes tr-shutter {
+    from { clip-path: inset(50% 0 50% 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+
+  /* Abtastzeile: das Bild wird von oben nach unten aufgebaut. */
+  @keyframes tr-scanline {
+    from { clip-path: inset(0 0 100% 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+}
+
+/* Schwache Pi-Hardware oder Nutzerwunsch: Bewegung komplett aus. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+html[data-motion='reduced'] *,
+html[data-motion='reduced'] *::before,
+html[data-motion='reduced'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/*
+ * Sanfter Wechsel zwischen Hell und Dunkel.
+ *
+ * Ueber die View-Transitions-API: Der Browser legt einen Schnappschuss der
+ * alten Ansicht ueber die neue und blendet ihn aus. CSS-Uebergaenge koennen
+ * das nicht leisten, weil Farben, die aus einer CSS-Variablen kommen, bei
+ * deren Aenderung nicht interpoliert werden — nachgemessen.
+ *
+ * Bewusst eine Ausnahme von der Bewegungsbremse: Es ist keine Zierde, sondern
+ * Ruecksicht auf die Augen. Ein harter Umschlag von dunkel auf hell blendet,
+ * und er passiert taeglich zweimal.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 900ms !important;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+  mix-blend-mode: normal;
+}

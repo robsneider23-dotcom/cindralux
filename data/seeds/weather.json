@@ -1,0 +1,21 @@
+{
+  "_comment": "Fallback-Wetter, falls Open-Meteo nicht erreichbar ist (z.B. Pi ohne Internet). dayOffset ist relativ zum heutigen Tag.",
+  "temperature": 17.4,
+  "apparentTemperature": 16.1,
+  "description": "Wechselnd bewölkt",
+  "icon": "partly",
+  "high": 19.8,
+  "low": 11.2,
+  "windSpeed": 14,
+  "humidity": 68,
+  "precipitationChance": 20,
+  "forecast": [
+    { "dayOffset": 0, "min": 11.2, "max": 19.8, "icon": "partly", "description": "Wechselnd bewölkt", "precipitationChance": 20 },
+    { "dayOffset": 1, "min": 12.0, "max": 21.5, "icon": "clear", "description": "Sonnig", "precipitationChance": 5 },
+    { "dayOffset": 2, "min": 13.4, "max": 22.9, "icon": "clear", "description": "Heiter", "precipitationChance": 10 },
+    { "dayOffset": 3, "min": 14.1, "max": 20.2, "icon": "rain", "description": "Regenschauer", "precipitationChance": 70 },
+    { "dayOffset": 4, "min": 10.8, "max": 17.6, "icon": "cloudy", "description": "Stark bewölkt", "precipitationChance": 35 },
+    { "dayOffset": 5, "min": 9.9, "max": 18.4, "icon": "partly", "description": "Wechselnd bewölkt", "precipitationChance": 25 },
+    { "dayOffset": 6, "min": 11.5, "max": 20.1, "icon": "clear", "description": "Sonnig", "precipitationChance": 10 }
+  ]
+}

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Rubicon Kiosk
+Comment=Startet das Dashboard im Vollbild
+Exec=/home/pi/rubicon/deploy/rubicon-kiosk.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

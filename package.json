@@ -1,0 +1,30 @@
+{
+  "name": "rubicon-home-command-center",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c \"#ff5a1f\",\"#22d3ee\" \"npm:dev:client\" \"npm:dev:server\"",
+    "dev:client": "npm run dev --workspace client",
+    "dev:server": "npm run dev --workspace server",
+    "build": "npm run build --workspace client",
+    "start": "npm run start --workspace server",
+    "preview": "npm run preview --workspace client",
+    "typecheck": "npm run typecheck --workspace client && npm run typecheck --workspace server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.21.5": true
+  }
+}
