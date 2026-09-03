@@ -557,13 +557,23 @@ Prozess (`npm start`) auf Port 4000 — Frontend und API zusammen.
 
 ## Nächste Schritte
 
-- `/api/health` um echte Pi-Werte ergänzen (`/sys/class/thermal/thermal_zone0/temp`)
-- Google OAuth als Alternative zur iCal-Adresse — listet alle Kalender eines
-  Kontos automatisch auf und aktualisiert nahezu live (braucht ein
-  Google-Cloud-Projekt mit OAuth-Client)
-- Müllabholung wahlweise aus einer ICS-Quelle der Kommune statt aus Regeln
+Erledigt, aber lange nicht aus dieser Liste gestrichen: Google-OAuth-Kalender
+(`services/google.ts`), Müllabholung per ICS (`services/trash.ts`) und der
+Ambient-Modus (`components/idle/IdleScreen.tsx`) sind seit einiger Zeit fertig.
+Frisch dazugekommen:
+
+- `/api/health` liest jetzt echte Pi-Werte (`readCpuTemperatureC()`,
+  `/sys/class/thermal/thermal_zone0/temp`) — sichtbar im Kopf als System-Pille.
+- Einkaufsliste und Notizen: `services/lists.ts`, Routen unter `/api/lists/…`,
+  Panel über den neuen „Liste"-Knopf in der Startleiste.
 - Home-Assistant-Zustände über WebSocket statt Polling
+  (`services/homeAssistantSocket.ts`) — eine dauerhafte Verbindung statt eines
+  REST-Requests je Kachel/Sensor bei jedem Client-Poll. REST bleibt Fallback,
+  solange die Verbindung noch nicht steht. Gegen eine echte HA-Instanz noch
+  nicht durchgetestet — hier war keine konfiguriert.
+
+Weiterhin offen:
+
 - ÖPNV-Abfahrten und Fahrzeit zur Arbeit
-- Einkaufsliste und Notizen
-- Weckwort statt Knopfdruck (z. B. openWakeWord lokal auf dem Pi)
-- Ambient-Modus: nach längerer Ruhe auf große Uhr und Fotos umschalten
+- Weckwort statt Knopfdruck (z. B. openWakeWord lokal auf dem Pi) — braucht
+  zuerst ein Mikrofon am Pi, das noch nicht geklärt ist
