@@ -9,6 +9,7 @@ import type {
 } from '../../../shared/types.ts';
 import { fetchWithTimeout, describeError } from '../lib/http.ts';
 import { loadConfig } from './config.ts';
+import { getAllCachedStates, getCachedState, isSocketReady } from './homeAssistantSocket.ts';
 
 /**
  * Home-Assistant-Anbindung ueber die REST-API.
@@ -110,7 +111,13 @@ export async function isConfigured(): Promise<boolean> {
   return Boolean(config.homeAssistant.baseUrl.trim() && config.homeAssistant.token.trim());
 }
 
-/** Zustaende genau der Entities holen, die als Kachel konfiguriert sind. */
+/**
+ * Zustaende genau der Entities holen, die als Kachel konfiguriert sind.
+ *
+ * Steht die WebSocket-Verbindung, kommen die Werte aus deren Cache — ohne
+ * eigenen HTTP-Request. Fuer Entities, die dort (noch) fehlen, greift der
+ * bisherige REST-Weg als Fallback, z.B. kurz nach dem Verbindungsaufbau.
+ */
 async function fetchTileStates(): Promise<HomeAssistantEntityState[]> {
   const config = await loadConfig();
   const ids = config.smartHomeActions
@@ -119,6 +126,9 @@ async function fetchTileStates(): Promise<HomeAssistantEntityState[]> {
 
   const states = await Promise.all(
     ids.map(async (entityId): Promise<HomeAssistantEntityState> => {
+      const cached = isSocketReady() ? getCachedState(entityId) : undefined;
+      if (cached) return { entityId, state: cached.state, friendlyName: cached.friendlyName };
+
       try {
         const response = await haFetch(`/api/states/${encodeURIComponent(entityId)}`);
         if (!response.ok) return { entityId, state: 'unavailable' };
@@ -158,6 +168,20 @@ export async function getStatus(): Promise<HomeAssistantStatus> {
           state: mockStateOf(action.entityId as string),
           friendlyName: action.label,
         })),
+      checkedAt,
+    };
+  }
+
+  // Steht die WebSocket-Verbindung schon, ist das der zuverlaessigste Beleg,
+  // dass Home Assistant erreichbar ist — der REST-Ping waere nur ein zweiter
+  // Weg, dasselbe zu pruefen.
+  if (isSocketReady()) {
+    return {
+      configured: true,
+      connected: true,
+      mode: 'live',
+      message: 'Verbunden (WebSocket)',
+      entities: await fetchTileStates(),
       checkedAt,
     };
   }
@@ -318,6 +342,28 @@ export async function listEntities(force = false): Promise<HomeAssistantEntityLi
     return data;
   }
 
+  // Der WebSocket-Cache traegt bereits den kompletten Bestand — kein
+  // zusaetzlicher /api/states-Request noetig.
+  if (isSocketReady()) {
+    const entities = getAllCachedStates()
+      .filter((entry) => RELEVANT_DOMAINS.has(entry.entityId.split('.')[0] ?? ''))
+      .map(
+        (entry): HomeAssistantEntityOption => ({
+          entityId: entry.entityId,
+          friendlyName: entry.friendlyName ?? entry.entityId,
+          domain: entry.entityId.split('.')[0] ?? '',
+          state: entry.state,
+          unit: entry.unit,
+          deviceClass: entry.deviceClass,
+        }),
+      )
+      .sort((a, b) => a.friendlyName.localeCompare(b.friendlyName, 'de'));
+
+    const data: HomeAssistantEntityList = { mode: 'live', entities };
+    entityCache = { at: Date.now(), data };
+    return data;
+  }
+
   try {
     const response = await haFetch('/api/states');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -406,16 +452,23 @@ export async function readSensors(): Promise<SensorReading[]> {
       let deviceClass: string | undefined;
 
       if (live) {
-        try {
-          const response = await haFetch(`/api/states/${encodeURIComponent(sensor.entityId)}`);
-          if (response.ok) {
-            const data = (await response.json()) as HaStateResponse;
-            state = data.state ?? 'unknown';
-            unit = sensor.unit ?? data.attributes?.unit_of_measurement;
-            deviceClass = data.attributes?.device_class;
+        const cached = isSocketReady() ? getCachedState(sensor.entityId) : undefined;
+        if (cached) {
+          state = cached.state;
+          unit = sensor.unit ?? cached.unit;
+          deviceClass = cached.deviceClass;
+        } else {
+          try {
+            const response = await haFetch(`/api/states/${encodeURIComponent(sensor.entityId)}`);
+            if (response.ok) {
+              const data = (await response.json()) as HaStateResponse;
+              state = data.state ?? 'unknown';
+              unit = sensor.unit ?? data.attributes?.unit_of_measurement;
+              deviceClass = data.attributes?.device_class;
+            }
+          } catch {
+            // Ein einzelner nicht erreichbarer Sensor darf den Rest nicht kippen.
           }
-        } catch {
-          // Ein einzelner nicht erreichbarer Sensor darf den Rest nicht kippen.
         }
       } else {
         const mock = mockSensorValue(sensor.entityId);

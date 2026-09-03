@@ -1,15 +1,16 @@
-import { Activity, House, Plus, Sparkles } from 'lucide-react';
+import { Activity, House, ListChecks, Plus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useDashboard } from '@/lib/store';
 import { cx } from '@/lib/utils';
 import { SensorPanel } from './SensorPanel';
 import { SmartHomePanel } from './SmartHomePanel';
 import { AiAssistantPanel } from './AiAssistantPanel';
+import { ListsPanel } from './ListsPanel';
 import { OverlayFrame } from './OverlayFrame';
 import { TimerChips } from './TimerChips';
 import { TimerQuickAdd } from './TimerQuickAdd';
 
-type Launcher = 'smarthome' | 'zuhause' | 'assistent' | null;
+type Launcher = 'smarthome' | 'zuhause' | 'assistent' | 'listen' | null;
 
 /**
  * Startleiste am unteren Rand.
@@ -20,7 +21,7 @@ type Launcher = 'smarthome' | 'zuhause' | 'assistent' | null;
  * liest, ohne etwas anzutippen.
  */
 export function LauncherBar({ className }: { className?: string }) {
-  const { homeAssistant, sensors, config } = useDashboard();
+  const { homeAssistant, sensors, config, lists } = useDashboard();
   const [open, setOpen] = useState<Launcher>(null);
   const [timerDialog, setTimerDialog] = useState(false);
 
@@ -29,6 +30,7 @@ export function LauncherBar({ className }: { className?: string }) {
     (entity) => entity.state === 'on' || entity.state === 'heat',
   ).length;
   const aiReady = config?.ai.hasApiKey ?? false;
+  const openShoppingItems = (lists?.shopping ?? []).filter((item) => !item.done).length;
 
   return (
     <>
@@ -59,6 +61,14 @@ export function LauncherBar({ className }: { className?: string }) {
           label="Assistent"
           hint={aiReady ? config?.ai.model : 'lokale Antworten'}
           onClick={() => setOpen('assistent')}
+        />
+
+        <LauncherButton
+          icon={<ListChecks size={22} strokeWidth={1.5} />}
+          label="Liste"
+          hint={openShoppingItems > 0 ? `${openShoppingItems} offen` : 'Einkaufsliste & Notizen'}
+          badge={openShoppingItems > 0 ? openShoppingItems : undefined}
+          onClick={() => setOpen('listen')}
         />
 
         {/* Timer rechts, außerhalb der Startknöpfe */}
@@ -123,6 +133,19 @@ export function LauncherBar({ className }: { className?: string }) {
           bodyClassName="flex flex-col overflow-hidden"
         >
           <AiAssistantPanel variant="overlay" className="min-h-[26rem] flex-1" />
+        </OverlayFrame>
+      )}
+
+      {open === 'listen' && (
+        <OverlayFrame
+          title="Liste"
+          icon={<ListChecks size={13} strokeWidth={1.6} />}
+          size="lg"
+          backdrop="lists"
+          onClose={() => setOpen(null)}
+          bodyClassName="flex flex-col overflow-hidden"
+        >
+          <ListsPanel />
         </OverlayFrame>
       )}
 

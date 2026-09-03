@@ -6,6 +6,7 @@ import { ASSETS_DIR, CACHE_DIR, CLIENT_DIST_DIR, DATA_DIR } from './lib/paths.ts
 import { ensureDir } from './lib/jsonStore.ts';
 import { loadConfig, onConfigChanged } from './services/config.ts';
 import { invalidateCalendarCache, refreshCalendar } from './services/calendar.ts';
+import { startHomeAssistantSocket } from './services/homeAssistantSocket.ts';
 import { describeError } from './lib/http.ts';
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -64,6 +65,10 @@ async function start(): Promise<void> {
   refreshCalendar().catch((error) => {
     console.warn(`[start] Kalender-Vorlauf fehlgeschlagen: ${describeError(error)}`);
   });
+
+  // Haelt ab hier eine dauerhafte WebSocket-Verbindung zu Home Assistant, statt
+  // dass jeder Client-Poll einzeln per REST nachfragt. Reconnect eingebaut.
+  startHomeAssistantSocket();
 }
 
 start().catch((error) => {

@@ -58,9 +58,19 @@ export function StatusHeader({
 
   const sysTone: StatusTone = !health
     ? "err"
-    : health.system.memoryUsedPercent > 90
+    : health.system.memoryUsedPercent > 90 || (health.system.temperatureC ?? 0) > 80
       ? "warn"
       : "ok";
+
+  const sysDetail = health
+    ? [
+        `RAM ${health.system.memoryUsedPercent} %`,
+        `Last ${health.system.loadAverage.toFixed(2)}`,
+        health.system.temperatureC !== null ? `${health.system.temperatureC.toFixed(0)} °C` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : (errors.config ?? "Offline");
 
   return (
     <header className="panel scanlines noise relative z-10 flex shrink-0 items-center gap-4 overflow-hidden px-4 py-3 short:py-2 lg:gap-5 lg:px-5">
@@ -135,11 +145,7 @@ export function StatusHeader({
             className="hidden 2xl:flex"
             label="System"
             tone={sysTone}
-            detail={
-              health
-                ? `RAM ${health.system.memoryUsedPercent} % · Last ${health.system.loadAverage.toFixed(2)}`
-                : (errors.config ?? "Offline")
-            }
+            detail={sysDetail}
             icon={<Cpu size={13} strokeWidth={1.6} />}
           />
         </div>

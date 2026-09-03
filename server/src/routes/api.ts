@@ -4,6 +4,8 @@ import type {
   AiChatRequest,
   AppConfigPatch,
   CreateEventRequest,
+  CreateNoteRequest,
+  CreateShoppingItemRequest,
   CreateTimerRequest,
   DailyBriefingRequest,
   HealthResponse,
@@ -50,10 +52,20 @@ import {
   dismissTimer,
   listTimers,
 } from '../services/timers.ts';
+import {
+  addNote,
+  addShoppingItem,
+  clearCheckedShoppingItems,
+  deleteNote,
+  deleteShoppingItem,
+  getLists,
+  toggleShoppingItem,
+} from '../services/lists.ts';
 import { chat, dailyBriefing, testAiConnection } from '../services/ai.ts';
 import { createRealtimeSession, RealtimeError, testRealtime } from '../services/realtime.ts';
 import { openGptLive } from '../services/gptLive.ts';
 import { describeError } from '../lib/http.ts';
+import { readCpuTemperatureC } from '../lib/systemTemp.ts';
 
 export const api = Router();
 
@@ -70,28 +82,30 @@ function route(handler: (req: Request, res: Response) => Promise<void>) {
 /* Health / System                                                             */
 /* -------------------------------------------------------------------------- */
 
-api.get('/health', (_req, res) => {
-  const total = os.totalmem();
-  const used = total - os.freemem();
+api.get(
+  '/health',
+  route(async (_req, res) => {
+    const total = os.totalmem();
+    const used = total - os.freemem();
 
-  const payload: HealthResponse = {
-    ok: true,
-    service: 'rubicon-home-command-center',
-    version: '1.0.0',
-    uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
-    system: {
-      hostname: os.hostname(),
-      platform: `${os.type()} ${os.arch()}`,
-      loadAverage: Math.round((os.loadavg()[0] ?? 0) * 100) / 100,
-      memoryUsedPercent: Math.round((used / total) * 100),
-      // Auf dem Pi spaeter aus /sys/class/thermal/thermal_zone0/temp lesen.
-      temperatureC: null,
-    },
-    time: new Date().toISOString(),
-  };
+    const payload: HealthResponse = {
+      ok: true,
+      service: 'rubicon-home-command-center',
+      version: '1.0.0',
+      uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
+      system: {
+        hostname: os.hostname(),
+        platform: `${os.type()} ${os.arch()}`,
+        loadAverage: Math.round((os.loadavg()[0] ?? 0) * 100) / 100,
+        memoryUsedPercent: Math.round((used / total) * 100),
+        temperatureC: await readCpuTemperatureC(),
+      },
+      time: new Date().toISOString(),
+    };
 
-  res.json(payload);
-});
+    res.json(payload);
+  }),
+);
 
 /* -------------------------------------------------------------------------- */
 /* Konfiguration                                                               */
@@ -514,6 +528,75 @@ api.delete(
   '/timers/:id',
   route(async (req, res) => {
     const removed = await deleteTimer(String(req.params.id));
+    res.status(removed ? 200 : 404).json({ ok: removed });
+  }),
+);
+
+/* -------------------------------------------------------------------------- */
+/* Einkaufsliste & Notizen                                                     */
+/* -------------------------------------------------------------------------- */
+
+api.get(
+  '/lists',
+  route(async (_req, res) => {
+    res.json(await getLists());
+  }),
+);
+
+api.post(
+  '/lists/shopping',
+  route(async (req, res) => {
+    try {
+      res.status(201).json(await addShoppingItem((req.body ?? {}) as CreateShoppingItemRequest));
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  }),
+);
+
+// Vor '/lists/shopping/:id' registriert, sonst faengt :id auch "checked" ab.
+api.delete(
+  '/lists/shopping/checked',
+  route(async (_req, res) => {
+    res.json({ removed: await clearCheckedShoppingItems() });
+  }),
+);
+
+api.patch(
+  '/lists/shopping/:id/toggle',
+  route(async (req, res) => {
+    const item = await toggleShoppingItem(String(req.params.id));
+    if (!item) {
+      res.status(404).json({ error: 'Eintrag nicht gefunden' });
+      return;
+    }
+    res.json(item);
+  }),
+);
+
+api.delete(
+  '/lists/shopping/:id',
+  route(async (req, res) => {
+    const removed = await deleteShoppingItem(String(req.params.id));
+    res.status(removed ? 200 : 404).json({ ok: removed });
+  }),
+);
+
+api.post(
+  '/lists/notes',
+  route(async (req, res) => {
+    try {
+      res.status(201).json(await addNote((req.body ?? {}) as CreateNoteRequest));
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  }),
+);
+
+api.delete(
+  '/lists/notes/:id',
+  route(async (req, res) => {
+    const removed = await deleteNote(String(req.params.id));
     res.status(removed ? 200 : 404).json({ ok: removed });
   }),
 );

@@ -16,5 +16,8 @@ data/cache/*.json
 # Gestellte Wecker
 data/timers.json
 
+# Einkaufsliste und Notizen — persönlicher Laufzeitinhalt
+data/lists.json
+
 # Die Beispieldatei enthält ausschließlich Platzhalter und gehört ins Repo:
 !data/config.example.json

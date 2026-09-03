@@ -12,15 +12,20 @@ import type {
   AppTimer,
   CreateEventRequest,
   CreateEventResult,
+  CreateNoteRequest,
+  CreateShoppingItemRequest,
   CreateTimerRequest,
   GptLiveOpenResult,
   HomeAssistantCallRequest,
   HomeAssistantCallResult,
   HomeAssistantEntityList,
   HomeAssistantStatus,
+  ListsResponse,
+  NoteItem,
   PhotoItem,
   PhotoLibrary,
   SensorReading,
+  ShoppingItem,
   TimerListResponse,
   PublicAppConfig,
   RealtimeSessionResponse,
@@ -131,6 +136,18 @@ export const api = {
   dismissAllTimers: () => post<{ dismissed: number }>('/timers/dismiss-all'),
   deleteTimer: (id: string) =>
     request<{ ok: boolean }>(`/timers/${id}`, { method: 'DELETE' }),
+
+  lists: () => request<ListsResponse>('/lists'),
+  addShoppingItem: (payload: CreateShoppingItemRequest) =>
+    post<ShoppingItem>('/lists/shopping', payload),
+  toggleShoppingItem: (id: string) =>
+    request<ShoppingItem>(`/lists/shopping/${id}/toggle`, { method: 'PATCH' }),
+  deleteShoppingItem: (id: string) =>
+    request<{ ok: boolean }>(`/lists/shopping/${id}`, { method: 'DELETE' }),
+  clearCheckedShoppingItems: () =>
+    request<{ removed: number }>('/lists/shopping/checked', { method: 'DELETE' }),
+  addNote: (payload: CreateNoteRequest) => post<NoteItem>('/lists/notes', payload),
+  deleteNote: (id: string) => request<{ ok: boolean }>(`/lists/notes/${id}`, { method: 'DELETE' }),
 
   testHomeAssistant: () => post<TestResult>('/test/home-assistant'),
   testAi: () => post<TestResult>('/test/ai'),

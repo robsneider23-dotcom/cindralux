@@ -283,6 +283,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       sensors: 'sweep',
       assistant: 'orbit',
       timer: 'ring',
+      lists: 'grid',
       settings: 'none',
     },
     night: {

@@ -10,6 +10,7 @@ import {
 import type {
   CalendarEventsResponse,
   HomeAssistantStatus,
+  ListsResponse,
   PublicAppConfig,
   SensorReading,
   TimerListResponse,
@@ -30,6 +31,8 @@ const INTERVAL = {
   sensors: 15_000,
   // Timer muessen sekundengenau klingeln — hier ist haeufiges Fragen der Zweck.
   timers: 2_000,
+  // Einkaufsliste/Notizen aendern sich nur durch Bedienung am Panel selbst.
+  lists: 15_000,
 };
 
 interface DashboardValue {
@@ -40,6 +43,7 @@ interface DashboardValue {
   homeAssistant: HomeAssistantStatus | null;
   sensors: SensorReading[];
   timers: TimerListResponse | null;
+  lists: ListsResponse | null;
   /** Erstabruf laeuft noch — im UI klar von "keine Daten" zu trennen. */
   pending: {
     calendar: boolean;
@@ -60,6 +64,7 @@ interface DashboardValue {
   reloadHomeAssistant: () => Promise<void>;
   reloadSensors: () => Promise<void>;
   reloadTimers: () => Promise<void>;
+  reloadLists: () => Promise<void>;
   /** Nach dem Speichern der Einstellungen: alles neu ziehen. */
   reloadAll: () => Promise<void>;
 }
@@ -89,6 +94,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const homeAssistant = usePolling(() => api.homeAssistantStatus(), INTERVAL.homeAssistant);
   const sensors = usePolling(() => api.sensors(), INTERVAL.sensors);
   const timers = usePolling(() => api.timers(), INTERVAL.timers);
+  const lists = usePolling(() => api.lists(), INTERVAL.lists);
 
   // Theme-Modus und Hintergrund-Deckkraft als CSS-Variablen setzen —
   // so wirkt eine Aenderung in den Einstellungen sofort und ohne Neuladen.
@@ -205,6 +211,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       homeAssistant: homeAssistant.data,
       sensors: sensors.data?.sensors ?? [],
       timers: timers.data,
+      lists: lists.data,
       pending: {
         calendar: calendar.loading && calendar.data === null,
         weather: weather.loading && weather.data === null,
@@ -224,6 +231,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       reloadHomeAssistant: homeAssistant.reload,
       reloadSensors: sensors.reload,
       reloadTimers: timers.reload,
+      reloadLists: lists.reload,
       reloadAll,
     }),
     [
@@ -235,6 +243,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       homeAssistant,
       sensors,
       timers,
+      lists,
       reloadConfig,
       reloadAll,
     ],

@@ -1796,6 +1796,7 @@ const WINDOW_LABELS: Array<{ id: WindowId; label: string }> = [
   { id: "sensors", label: "Zuhause" },
   { id: "assistant", label: "Assistent" },
   { id: "timer", label: "Timer" },
+  { id: "lists", label: "Liste" },
 ];
 
 const BACKDROP_STYLES: BackdropStyle[] = [
@@ -1829,6 +1830,7 @@ const STANDARD_BACKDROPS: Record<WindowId, BackdropStyle> = {
   sensors: "sweep",
   assistant: "orbit",
   timer: "ring",
+  lists: "grid",
   settings: "none",
 };
 

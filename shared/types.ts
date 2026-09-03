@@ -611,6 +611,7 @@ export type WindowId =
   | 'sensors'
   | 'assistant'
   | 'timer'
+  | 'lists'
   | 'settings';
 
 /** Verfuegbare Hintergrundbewegungen. */
@@ -798,6 +799,36 @@ export interface CreateTimerRequest {
 export interface TimerListResponse {
   timers: AppTimer[];
   serverTime: string;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Einkaufsliste & Notizen                                                     */
+/* -------------------------------------------------------------------------- */
+
+export interface ShoppingItem {
+  id: string;
+  text: string;
+  done: boolean;
+  createdAt: string;
+}
+
+export interface NoteItem {
+  id: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface ListsResponse {
+  shopping: ShoppingItem[];
+  notes: NoteItem[];
+}
+
+export interface CreateShoppingItemRequest {
+  text: string;
+}
+
+export interface CreateNoteRequest {
+  text: string;
 }
 
 /* -------------------------------------------------------------------------- */
