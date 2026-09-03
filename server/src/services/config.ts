@@ -7,6 +7,7 @@ import type {
 import { urlHint } from '../lib/redact.ts';
 import { CONFIG_FILE, DATA_DIR } from '../lib/paths.ts';
 import { watch, type FSWatcher } from 'node:fs';
+import path from 'node:path';
 import { ensureDir, readJson, writeJson } from '../lib/jsonStore.ts';
 
 /**
@@ -321,10 +322,19 @@ export function onConfigChanged(listener: () => void): void {
 function watchConfigFile(): void {
   if (watcher) return;
 
+  const configFileName = path.basename(CONFIG_FILE);
+
   try {
+    // Das Verzeichnis beobachten statt der Datei selbst: jsonStore.writeJson()
+    // schreibt atomar per temporaerer Datei + rename (Stromausfallschutz), und
+    // ein auf die Datei selbst gesetzter Watcher haengt danach am alten Inode
+    // — er wuerde die naechste Aenderung nie mehr sehen. Ein Verzeichnis-Watcher
+    // bleibt davon unberuehrt und wird stattdessen auf den Dateinamen gefiltert.
+    //
     // Kurze Sammelfrist: Editoren schreiben oft mehrfach hintereinander.
     let timer: NodeJS.Timeout | undefined;
-    watcher = watch(CONFIG_FILE, () => {
+    watcher = watch(DATA_DIR, (_event, filename) => {
+      if (filename && filename !== configFileName) return;
       clearTimeout(timer);
       timer = setTimeout(() => {
         console.log('[config] data/config.json wurde geändert — wird neu gelesen.');
