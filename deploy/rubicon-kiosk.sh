@@ -44,6 +44,13 @@ if [ -n "${WAYLAND_DISPLAY:-}" ]; then
   OZONE=(--ozone-platform=wayland --enable-features=UseOzonePlatform)
 fi
 
+# Nur für gezielte Fehlersuche per Chrome DevTools Protocol — bewusst kein
+# Dauerzustand: RUBICON_DEBUG=1 vor dem Aufruf setzen.
+DEBUG=()
+if [ "${RUBICON_DEBUG:-}" = "1" ]; then
+  DEBUG=(--remote-debugging-port=9222 --remote-allow-origins=*)
+fi
+
 # Neustart-Schleife: Das Panel läuft unbeaufsichtigt. Stürzt Chromium ab oder
 # beendet ihn der Speichermanager, kommt er von selbst zurück — sonst bliebe
 # der Bildschirm bis zum nächsten Handanlegen leer. Die Wartezeit verdoppelt
@@ -60,6 +67,7 @@ while true; do
 
   "$BROWSER" \
     "${OZONE[@]}" \
+    "${DEBUG[@]}" \
     `# Kein Systemschlüsselbund: Bei automatischer Anmeldung bleibt der` \
     `# GNOME-Keyring gesperrt. Chromium fragt danach mit einem modalen` \
     `# Fenster, das den Browser blockiert — die Seite bleibt weiß. Genau` \
