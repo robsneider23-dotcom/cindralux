@@ -55,6 +55,7 @@ import { GoogleCalendarSetup } from "./settings/GoogleCalendarSetup";
 import { TransitionPreview } from "./settings/TransitionPreview";
 import { PhotoPicker } from "./settings/PhotoPicker";
 import { PanelBackdrop, BACKDROP_LABELS } from "./PanelBackdrop";
+import { ConnectionStatusPill, type StatusTone } from "./ConnectionStatusPill";
 import { TRANSITIONS } from "@/lib/transitions";
 import { Portal } from "./Portal";
 
@@ -1433,12 +1434,42 @@ function ConnectionSettings({
   aiKey: string;
   setAiKey: (value: string) => void;
 }) {
+  const { homeAssistant } = useDashboard();
+
+  const haTone: StatusTone = !homeAssistant
+    ? "idle"
+    : homeAssistant.connected
+      ? "ok"
+      : homeAssistant.configured
+        ? "err"
+        : "warn";
+  const haDetail = !homeAssistant
+    ? "Verbinde …"
+    : homeAssistant.connected
+      ? `Verbunden${homeAssistant.version ? ` · ${homeAssistant.version}` : ""}`
+      : homeAssistant.configured
+        ? (homeAssistant.message ?? "Keine Verbindung")
+        : "Simulation";
+
+  const aiConfigured = draft.ai.hasApiKey;
+  const aiTone: StatusTone = aiConfigured ? "ok" : "warn";
+  const aiDetail = aiConfigured ? draft.ai.model : "Lokale Antworten";
+
   return (
     <>
       <Section
         title="Home Assistant"
         description="Long-Lived Access Token im HA-Profil unter Sicherheit erzeugen. Ohne Konfiguration laufen die Kacheln im Simulationsmodus."
       >
+        <div className="mb-4">
+          <ConnectionStatusPill
+            label="Status"
+            tone={haTone}
+            detail={haDetail}
+            icon={<House size={13} strokeWidth={1.6} />}
+            pulse={haTone === "ok"}
+          />
+        </div>
         <div className="grid gap-4 lg:grid-cols-2">
           <Field label="Basis-URL" hint="z. B. http://homeassistant.local:8123">
             <input
@@ -1500,6 +1531,15 @@ function ConnectionSettings({
         title="AI-Assistent"
         description="OpenAI-kompatible API. Funktioniert mit OpenAI, LM Studio, Ollama (/v1) und ähnlichen Servern."
       >
+        <div className="mb-4">
+          <ConnectionStatusPill
+            label="Status"
+            tone={aiTone}
+            detail={aiDetail}
+            icon={<Bot size={13} strokeWidth={1.6} />}
+            pulse={aiTone === "ok"}
+          />
+        </div>
         <div className="grid gap-4 lg:grid-cols-3">
           <Field
             label="Basis-URL"

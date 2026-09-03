@@ -1,4 +1,4 @@
-import { Bot, Cpu, House, Settings2, Thermometer, Wind } from "lucide-react";
+import { Cpu, Settings2, Thermometer, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { HealthResponse } from "@shared/types";
 import { api } from "@/lib/api";
@@ -18,7 +18,7 @@ export function StatusHeader({
 }: {
   onOpenSettings: () => void;
 }) {
-  const { config, weather, homeAssistant, errors } = useDashboard();
+  const { config, weather, errors } = useDashboard();
   const [health, setHealth] = useState<HealthResponse | null>(null);
 
   useEffect(() => {
@@ -31,30 +31,6 @@ export function StatusHeader({
     const timer = window.setInterval(load, 30_000);
     return () => window.clearInterval(timer);
   }, []);
-
-  const haTone: StatusTone = !homeAssistant
-    ? "idle"
-    : homeAssistant.connected
-      ? "ok"
-      : homeAssistant.configured
-        ? "err"
-        : "warn";
-
-  const haDetail = !homeAssistant
-    ? "Verbinde …"
-    : homeAssistant.connected
-      ? `Verbunden${homeAssistant.version ? ` · ${homeAssistant.version}` : ""}`
-      : homeAssistant.configured
-        ? (homeAssistant.message ?? "Keine Verbindung")
-        : "Simulation";
-
-  const aiConfigured = config?.ai.hasApiKey ?? false;
-  const aiTone: StatusTone = !config ? "idle" : aiConfigured ? "ok" : "warn";
-  const aiDetail = !config
-    ? "Lade …"
-    : aiConfigured
-      ? config.ai.model
-      : "Lokale Antworten";
 
   const sysTone: StatusTone = !health
     ? "err"
@@ -124,25 +100,12 @@ export function StatusHeader({
         </>
       )}
 
-      {/* Verbindungszustaende — rechtsbuendig */}
+      {/* Verbindungszustaende — rechtsbuendig. Home Assistant und AI sind in
+          die Einstellungen gewandert (dort stehen sie ohnehin direkt neben
+          ihrer Konfiguration); System bleibt hier fuer den Blick auf einen. */}
       <div className="ml-auto flex shrink-0 items-center gap-2 pl-2">
         <div className="hidden items-center gap-2 md:flex">
           <ConnectionStatusPill
-            label="Home Assistant"
-            tone={haTone}
-            detail={haDetail}
-            icon={<House size={13} strokeWidth={1.6} />}
-            pulse={haTone === "ok"}
-          />
-          <ConnectionStatusPill
-            label="AI"
-            tone={aiTone}
-            detail={aiDetail}
-            icon={<Bot size={13} strokeWidth={1.6} />}
-            pulse={aiTone === "ok"}
-          />
-          <ConnectionStatusPill
-            className="hidden 2xl:flex"
             label="System"
             tone={sysTone}
             detail={sysDetail}
