@@ -137,7 +137,7 @@ export function IdleScreen({
                       einem Ruhebildschirm soll die Uhr HH:MM bleiben, die
                       Sekunden sind nur ein leises Lebenszeichen daneben. */}
                   {showSeconds && (
-                    <span className="digits absolute left-1/2 top-[78%] -translate-x-1/2 text-[clamp(0.85rem,1.8vw,1.5rem)] font-light leading-none text-accent/45">
+                    <span className="digits absolute left-1/2 top-[93%] -translate-x-1/2 text-[clamp(0.85rem,1.8vw,1.5rem)] font-light leading-none text-accent/70">
                       {String(now.getSeconds()).padStart(2, '0')}
                     </span>
                   )}
