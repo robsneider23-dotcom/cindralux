@@ -1,7 +1,7 @@
 import { AlarmClock, Plus, Timer as TimerIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { useDashboard } from "@/lib/store";
+import { useTimers } from "@/lib/timersStore";
 import { cx } from "@/lib/utils";
 import { Portal } from "./Portal";
 
@@ -15,7 +15,7 @@ const WEEKDAY_LABELS = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
  * Mikrofon in zwei Tipps stehen — und ohne Internet funktionieren.
  */
 export function TimerQuickAdd({ onClose }: { onClose: () => void }) {
-  const { reloadTimers } = useDashboard();
+  const { reloadTimers } = useTimers();
   const [mode, setMode] = useState<"timer" | "alarm">("timer");
   const [label, setLabel] = useState("");
   const [time, setTime] = useState("07:00");

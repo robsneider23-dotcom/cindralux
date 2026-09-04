@@ -1,7 +1,7 @@
 import { AlarmClock, Timer as TimerIcon, X } from "lucide-react";
 import type { AppTimer } from "@shared/types";
 import { api } from "@/lib/api";
-import { useDashboard } from "@/lib/store";
+import { useTimers } from "@/lib/timersStore";
 import { useClock } from "@/hooks/useClock";
 import { formatTime } from "@/lib/format";
 import { cx } from "@/lib/utils";
@@ -29,7 +29,7 @@ function remaining(dueAt: string, now: Date): string {
  * keinen Platz. Timer zählen sekündlich herunter, Wecker zeigen ihre Uhrzeit.
  */
 export function TimerChips() {
-  const { timers, reloadTimers } = useDashboard();
+  const { timers, reloadTimers } = useTimers();
   const now = useClock(true);
 
   const entries = (timers?.timers ?? []).filter(

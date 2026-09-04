@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { AiMessage, AiMode, HomeAssistantAction } from "@shared/types";
 import { api } from "@/lib/api";
 import { useDashboard } from "@/lib/store";
+import { useTimers } from "@/lib/timersStore";
 import { cx } from "@/lib/utils";
 import { useRealtimeVoice, type ToolExecutor } from "@/hooks/useRealtimeVoice";
 import { Panel } from "./Panel";
@@ -108,7 +109,8 @@ export function AiAssistantPanel({
   /** `overlay` lässt das Panel-Gehäuse weg — das liefert das Fenster. */
   variant?: "panel" | "overlay";
 }) {
-  const { config, reloadTimers, reloadHomeAssistant } = useDashboard();
+  const { config, reloadHomeAssistant } = useDashboard();
+  const { reloadTimers } = useTimers();
 
   /**
    * Werkzeuge, die der Sprachassistent auslösen darf. Die Rückgabe geht als

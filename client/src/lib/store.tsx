@@ -13,7 +13,6 @@ import type {
   ListsResponse,
   PublicAppConfig,
   SensorReading,
-  TimerListResponse,
   TrashResponse,
   WeatherSummary,
 } from '@shared/types';
@@ -32,8 +31,7 @@ const INTERVAL = {
   trash: 30 * 60_000,
   homeAssistant: 20_000,
   sensors: 15_000,
-  // Timer muessen sekundengenau klingeln — hier ist haeufiges Fragen der Zweck.
-  timers: 2_000,
+  // Timer haben einen eigenen, schneller tickenden Kontext — siehe timersStore.tsx.
   // Einkaufsliste/Notizen aendern sich nur durch Bedienung am Panel selbst.
   lists: 15_000,
 };
@@ -45,7 +43,6 @@ interface DashboardValue {
   trash: TrashResponse | null;
   homeAssistant: HomeAssistantStatus | null;
   sensors: SensorReading[];
-  timers: TimerListResponse | null;
   lists: ListsResponse | null;
   /** Erstabruf laeuft noch — im UI klar von "keine Daten" zu trennen. */
   pending: {
@@ -66,7 +63,6 @@ interface DashboardValue {
   reloadTrash: () => Promise<void>;
   reloadHomeAssistant: () => Promise<void>;
   reloadSensors: () => Promise<void>;
-  reloadTimers: () => Promise<void>;
   reloadLists: () => Promise<void>;
   /** Nach dem Speichern der Einstellungen: alles neu ziehen. */
   reloadAll: () => Promise<void>;
@@ -96,7 +92,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const trash = usePolling(() => api.trash(), INTERVAL.trash);
   const homeAssistant = usePolling(() => api.homeAssistantStatus(), INTERVAL.homeAssistant);
   const sensors = usePolling(() => api.sensors(), INTERVAL.sensors);
-  const timers = usePolling(() => api.timers(), INTERVAL.timers);
   const lists = usePolling(() => api.lists(), INTERVAL.lists);
 
   // Theme-Modus und Hintergrund-Deckkraft als CSS-Variablen setzen —
@@ -213,7 +208,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       trash: trash.data,
       homeAssistant: homeAssistant.data,
       sensors: sensors.data?.sensors ?? [],
-      timers: timers.data,
       lists: lists.data,
       pending: {
         calendar: calendar.loading && calendar.data === null,
@@ -233,7 +227,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       reloadTrash: trash.reload,
       reloadHomeAssistant: homeAssistant.reload,
       reloadSensors: sensors.reload,
-      reloadTimers: timers.reload,
       reloadLists: lists.reload,
       reloadAll,
     }),
@@ -245,7 +238,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       trash,
       homeAssistant,
       sensors,
-      timers,
       lists,
       reloadConfig,
       reloadAll,

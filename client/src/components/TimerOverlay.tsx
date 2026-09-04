@@ -2,7 +2,7 @@ import { AlarmClock, BellOff, Timer as TimerIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { AppTimer } from "@shared/types";
 import { api } from "@/lib/api";
-import { useDashboard } from "@/lib/store";
+import { useTimers } from "@/lib/timersStore";
 import { playChime } from "@/lib/chime";
 import { formatTime } from "@/lib/format";
 import { Portal } from "./Portal";
@@ -14,7 +14,7 @@ import { Portal } from "./Portal";
  * statt einer kleinen Einblendung. Der Ton wiederholt sich, bis bestätigt wird.
  */
 export function TimerOverlay() {
-  const { timers, reloadTimers } = useDashboard();
+  const { timers, reloadTimers } = useTimers();
   const ringing = timers?.timers.filter((entry) => entry.ringing) ?? [];
   const active = ringing.length > 0;
 
