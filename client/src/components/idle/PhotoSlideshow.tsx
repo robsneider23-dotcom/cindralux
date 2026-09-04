@@ -18,16 +18,42 @@ export function PhotoSlideshow({
   config: SlideshowConfig;
   className?: string;
 }) {
-  // Reihenfolge einmal festlegen, damit sie beim Neuzeichnen stabil bleibt.
-  const order = useMemo(() => {
+  /**
+   * Reihenfolge einmal festlegen, damit sie beim Neuzeichnen stabil bleibt.
+   *
+   * `mix` mischt zufaellig, `date` sortiert nach Aufnahme-/Dateidatum (ohne
+   * Datum ans Ende), `person` gruppiert nach der manuell vergebenen Markierung
+   * (unmarkierte Bilder zuletzt, danach alphabetisch je Gruppe).
+   */
+  const sequence = useMemo(() => {
     const list = [...photos];
-    if (!config.shuffle) return list;
+
+    if (config.order === 'date') {
+      return list.sort((a, b) => {
+        if (!a.takenAt && !b.takenAt) return 0;
+        if (!a.takenAt) return 1;
+        if (!b.takenAt) return -1;
+        return a.takenAt.localeCompare(b.takenAt);
+      });
+    }
+
+    if (config.order === 'person') {
+      return list.sort((a, b) => {
+        const pa = a.person ?? '';
+        const pb = b.person ?? '';
+        if (pa === pb) return a.name.localeCompare(b.name, 'de');
+        if (!pa) return 1;
+        if (!pb) return -1;
+        return pa.localeCompare(pb, 'de');
+      });
+    }
+
     for (let i = list.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       [list[i], list[j]] = [list[j] as PhotoItem, list[i] as PhotoItem];
     }
     return list;
-  }, [photos, config.shuffle]);
+  }, [photos, config.order]);
 
   const [index, setIndex] = useState(0);
   const [previous, setPrevious] = useState<number | null>(null);
@@ -37,7 +63,7 @@ export function PhotoSlideshow({
   const timer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    if (order.length < 2) return;
+    if (sequence.length < 2) return;
 
     const advance = () => {
       setSpec(
@@ -46,12 +72,12 @@ export function PhotoSlideshow({
           : transitionSpec(config.transition, config.intervalSeconds),
       );
       setPrevious(index);
-      setIndex((current) => (current + 1) % order.length);
+      setIndex((current) => (current + 1) % sequence.length);
     };
 
     timer.current = window.setTimeout(advance, Math.max(4, config.intervalSeconds) * 1000);
     return () => window.clearTimeout(timer.current);
-  }, [index, order.length, config.intervalSeconds, config.transition, config.randomTransition]);
+  }, [index, sequence.length, config.intervalSeconds, config.transition, config.randomTransition]);
 
   // Die weichende Ebene nach dem Übergang entfernen.
   useEffect(() => {
@@ -60,10 +86,10 @@ export function PhotoSlideshow({
     return () => window.clearTimeout(done);
   }, [previous, spec.duration]);
 
-  if (order.length === 0) return null;
+  if (sequence.length === 0) return null;
 
-  const current = order[index];
-  const leaving = previous !== null ? order[previous] : undefined;
+  const current = sequence[index];
+  const leaving = previous !== null ? sequence[previous] : undefined;
 
   return (
     <div className={className}>

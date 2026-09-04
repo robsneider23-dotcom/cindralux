@@ -66,24 +66,42 @@ export async function resolvePhotoPath(name: string): Promise<string | null> {
   }
 }
 
-/** Dateiname der Herkunftsliste, immer im Bilderordner selbst. */
-const GOOGLE_MANIFEST = '.google-origin.json';
+/** Metadaten je Dateiname, immer im Bilderordner selbst — kein Sonderpfad noetig. */
+const META_FILE = '.photos-meta.json';
+/** Vorgaenger-Datei (nur Herkunftsliste) — wird beim ersten Lesen automatisch uebernommen. */
+const LEGACY_GOOGLE_MANIFEST = '.google-origin.json';
 
-/** Welche Dateinamen im Bilderordner aus dem Google-Photos-Picker stammen. */
-async function readGoogleManifest(dir: string): Promise<Set<string>> {
-  const list = await readJson<string[]>(path.join(dir, GOOGLE_MANIFEST));
-  return new Set(list ?? []);
+interface PhotoMeta {
+  /** Fehlt bei lokalen Bildern; nur Google-Importe tragen es. */
+  origin?: 'google';
+  /** ISO-Zeitstempel, bei Google das Aufnahmedatum laut API. */
+  takenAt?: string;
+  /** Manuell vergebene Personenmarkierung. */
+  person?: string;
 }
 
-async function writeGoogleManifest(dir: string, names: Set<string>): Promise<void> {
-  await writeJson(path.join(dir, GOOGLE_MANIFEST), [...names].sort());
+async function readMeta(dir: string): Promise<Record<string, PhotoMeta>> {
+  const meta = await readJson<Record<string, PhotoMeta>>(path.join(dir, META_FILE));
+  if (meta) return meta;
+
+  // Migration von der alten, reinen Herkunftsliste — einmalig, verlustfrei fuer origin.
+  const legacy = await readJson<string[]>(path.join(dir, LEGACY_GOOGLE_MANIFEST));
+  if (!legacy) return {};
+  const migrated: Record<string, PhotoMeta> = {};
+  for (const name of legacy) migrated[name] = { origin: 'google' };
+  await writeJson(path.join(dir, META_FILE), migrated);
+  return migrated;
+}
+
+async function writeMeta(dir: string, meta: Record<string, PhotoMeta>): Promise<void> {
+  await writeJson(path.join(dir, META_FILE), meta);
 }
 
 export async function listPhotos(): Promise<PhotoLibrary> {
   const config = await loadConfig();
   const dir = await resolveLocalDir();
   const chosen = new Set(config.photos.selected);
-  const googleOrigin = await readGoogleManifest(dir);
+  const meta = await readMeta(dir);
 
   let entries: string[] = [];
   let message: string | undefined;
@@ -100,25 +118,64 @@ export async function listPhotos(): Promise<PhotoLibrary> {
         : describeError(error);
   }
 
-  const photos: PhotoItem[] = entries.map((name) => {
-    const origin = googleOrigin.has(name) ? 'google' : 'local';
-    const id = `${origin}:${name}`;
-    return {
-      id,
-      name,
-      url: `/api/photos/file/${encodeURIComponent(name)}`,
-      origin,
-      // Ohne Auswahl laufen alle Bilder — sonst bliebe die Diashow leer,
-      // solange niemand etwas angehakt hat.
-      selected: chosen.size === 0 || chosen.has(id),
-    };
-  });
+  const photos: PhotoItem[] = await Promise.all(
+    entries.map(async (name): Promise<PhotoItem> => {
+      const entryMeta = meta[name];
+      const origin = entryMeta?.origin === 'google' ? 'google' : 'local';
+      const id = `${origin}:${name}`;
+
+      // Ohne eigenes Aufnahmedatum (lokale Bilder) das Dateidatum nehmen —
+      // besser als gar keine Reihenfolge fuer den "Datum"-Modus der Diashow.
+      let takenAt = entryMeta?.takenAt;
+      if (!takenAt) {
+        try {
+          takenAt = (await fs.stat(path.join(dir, name))).mtime.toISOString();
+        } catch {
+          // Kein Datum ist kein Fehler — sortiert dann einfach ans Ende.
+        }
+      }
+
+      return {
+        id,
+        name,
+        url: `/api/photos/file/${encodeURIComponent(name)}`,
+        origin,
+        // Ohne Auswahl laufen alle Bilder — sonst bliebe die Diashow leer,
+        // solange niemand etwas angehakt hat.
+        selected: chosen.size === 0 || chosen.has(id),
+        takenAt,
+        person: entryMeta?.person,
+      };
+    }),
+  );
 
   if (!message && photos.length === 0) {
     message = `Keine Bilder in ${dir}. Bilder dorthin kopieren (jpg, png, webp).`;
   }
 
   return { photos, localDir: dir, message };
+}
+
+/**
+ * Personenmarkierung eines Bilds setzen oder loeschen (leerer String loescht).
+ * Rein manuell — es gibt keine Gesichtserkennung in diesem Projekt.
+ */
+export async function setPhotoPerson(name: string, person: string): Promise<void> {
+  const file = await resolvePhotoPath(name);
+  if (!file) throw new Error('Bild nicht gefunden');
+
+  const dir = await resolveLocalDir();
+  const meta = await readMeta(dir);
+  const trimmed = person.trim();
+  const entry = { ...meta[name] };
+
+  if (trimmed) entry.person = trimmed;
+  else delete entry.person;
+
+  if (Object.keys(entry).length === 0) delete meta[name];
+  else meta[name] = entry;
+
+  await writeMeta(dir, meta);
 }
 
 /** Nur die Bilder, die die Diashow tatsächlich zeigen soll. */
@@ -171,21 +228,21 @@ export async function importGooglePickerSession(sessionId: string): Promise<Phot
   await fs.mkdir(dir, { recursive: true });
 
   const items = (await listPickerMediaItems(sessionId)).filter((item) => item.type === 'PHOTO');
-  const googleOrigin = await readGoogleManifest(dir);
+  const meta = await readMeta(dir);
 
   for (const item of items) {
     try {
       const { buffer, contentType } = await downloadPickerMediaFile(item);
       const filename = safeGoogleFilename(item, contentType);
       await fs.writeFile(path.join(dir, filename), buffer);
-      googleOrigin.add(filename);
+      meta[filename] = { ...meta[filename], origin: 'google', takenAt: item.createTime };
     } catch (error) {
       // Ein einzelnes fehlgeschlagenes Bild darf den Rest des Imports nicht kippen.
       console.warn(`[photos] Google-Bild ${item.id} nicht ladbar: ${describeError(error)}`);
     }
   }
 
-  await writeGoogleManifest(dir, googleOrigin);
+  await writeMeta(dir, meta);
   await deletePickerSession(sessionId);
 
   return listPhotos();

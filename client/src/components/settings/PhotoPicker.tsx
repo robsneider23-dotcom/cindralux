@@ -116,6 +116,15 @@ export function PhotoPicker({
   const isOn = (id: string) => selected.length === 0 || selected.includes(id);
   const count = library?.photos.filter((photo) => isOn(photo.id)).length ?? 0;
 
+  /** Personenmarkierung speichern — rein manuell, es gibt keine Gesichtserkennung. */
+  const savePerson = async (name: string, person: string) => {
+    try {
+      setLibrary(await api.setPhotoPerson(name, person));
+    } catch {
+      // Ein einzelnes fehlgeschlagenes Speichern ist kein Drama — Feld bleibt einfach stehen.
+    }
+  };
+
   return (
     <>
       <div className="mb-4 flex flex-wrap items-end gap-3">
@@ -201,35 +210,51 @@ export function PhotoPicker({
             </button>
           </div>
 
+          <p className="mb-2.5 text-3xs leading-relaxed text-zinc-600">
+            Personenmarkierung optional — nur nötig für die „Person"-Reihenfolge der
+            Diashow (Einstellungen unter „Ruhemodus").
+          </p>
+
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
             {library.photos.map((photo) => {
               const on = isOn(photo.id);
               return (
-                <button
-                  key={photo.id}
-                  type="button"
-                  onClick={() => toggle(photo.id)}
-                  className={cx(
-                    'touchable relative aspect-[4/3] overflow-hidden rounded-[3px] border',
-                    on ? 'border-accent/60 shadow-glow' : 'border-white/[0.08] opacity-45',
-                  )}
-                  title={photo.name}
-                >
-                  <img src={photo.url} alt="" className="h-full w-full object-cover" />
-                  {photo.origin === 'google' && (
-                    <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-zinc-300">
-                      <CloudDownload size={12} strokeWidth={2} />
+                <div key={photo.id} className="flex flex-col gap-1">
+                  <button
+                    type="button"
+                    onClick={() => toggle(photo.id)}
+                    className={cx(
+                      'touchable relative aspect-[4/3] overflow-hidden rounded-[3px] border',
+                      on ? 'border-accent/60 shadow-glow' : 'border-white/[0.08] opacity-45',
+                    )}
+                    title={photo.name}
+                  >
+                    <img src={photo.url} alt="" className="h-full w-full object-cover" />
+                    {photo.origin === 'google' && (
+                      <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-zinc-300">
+                        <CloudDownload size={12} strokeWidth={2} />
+                      </span>
+                    )}
+                    {on && (
+                      <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-surface-900">
+                        <Check size={14} strokeWidth={3} />
+                      </span>
+                    )}
+                    <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/90 to-transparent px-2 py-1 text-left text-3xs text-zinc-300">
+                      {photo.name}
                     </span>
-                  )}
-                  {on && (
-                    <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-surface-900">
-                      <Check size={14} strokeWidth={3} />
-                    </span>
-                  )}
-                  <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/90 to-transparent px-2 py-1 text-left text-3xs text-zinc-300">
-                    {photo.name}
-                  </span>
-                </button>
+                  </button>
+                  <input
+                    defaultValue={photo.person ?? ''}
+                    onBlur={(event) => void savePerson(photo.name, event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') event.currentTarget.blur();
+                    }}
+                    placeholder="Person"
+                    spellCheck={false}
+                    className="field min-h-[38px] px-2 text-3xs"
+                  />
+                </div>
               );
             })}
           </div>

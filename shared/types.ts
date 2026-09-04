@@ -877,6 +877,15 @@ export type SlideTransition =
 /** Woher die Bilder der Diashow stammen. */
 export type PhotoSource = 'local' | 'google' | 'both';
 
+/**
+ * Reihenfolge der Diashow.
+ *
+ * `mix` mischt einmal pro Sitzung zufaellig, `date` sortiert nach
+ * Aufnahme-/Dateidatum, `person` gruppiert nach der manuell vergebenen
+ * Personenmarkierung (unmarkierte Bilder laufen zuletzt).
+ */
+export type SlideshowOrder = 'mix' | 'date' | 'person';
+
 export interface SlideshowConfig {
   enabled: boolean;
   /** Sekunden je Bild. */
@@ -885,8 +894,7 @@ export interface SlideshowConfig {
   /** Bei jedem Wechsel einen zufaelligen Effekt nehmen. */
   randomTransition: boolean;
   source: PhotoSource;
-  /** Bilder in zufaelliger Reihenfolge zeigen. */
-  shuffle: boolean;
+  order: SlideshowOrder;
 }
 
 export interface IdleConfig {
@@ -911,6 +919,10 @@ export interface PhotoItem {
   selected: boolean;
   width?: number;
   height?: number;
+  /** ISO-Zeitstempel — bei Google das Aufnahmedatum, sonst das Dateidatum. */
+  takenAt?: string;
+  /** Manuell vergebene Personenmarkierung, fuer die "Person"-Reihenfolge. */
+  person?: string;
 }
 
 export interface PhotoLibrary {

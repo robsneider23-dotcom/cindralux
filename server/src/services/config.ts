@@ -262,7 +262,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       transition: 'ken-burns',
       randomTransition: false,
       source: 'local',
-      shuffle: true,
+      order: 'mix',
     },
   },
   photos: {

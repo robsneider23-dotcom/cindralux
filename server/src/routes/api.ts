@@ -33,6 +33,7 @@ import {
   importGooglePickerSession,
   listPhotos,
   resolvePhotoPath,
+  setPhotoPerson,
   startGooglePickerSession,
 } from '../services/photos.ts';
 import {
@@ -488,6 +489,20 @@ api.get(
       return;
     }
     res.sendFile(file, { maxAge: '1h' });
+  }),
+);
+
+/** Personenmarkierung eines Bilds setzen — rein manuell, fuer die "Person"-Reihenfolge. */
+api.patch(
+  '/photos/:name/person',
+  route(async (req, res) => {
+    try {
+      const person = String((req.body as { person?: string } | undefined)?.person ?? '');
+      await setPhotoPerson(String(req.params.name), person);
+      res.json(await listPhotos());
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
   }),
 );
 

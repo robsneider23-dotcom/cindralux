@@ -516,12 +516,15 @@ export interface PickerMediaItem {
   baseUrl: string;
   mimeType: string;
   filename: string;
+  /** Aufnahmedatum laut Google, ISO-Format — fuer die "Datum"-Reihenfolge der Diashow. */
+  createTime?: string;
 }
 
 interface PickerMediaItemsResponse {
   mediaItems?: Array<{
     id?: string;
     type?: string;
+    createTime?: string;
     mediaFile?: { baseUrl?: string; mimeType?: string; filename?: string };
   }>;
   nextPageToken?: string;
@@ -549,6 +552,7 @@ export async function listPickerMediaItems(sessionId: string): Promise<PickerMed
         baseUrl: entry.mediaFile.baseUrl,
         mimeType: entry.mediaFile.mimeType ?? 'image/jpeg',
         filename: entry.mediaFile.filename ?? `${entry.id}.jpg`,
+        createTime: entry.createTime,
       });
     }
     pageToken = body.nextPageToken;

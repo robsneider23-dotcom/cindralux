@@ -34,6 +34,7 @@ import type {
   CalendarView,
   InputDevices,
   ColorScheme,
+  SlideshowOrder,
 } from "@shared/types";
 import { api } from "@/lib/api";
 import { useDashboard } from "@/lib/store";
@@ -2299,16 +2300,11 @@ function IdleSettings({ draft, update }: PaneProps) {
         title="Diashow"
         description="Läuft im Ruhemodus hinter Uhr und Wetter."
       >
-        <div className="mb-4 grid gap-2.5 lg:grid-cols-3">
+        <div className="mb-4 grid gap-2.5 lg:grid-cols-2">
           <Toggle
             label="Diashow aktivieren"
             checked={show.enabled}
             onChange={(enabled) => setShow({ enabled })}
-          />
-          <Toggle
-            label="Zufällige Reihenfolge"
-            checked={show.shuffle}
-            onChange={(shuffle) => setShow({ shuffle })}
           />
           <Toggle
             label="Bei jedem Wechsel anderer Effekt"
@@ -2318,20 +2314,43 @@ function IdleSettings({ draft, update }: PaneProps) {
           />
         </div>
 
-        <Field label="Sekunden je Bild">
-          <input
-            type="number"
-            min={4}
-            max={600}
-            value={show.intervalSeconds}
-            onChange={(event) =>
-              setShow({
-                intervalSeconds: Math.max(4, Number(event.target.value) || 20),
-              })
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Field label="Sekunden je Bild">
+            <input
+              type="number"
+              min={4}
+              max={600}
+              value={show.intervalSeconds}
+              onChange={(event) =>
+                setShow({
+                  intervalSeconds: Math.max(4, Number(event.target.value) || 20),
+                })
+              }
+              className="field digits w-40"
+            />
+          </Field>
+
+          <Field
+            label="Reihenfolge"
+            hint={
+              show.order === "person"
+                ? "Personenmarkierung wird bei den Bildern unten vergeben. Unmarkierte laufen zuletzt."
+                : show.order === "date"
+                  ? "Aufnahme- bzw. Dateidatum, älteste zuerst."
+                  : "Bei jedem Start des Ruhemodus neu gemischt."
             }
-            className="field digits w-40"
-          />
-        </Field>
+          >
+            <SegmentedControl<SlideshowOrder>
+              value={show.order}
+              onChange={(order) => setShow({ order })}
+              options={[
+                { value: "mix", label: "Mix" },
+                { value: "date", label: "Datum" },
+                { value: "person", label: "Person" },
+              ]}
+            />
+          </Field>
+        </div>
       </Section>
 
       <Section

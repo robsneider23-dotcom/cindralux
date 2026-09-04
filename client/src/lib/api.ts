@@ -123,6 +123,12 @@ export const api = {
   photoLibrary: () => request<PhotoLibrary>('/photos'),
   activePhotos: async () => (await request<{ photos: PhotoItem[] }>('/photos/active')).photos,
 
+  setPhotoPerson: (name: string, person: string) =>
+    request<PhotoLibrary>(`/photos/${encodeURIComponent(name)}/person`, {
+      method: 'PATCH',
+      body: JSON.stringify({ person }),
+    }),
+
   googlePhotosStartSession: () =>
     post<GooglePickerSession>('/google/photos/session'),
   googlePhotosSessionStatus: (sessionId: string) =>

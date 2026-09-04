@@ -25,3 +25,10 @@ data/backups/
 
 # Die Beispieldatei enthält ausschließlich Platzhalter und gehört ins Repo:
 !data/config.example.json
+
+# Heruntergeladene Google-Fotos-Importe und ihre Metadaten — persönliche
+# Bilder, gehören niemals ins Repo. Die Demo-Platzhalter (01-huegel.svg etc.)
+# bleiben davon unberührt, weil sie nicht auf "google-" beginnen.
+data/photos/google-*
+data/photos/.photos-meta.json
+data/photos/.google-origin.json
