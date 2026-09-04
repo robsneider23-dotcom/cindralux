@@ -118,3 +118,10 @@ Der angeforderte Bereich ist `calendar.readonly`: Das Dashboard kann Termine
 
 Den Zugriff entziehst du jederzeit über **Trennen** im Dashboard oder unter
 [myaccount.google.com/permissions](https://myaccount.google.com/permissions).
+
+> Seit der Google-Fotos-Anbindung fragt derselbe Verbinden-Knopf zusätzlich den
+> (eingeschränkten) Bereich `photospicker.mediaitems.readonly` mit ab — dafür
+> reicht dasselbe Google-Cloud-Projekt, es muss nur zusätzlich die Photos
+> Picker API aktiviert werden. Details: **[docs/google-fotos.md](google-fotos.md)**.
+> Wer schon vor dieser Änderung verbunden war, muss sich einmal **trennen und
+> neu verbinden**, damit das Refresh-Token den neuen Bereich mit umfasst.

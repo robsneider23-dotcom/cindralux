@@ -3,6 +3,8 @@ import type {
   CalendarSource,
   CreateEventRequest,
   GoogleCalendarEntry,
+  GooglePickerSession,
+  GooglePickerStatus,
   GoogleStatus,
 } from '../../../shared/types.ts';
 import { fetchWithTimeout, describeError } from '../lib/http.ts';
@@ -23,6 +25,7 @@ import { loadConfig, saveConfig } from './config.ts';
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const API = 'https://www.googleapis.com/calendar/v3';
+const PICKER_API = 'https://photospicker.googleapis.com/v1';
 
 /**
  * Berechtigungen.
@@ -30,11 +33,19 @@ const API = 'https://www.googleapis.com/calendar/v3';
  * `calendar.events` erlaubt das Anlegen von Terminen, `calendar.readonly`
  * zusaetzlich das Auflisten der Kalender des Kontos. Bewusst nicht der volle
  * `calendar`-Bereich: Das Dashboard soll Termine schreiben duerfen, aber keine
- * Kalender anlegen oder loeschen.
+ * Kalender anlegen oder loeschen. `photospicker.mediaitems.readonly` erlaubt
+ * ausschliesslich das Lesen der Bilder, die der Nutzer im Picker-Fenster
+ * selbst auswaehlt — auf die restliche Mediathek hat das Dashboard keinen
+ * Zugriff (Google hat den freien Bibliothekszugriff 2025 abgeschafft).
+ *
+ * Eine bereits verbundene Installation muss sich einmal trennen und neu
+ * verbinden, damit der zusaetzliche Scope in ihr Refresh-Token aufgenommen
+ * wird — bestehende Tokens erweitern sich nicht von selbst.
  */
 const SCOPE = [
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/photospicker.mediaitems.readonly',
 ].join(' ');
 
 /** Muss in der Google Cloud Console als Weiterleitungs-URI eingetragen sein. */
@@ -423,4 +434,148 @@ function addMinutes(time: string, minutes: number): string {
   const [h, m] = time.split(':').map(Number);
   const total = ((h ?? 0) * 60 + (m ?? 0) + minutes) % (24 * 60);
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Google Photos Picker                                                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Der Nutzer waehlt Bilder in Googles eigenem Fenster aus (`pickerUri`), nicht
+ * das Dashboard in einer synchronisierten Mediathek — genau das erlaubt der
+ * eingeschraenkte `photospicker.mediaitems.readonly`-Scope noch.
+ *
+ * Protokoll: https://developers.google.com/photos/picker/guides/get-started
+ */
+
+/** "5s" / "1.500s" (protobuf-Duration-Notation) in Millisekunden. */
+function parseDurationMs(duration: string | undefined, fallbackMs: number): number {
+  const match = duration ? /^(\d+(?:\.\d+)?)s$/.exec(duration) : null;
+  return match ? Math.round(Number(match[1]) * 1000) : fallbackMs;
+}
+
+interface PickerSessionResponse {
+  id?: string;
+  pickerUri?: string;
+  mediaItemsSet?: boolean;
+  pollingConfig?: { pollInterval?: string };
+  error?: { message?: string };
+}
+
+async function pickerFetch(
+  path: string,
+  init: RequestInit = {},
+): Promise<Response> {
+  const token = await getAccessToken();
+  return fetchWithTimeout(
+    `${PICKER_API}${path}`,
+    { ...init, headers: { Authorization: `Bearer ${token}`, ...init.headers } },
+    15_000,
+  );
+}
+
+/** Eine neue Auswahl-Sitzung anlegen. Der Nutzer oeffnet danach `pickerUri`. */
+export async function createPickerSession(): Promise<GooglePickerSession> {
+  const response = await pickerFetch('/sessions', { method: 'POST' });
+  const body = (await response.json()) as PickerSessionResponse;
+  if (!response.ok || !body.id || !body.pickerUri) {
+    throw new Error(body.error?.message ?? `HTTP ${response.status}`);
+  }
+
+  return {
+    sessionId: body.id,
+    pickerUri: body.pickerUri,
+    pollIntervalMs: parseDurationMs(body.pollingConfig?.pollInterval, 3_000),
+  };
+}
+
+/** Nachfragen, ob der Nutzer seine Auswahl im Picker-Fenster abgeschlossen hat. */
+export async function getPickerSessionStatus(sessionId: string): Promise<GooglePickerStatus> {
+  const response = await pickerFetch(`/sessions/${encodeURIComponent(sessionId)}`);
+  const body = (await response.json()) as PickerSessionResponse;
+  if (!response.ok) throw new Error(body.error?.message ?? `HTTP ${response.status}`);
+
+  return {
+    ready: body.mediaItemsSet === true,
+    pollIntervalMs: parseDurationMs(body.pollingConfig?.pollInterval, 3_000),
+  };
+}
+
+/** Sitzung aufraeumen, nachdem die Bilder heruntergeladen sind. Best-effort. */
+export async function deletePickerSession(sessionId: string): Promise<void> {
+  try {
+    await pickerFetch(`/sessions/${encodeURIComponent(sessionId)}`, { method: 'DELETE' });
+  } catch {
+    // Sitzungen verfallen ohnehin von selbst — ein fehlgeschlagenes Aufraeumen ist kein Fehler.
+  }
+}
+
+export interface PickerMediaItem {
+  id: string;
+  type: string;
+  baseUrl: string;
+  mimeType: string;
+  filename: string;
+}
+
+interface PickerMediaItemsResponse {
+  mediaItems?: Array<{
+    id?: string;
+    type?: string;
+    mediaFile?: { baseUrl?: string; mimeType?: string; filename?: string };
+  }>;
+  nextPageToken?: string;
+  error?: { message?: string };
+}
+
+/** Alle vom Nutzer ausgewaehlten Bilder dieser Sitzung auflisten (mit Seitenblaetterung). */
+export async function listPickerMediaItems(sessionId: string): Promise<PickerMediaItem[]> {
+  const items: PickerMediaItem[] = [];
+  let pageToken: string | undefined;
+
+  do {
+    const params = new URLSearchParams({ sessionId, pageSize: '100' });
+    if (pageToken) params.set('pageToken', pageToken);
+
+    const response = await pickerFetch(`/mediaItems?${params.toString()}`);
+    const body = (await response.json()) as PickerMediaItemsResponse;
+    if (!response.ok) throw new Error(body.error?.message ?? `HTTP ${response.status}`);
+
+    for (const entry of body.mediaItems ?? []) {
+      if (!entry.id || !entry.mediaFile?.baseUrl) continue;
+      items.push({
+        id: entry.id,
+        type: entry.type ?? 'PHOTO',
+        baseUrl: entry.mediaFile.baseUrl,
+        mimeType: entry.mediaFile.mimeType ?? 'image/jpeg',
+        filename: entry.mediaFile.filename ?? `${entry.id}.jpg`,
+      });
+    }
+    pageToken = body.nextPageToken;
+  } while (pageToken);
+
+  return items;
+}
+
+/**
+ * Bilddaten eines ausgewaehlten Bilds herunterladen.
+ *
+ * `=w2048-h2048` erzwingt eine gerenderte JPEG-Version in Bildschirmgroesse
+ * statt der Originaldatei — wichtig, weil iPhones oft HEIC ausliefern, das
+ * kein Browser zuverlaessig darstellt, und weil Diashow-Bilder keine
+ * Kameraoriginale in voller Aufloesung brauchen.
+ */
+export async function downloadPickerMediaFile(
+  item: PickerMediaItem,
+): Promise<{ buffer: Buffer; contentType: string }> {
+  const token = await getAccessToken();
+  const response = await fetchWithTimeout(
+    `${item.baseUrl}=w2048-h2048`,
+    { headers: { Authorization: `Bearer ${token}` } },
+    20_000,
+  );
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  return { buffer, contentType: response.headers.get('content-type') ?? 'image/jpeg' };
 }

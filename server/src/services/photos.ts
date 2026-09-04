@@ -1,9 +1,23 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { PhotoItem, PhotoLibrary } from '../../../shared/types.ts';
+import type {
+  GooglePickerSession,
+  GooglePickerStatus,
+  PhotoItem,
+  PhotoLibrary,
+} from '../../../shared/types.ts';
 import { ROOT_DIR } from '../lib/paths.ts';
 import { describeError } from '../lib/http.ts';
+import { readJson, writeJson } from '../lib/jsonStore.ts';
 import { loadConfig } from './config.ts';
+import {
+  createPickerSession,
+  deletePickerSession,
+  downloadPickerMediaFile,
+  getPickerSessionStatus,
+  listPickerMediaItems,
+  type PickerMediaItem,
+} from './google.ts';
 
 /**
  * Bilder für die Diashow im Ruhemodus.
@@ -52,10 +66,24 @@ export async function resolvePhotoPath(name: string): Promise<string | null> {
   }
 }
 
+/** Dateiname der Herkunftsliste, immer im Bilderordner selbst. */
+const GOOGLE_MANIFEST = '.google-origin.json';
+
+/** Welche Dateinamen im Bilderordner aus dem Google-Photos-Picker stammen. */
+async function readGoogleManifest(dir: string): Promise<Set<string>> {
+  const list = await readJson<string[]>(path.join(dir, GOOGLE_MANIFEST));
+  return new Set(list ?? []);
+}
+
+async function writeGoogleManifest(dir: string, names: Set<string>): Promise<void> {
+  await writeJson(path.join(dir, GOOGLE_MANIFEST), [...names].sort());
+}
+
 export async function listPhotos(): Promise<PhotoLibrary> {
   const config = await loadConfig();
   const dir = await resolveLocalDir();
   const chosen = new Set(config.photos.selected);
+  const googleOrigin = await readGoogleManifest(dir);
 
   let entries: string[] = [];
   let message: string | undefined;
@@ -72,15 +100,19 @@ export async function listPhotos(): Promise<PhotoLibrary> {
         : describeError(error);
   }
 
-  const photos: PhotoItem[] = entries.map((name) => ({
-    id: `local:${name}`,
-    name,
-    url: `/api/photos/file/${encodeURIComponent(name)}`,
-    origin: 'local',
-    // Ohne Auswahl laufen alle Bilder — sonst bliebe die Diashow leer,
-    // solange niemand etwas angehakt hat.
-    selected: chosen.size === 0 || chosen.has(`local:${name}`),
-  }));
+  const photos: PhotoItem[] = entries.map((name) => {
+    const origin = googleOrigin.has(name) ? 'google' : 'local';
+    const id = `${origin}:${name}`;
+    return {
+      id,
+      name,
+      url: `/api/photos/file/${encodeURIComponent(name)}`,
+      origin,
+      // Ohne Auswahl laufen alle Bilder — sonst bliebe die Diashow leer,
+      // solange niemand etwas angehakt hat.
+      selected: chosen.size === 0 || chosen.has(id),
+    };
+  });
 
   if (!message && photos.length === 0) {
     message = `Keine Bilder in ${dir}. Bilder dorthin kopieren (jpg, png, webp).`;
@@ -93,4 +125,72 @@ export async function listPhotos(): Promise<PhotoLibrary> {
 export async function activePhotos(): Promise<PhotoItem[]> {
   const library = await listPhotos();
   return library.photos.filter((photo) => photo.selected);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Google Photos Picker                                                       */
+/* -------------------------------------------------------------------------- */
+
+const CONTENT_TYPE_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+
+/**
+ * Einen sicheren, kollisionsfreien Dateinamen bauen.
+ *
+ * Der von Google gelieferte Dateiname ist nur Kosmetik und wird bereinigt statt
+ * uebernommen; die Endung kommt bewusst vom tatsaechlichen Content-Type der
+ * heruntergeladenen Datei, nicht von Googles Angabe — `downloadPickerMediaFile`
+ * erzwingt eine gerenderte JPEG-Version, unabhaengig vom Kameraformat.
+ */
+function safeGoogleFilename(item: PickerMediaItem, contentType: string): string {
+  const rawStem = path.basename(item.filename, path.extname(item.filename));
+  const stem = rawStem.replace(/[^\w-]+/g, '_').slice(0, 60) || item.id;
+  const ext = CONTENT_TYPE_EXTENSIONS[contentType.split(';')[0]?.trim() ?? ''] ?? '.jpg';
+  return `google-${item.id.slice(0, 12)}-${stem}${ext}`;
+}
+
+export async function startGooglePickerSession(): Promise<GooglePickerSession> {
+  return createPickerSession();
+}
+
+export async function googlePickerSessionStatus(sessionId: string): Promise<GooglePickerStatus> {
+  return getPickerSessionStatus(sessionId);
+}
+
+/**
+ * Die im Picker-Fenster gewaehlten Bilder herunterladen und wie lokale Bilder
+ * behandeln — die Diashow braucht danach keinen Sonderweg fuer Google-Bilder.
+ * Nur Fotos werden uebernommen, keine Videos (die Diashow zeigt nur Bilder).
+ */
+export async function importGooglePickerSession(sessionId: string): Promise<PhotoLibrary> {
+  const dir = await resolveLocalDir();
+  await fs.mkdir(dir, { recursive: true });
+
+  const items = (await listPickerMediaItems(sessionId)).filter((item) => item.type === 'PHOTO');
+  const googleOrigin = await readGoogleManifest(dir);
+
+  for (const item of items) {
+    try {
+      const { buffer, contentType } = await downloadPickerMediaFile(item);
+      const filename = safeGoogleFilename(item, contentType);
+      await fs.writeFile(path.join(dir, filename), buffer);
+      googleOrigin.add(filename);
+    } catch (error) {
+      // Ein einzelnes fehlgeschlagenes Bild darf den Rest des Imports nicht kippen.
+      console.warn(`[photos] Google-Bild ${item.id} nicht ladbar: ${describeError(error)}`);
+    }
+  }
+
+  await writeGoogleManifest(dir, googleOrigin);
+  await deletePickerSession(sessionId);
+
+  return listPhotos();
+}
+
+export async function cancelGooglePickerSession(sessionId: string): Promise<void> {
+  await deletePickerSession(sessionId);
 }

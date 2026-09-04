@@ -100,6 +100,7 @@ unverändert; zum Löschen sendet das Panel den Sentinel `__clear__`.
 | **Sprachmodus** | **vorbereitet, braucht OpenAI-Key** | Gespräch per Mikrofon über die Realtime API (WebRTC). Nur bei OpenAI verfügbar. |
 | **Messwerte** | **echt, sobald HA verbunden ist** | Temperatur, Luftfeuchte, Fenster, Verbrauch. Ohne HA plausible Beispielwerte, die dem Tagesgang folgen. |
 | **Timer & Wecker** | **echt** | Vollständig lokal, unabhängig von HA und AI. |
+| **Fotos (Diashow)** | **echt** | Lokaler Bilderordner immer verfügbar; Google Fotos optional über den Picker (Auswahl in Googles eigenem Fenster). |
 
 ### Kalender anbinden
 
@@ -356,6 +357,32 @@ Panels schaltet ihn frei.
 **Gestellte Wecker überleben einen Neustart** (`data/timers.json`), kurze Timer
 bewusst nicht — sie wären nach einem Neustart ohnehin abgelaufen.
 
+### Fotos für die Diashow
+
+Der Ruhemodus (siehe *Nachtabsenkung und Einbrennschutz*) kann zwischen Uhr und
+Tagesübersicht eine Bilder-Diashow zeigen. Unter *Einstellungen → Darstellung →
+Fotos* gibt es zwei Quellen, die sich mischen lassen:
+
+- **Lokaler Ordner** (`data/photos/` per Default, änderbar). Bilder einfach
+  hineinkopieren — jpg, png, webp, avif, gif und svg werden erkannt. Läuft
+  ohne Internet und ohne Konto, das ist die verlässliche Grundlage.
+- **Google Fotos** über die **Picker API**. Ein Tipp auf *Google Fotos
+  auswählen* öffnet Googles eigenes Auswahlfenster; was dort ausgewählt und
+  bestätigt wird, lädt das Dashboard herunter und legt es als normale Datei in
+  denselben Ordner. Danach unterscheidet sich ein Google-Bild aus Sicht der
+  Diashow nicht mehr von einem lokalen — inklusive der Möglichkeit, es einzeln
+  ab- oder wieder anzuwählen.
+
+  Google hat 2025 den automatischen Zugriff auf die ganze Mediathek
+  abgeschafft; der Picker ist der verbleibende Weg und verlangt bei jedem
+  Import eine bewusste Auswahl im eigenen Fenster — kein Hintergrund-Sync
+  eines Albums. Die Verbindung ist dieselbe wie beim Google-Kalender (ein
+  Google-Konto, ein OAuth-Client); Einrichtung:
+  **[docs/google-fotos.md](docs/google-fotos.md)**.
+
+In beiden Fällen entscheidet die Kachel-Auswahl in den Einstellungen, welche
+Bilder die Diashow tatsächlich zeigt — ohne jede Auswahl laufen alle.
+
 ### Alexa
 
 **Bewusst nicht direkt integriert.** Dieses Dashboard spricht ausschließlich mit
@@ -461,6 +488,13 @@ sich eine künftige Änderung ohne Codeänderung nachziehen.
 | GET | `/api/google/callback` | Weiterleitungsziel des OAuth-Ablaufs |
 | GET | `/api/google/calendars` | Kalenderliste des verbundenen Kontos |
 | POST | `/api/google/disconnect` | Verbindung trennen |
+| GET | `/api/photos` | Alle Bilder des Ordners samt Auswahlzustand |
+| GET | `/api/photos/active` | Nur die für die Diashow ausgewählten Bilder |
+| GET | `/api/photos/file/:name` | Ein Bild ausliefern |
+| POST | `/api/google/photos/session` | Google-Photos-Picker-Sitzung anlegen |
+| GET | `/api/google/photos/session/:id` | Nachfragen, ob die Auswahl im Picker-Fenster steht |
+| POST | `/api/google/photos/session/:id/import` | Ausgewählte Bilder herunterladen und in die lokale Bibliothek übernehmen |
+| DELETE | `/api/google/photos/session/:id` | Picker-Sitzung abbrechen / aufräumen |
 | POST | `/api/calendar/refresh` | Alle Quellen sofort neu laden |
 | POST | `/api/calendar/validate` | ICS-Adresse prüfen, Name und Terminzahl auslesen |
 | GET | `/api/trash/next` | Nächste Abholung + kommende Termine |

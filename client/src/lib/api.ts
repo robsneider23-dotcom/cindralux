@@ -6,6 +6,8 @@ import type {
   CalendarValidation,
   GeoResult,
   GoogleCalendarEntry,
+  GooglePickerSession,
+  GooglePickerStatus,
   GoogleStatus,
   DailyBriefingRequest,
   HealthResponse,
@@ -120,6 +122,15 @@ export const api = {
 
   photoLibrary: () => request<PhotoLibrary>('/photos'),
   activePhotos: async () => (await request<{ photos: PhotoItem[] }>('/photos/active')).photos,
+
+  googlePhotosStartSession: () =>
+    post<GooglePickerSession>('/google/photos/session'),
+  googlePhotosSessionStatus: (sessionId: string) =>
+    request<GooglePickerStatus>(`/google/photos/session/${sessionId}`),
+  googlePhotosImport: (sessionId: string) =>
+    post<PhotoLibrary>(`/google/photos/session/${sessionId}/import`),
+  googlePhotosCancelSession: (sessionId: string) =>
+    request<{ ok: boolean }>(`/google/photos/session/${sessionId}`, { method: 'DELETE' }),
   callService: (payload: HomeAssistantCallRequest) =>
     post<HomeAssistantCallResult>('/home-assistant/call-service', payload),
 

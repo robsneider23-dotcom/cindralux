@@ -926,3 +926,19 @@ export interface PhotosConfig {
   /** IDs der Bilder, die gezeigt werden. Leer = alle. */
   selected: string[];
 }
+
+/**
+ * Google-Photos-Picker-Sitzung: Der Nutzer waehlt Bilder in Googles eigenem
+ * Fenster (`pickerUri`) aus; das Dashboard fragt mit `sessionId` nach, bis
+ * die Auswahl steht, und laedt die gewaehlten Bilder danach lokal herunter.
+ */
+export interface GooglePickerSession {
+  sessionId: string;
+  pickerUri: string;
+  pollIntervalMs: number;
+}
+
+export interface GooglePickerStatus {
+  ready: boolean;
+  pollIntervalMs: number;
+}

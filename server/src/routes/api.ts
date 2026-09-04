@@ -26,7 +26,15 @@ import {
   validateTrashIcs,
 } from '../services/trash.ts';
 import { describeCoordinates, searchPlaces } from '../services/geocoding.ts';
-import { activePhotos, listPhotos, resolvePhotoPath } from '../services/photos.ts';
+import {
+  activePhotos,
+  cancelGooglePickerSession,
+  googlePickerSessionStatus,
+  importGooglePickerSession,
+  listPhotos,
+  resolvePhotoPath,
+  startGooglePickerSession,
+} from '../services/photos.ts';
 import {
   buildAuthUrl,
   createEvent as createGoogleEvent,
@@ -480,6 +488,54 @@ api.get(
       return;
     }
     res.sendFile(file, { maxAge: '1h' });
+  }),
+);
+
+/**
+ * Google-Photos-Auswahl.
+ *
+ * Der Nutzer waehlt Bilder in Googles eigenem Fenster aus; das Dashboard
+ * fragt mit der Sitzungs-ID nach, bis die Auswahl steht, und laedt die
+ * gewaehlten Bilder danach als eigene Dateien herunter.
+ */
+api.post(
+  '/google/photos/session',
+  route(async (_req, res) => {
+    try {
+      res.json(await startGooglePickerSession());
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  }),
+);
+
+api.get(
+  '/google/photos/session/:id',
+  route(async (req, res) => {
+    try {
+      res.json(await googlePickerSessionStatus(String(req.params.id)));
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  }),
+);
+
+api.post(
+  '/google/photos/session/:id/import',
+  route(async (req, res) => {
+    try {
+      res.json(await importGooglePickerSession(String(req.params.id)));
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  }),
+);
+
+api.delete(
+  '/google/photos/session/:id',
+  route(async (req, res) => {
+    await cancelGooglePickerSession(String(req.params.id));
+    res.json({ ok: true });
   }),
 );
 
