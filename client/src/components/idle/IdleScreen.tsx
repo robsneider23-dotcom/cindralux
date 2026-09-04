@@ -50,7 +50,8 @@ export function IdleScreen({
   shift?: { x: number; y: number };
 }) {
   const { config, weather, calendar, trash } = useDashboard();
-  const now = useClock(false);
+  const showSeconds = config?.appearance.showSeconds ?? true;
+  const now = useClock(showSeconds);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
 
   const idle = config?.idle;
@@ -129,10 +130,21 @@ export function IdleScreen({
             <div>
               <div className="digits text-[clamp(4rem,13vw,11rem)] font-extralight leading-none tracking-tight text-zinc-50">
                 {String(now.getHours()).padStart(2, '0')}
-                <span className="mx-2 text-accent/80">:</span>
+                <span className="relative mx-2 inline-block text-accent/80">
+                  :
+                  {/* Sekunden nisten sich unter den Doppelpunkt statt die
+                      Zeile mit einem dritten Zahlenpaar zu verlaengern — auf
+                      einem Ruhebildschirm soll die Uhr HH:MM bleiben, die
+                      Sekunden sind nur ein leises Lebenszeichen daneben. */}
+                  {showSeconds && (
+                    <span className="digits absolute left-1/2 top-[78%] -translate-x-1/2 text-[clamp(0.85rem,1.8vw,1.5rem)] font-light leading-none text-accent/45">
+                      {String(now.getSeconds()).padStart(2, '0')}
+                    </span>
+                  )}
+                </span>
                 {String(now.getMinutes()).padStart(2, '0')}
               </div>
-              <div className="mt-3 text-[clamp(1rem,2vw,1.6rem)] font-light text-zinc-300">
+              <div className={cx('text-[clamp(1rem,2vw,1.6rem)] font-light text-zinc-300', showSeconds ? 'mt-5' : 'mt-3')}>
                 {formatWeekday(now)}, {formatDateLong(now)}
               </div>
             </div>
