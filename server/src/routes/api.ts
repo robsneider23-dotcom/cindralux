@@ -247,7 +247,7 @@ api.post(
   '/system/power/:action',
   route(async (req, res) => {
     const action = req.params.action;
-    if (action !== 'reboot' && action !== 'shutdown') {
+    if (action !== 'reboot' && action !== 'shutdown' && action !== 'exit-kiosk') {
       res.status(400).json({ ok: false, message: 'Unbekannte Aktion.' });
       return;
     }

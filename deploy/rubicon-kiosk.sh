@@ -58,9 +58,23 @@ fi
 # dauerhaft einen Kern belegt.
 wartezeit=3
 
+# Ausstiegsluke: Das Dashboard selbst (Einstellungen → System → Kiosk
+# beenden) legt diese Datei an, statt Chromium direkt zu killen — sonst
+# wuerde genau diese Schleife es im naechsten Moment wieder hochziehen.
+# Vor jedem (Neu-)Start pruefen, nicht nur einmal, sonst uebersieht ein
+# spaeter angelegtes Signal einen bereits laufenden Chromium-Absturzzyklus.
+AUSSTIEG="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/data/.exit-kiosk"
+
 echo "Kiosk startet auf $URL" >&2
 
 while true; do
+  if [ -f "$AUSSTIEG" ]; then
+    rm -f "$AUSSTIEG"
+    echo "Kiosk beendet (aus dem Dashboard heraus) — kein automatischer Neustart. " \
+         "Zurueck: dieses Skript erneut ausfuehren oder den Pi neu starten." >&2
+    exit 0
+  fi
+
   warte_auf_server
   saeubere_profil
   beginn=$SECONDS

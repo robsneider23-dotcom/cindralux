@@ -9,6 +9,7 @@ import {
   Link2,
   Lock,
   Loader2,
+  LogOut,
   Moon,
   Palette,
   Power,
@@ -147,7 +148,7 @@ const WEEKDAYS = [
  */
 function SystemSettings() {
   const [verfuegbar, setVerfuegbar] = useState<boolean | null>(null);
-  const [frage, setFrage] = useState<"reboot" | "shutdown" | null>(null);
+  const [frage, setFrage] = useState<"reboot" | "shutdown" | "exit-kiosk" | null>(null);
   const [laeuft, setLaeuft] = useState(false);
   const [meldung, setMeldung] = useState<string | null>(null);
 
@@ -162,7 +163,7 @@ function SystemSettings() {
     };
   }, []);
 
-  const ausfuehren = async (aktion: "reboot" | "shutdown") => {
+  const ausfuehren = async (aktion: "reboot" | "shutdown" | "exit-kiosk") => {
     setLaeuft(true);
     setFrage(null);
     try {
@@ -211,7 +212,9 @@ function SystemSettings() {
             <p className="mb-3 text-2xs leading-relaxed text-zinc-200">
               {frage === "reboot"
                 ? "Pi wirklich neu starten? Das Dashboard ist etwa eine Minute lang weg."
-                : "Pi wirklich herunterfahren? Zum Wiedereinschalten musst du den Strom kurz trennen."}
+                : frage === "shutdown"
+                  ? "Pi wirklich herunterfahren? Zum Wiedereinschalten musst du den Strom kurz trennen."
+                  : "Kiosk wirklich beenden? Der Bildschirm zeigt danach den bloßen Desktop, ohne automatischen Neustart. Ohne Tastatur/Maus am Pi kommst du nur per SSH oder einem Neustart zurück zum Dashboard."}
             </p>
             <div className="flex gap-2">
               <button
@@ -219,7 +222,9 @@ function SystemSettings() {
                 className="btn flex-1 border-accent/50 text-accent-soft"
                 onClick={() => void ausfuehren(frage)}
               >
-                Ja, {frage === "reboot" ? "neu starten" : "herunterfahren"}
+                {frage === "reboot" && "Ja, neu starten"}
+                {frage === "shutdown" && "Ja, herunterfahren"}
+                {frage === "exit-kiosk" && "Ja, Kiosk beenden"}
               </button>
               <button
                 type="button"
@@ -231,7 +236,7 @@ function SystemSettings() {
             </div>
           </div>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               disabled={laeuft || verfuegbar === false}
@@ -250,12 +255,22 @@ function SystemSettings() {
               <Power className="h-4 w-4" />
               Herunterfahren
             </button>
+            <button
+              type="button"
+              disabled={laeuft}
+              className="btn flex-1 disabled:opacity-40"
+              onClick={() => setFrage("exit-kiosk")}
+            >
+              <LogOut className="h-4 w-4" />
+              Kiosk beenden
+            </button>
           </div>
         )}
 
         <p className="mt-3 text-2xs leading-relaxed text-zinc-500">
           Vor dem Stromtrennen bitte herunterfahren. Ein hart ausgeschalteter Pi
-          kann ein beschädigtes Dateisystem zurücklassen.
+          kann ein beschädigtes Dateisystem zurücklassen. „Kiosk beenden" braucht
+          keine sudo-Regel — nur Neustart und Herunterfahren tun das.
         </p>
       </Section>
 

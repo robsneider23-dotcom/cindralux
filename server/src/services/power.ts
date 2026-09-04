@@ -1,23 +1,34 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import path from 'node:path';
+import { writeFile } from 'node:fs/promises';
+import { DATA_DIR } from '../lib/paths.ts';
+import { describeError } from '../lib/http.ts';
 
 const run = promisify(execFile);
 
 /*
- * Neustart und Herunterfahren des Geraets.
+ * Neustart, Herunterfahren und Kiosk-Beenden des Geraets.
  *
- * Der Dienst laeuft als normaler Benutzer und darf das nicht von sich aus.
- * Beides braucht deshalb eine einmalige sudo-Regel (deploy/rubicon-power.sudoers).
- * Ohne sie schlaegt der Aufruf fehl — mit einer Meldung, die sagt, was zu tun
- * ist, statt nur „permission denied".
+ * Neustart/Herunterfahren brauchen Root und damit eine einmalige sudo-Regel
+ * (deploy/rubicon-power.sudoers) — der Dienst laeuft als normaler Benutzer.
+ * "Kiosk beenden" braucht das NICHT: Chromium laeuft als derselbe Benutzer
+ * wie der Server, ihn zu beenden ist kein Rechteproblem. Die eigentliche
+ * Huerde ist die Neustart-Schleife in deploy/rubicon-kiosk.sh, die Chromium
+ * nach jedem Absturz von selbst zurueckholt — genau das soll hier einmalig
+ * NICHT passieren. Die Sentinel-Datei ist das Signal dafuer: das Skript
+ * prueft sie vor jedem Neustartversuch und beendet sich selbst, statt
+ * Chromium erneut zu starten.
  */
 
-export type PowerAction = 'reboot' | 'shutdown';
+export type PowerAction = 'reboot' | 'shutdown' | 'exit-kiosk';
 
-const BEFEHL: Record<PowerAction, string> = {
+const SUDO_BEFEHL: Record<'reboot' | 'shutdown', string> = {
   reboot: '/sbin/reboot',
   shutdown: '/sbin/poweroff',
 };
+
+const EXIT_SENTINEL = path.join(DATA_DIR, '.exit-kiosk');
 
 const HINWEIS =
   'Der Dienst darf das Geraet nicht neu starten. Einmalig einrichten: ' +
@@ -33,7 +44,7 @@ export interface PowerResult {
 export async function powerAvailable(): Promise<boolean> {
   try {
     // -n: nie nach einem Passwort fragen. -l: nur nachschlagen, nicht starten.
-    await run('sudo', ['-n', '-l', BEFEHL.reboot]);
+    await run('sudo', ['-n', '-l', SUDO_BEFEHL.reboot]);
     return true;
   } catch {
     return false;
@@ -41,6 +52,8 @@ export async function powerAvailable(): Promise<boolean> {
 }
 
 export async function powerAction(action: PowerAction): Promise<PowerResult> {
+  if (action === 'exit-kiosk') return exitKiosk();
+
   if (!(await powerAvailable())) {
     return { ok: false, message: HINWEIS };
   }
@@ -51,7 +64,7 @@ export async function powerAction(action: PowerAction): Promise<PowerResult> {
    * angekommen ist oder das Dashboard nur haengt.
    */
   setTimeout(() => {
-    void run('sudo', ['-n', BEFEHL[action]]).catch(() => undefined);
+    void run('sudo', ['-n', SUDO_BEFEHL[action]]).catch(() => undefined);
   }, 1200);
 
   return {
@@ -60,5 +73,26 @@ export async function powerAction(action: PowerAction): Promise<PowerResult> {
       action === 'reboot'
         ? 'Der Pi startet neu. Das Dashboard ist in etwa einer Minute wieder da.'
         : 'Der Pi faehrt herunter. Warte, bis die gruene LED aufhoert zu blinken, bevor du den Strom trennst.',
+  };
+}
+
+async function exitKiosk(): Promise<PowerResult> {
+  try {
+    // Leere Datei genuegt — deploy/rubicon-kiosk.sh prueft nur, ob sie existiert.
+    await writeFile(EXIT_SENTINEL, '');
+  } catch (error) {
+    return { ok: false, message: `Sentinel-Datei nicht schreibbar: ${describeError(error)}` };
+  }
+
+  // Erst antworten, dann Chromium beenden — sonst reisst die Anfrage selbst ab.
+  setTimeout(() => {
+    void run('pkill', ['-f', '--', '--kiosk']).catch(() => undefined);
+  }, 800);
+
+  return {
+    ok: true,
+    message:
+      'Kiosk wird beendet, der Bildschirm zeigt danach den bloßen Desktop. ' +
+      'Zurueck zum Dashboard: deploy/rubicon-kiosk.sh erneut starten oder den Pi neu starten.',
   };
 }

@@ -87,7 +87,7 @@ export const api = {
   getConfig: () => request<PublicAppConfig>('/config'),
   inputDevices: () => request<InputDevices>('/system/input'),
   powerAvailable: () => request<{ available: boolean }>('/system/power'),
-  power: (action: 'reboot' | 'shutdown') =>
+  power: (action: 'reboot' | 'shutdown' | 'exit-kiosk') =>
     post<{ ok: boolean; message: string }>(`/system/power/${action}`),
   saveConfig: (patch: AppConfigPatch) =>
     request<PublicAppConfig>('/config', { method: 'PUT', body: JSON.stringify(patch) }),
