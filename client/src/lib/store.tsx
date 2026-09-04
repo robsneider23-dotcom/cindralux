@@ -25,7 +25,10 @@ import { hexToRgbTriplet } from './utils';
 /** Aktualisierungsintervalle — bewusst ruhig, das Panel laeuft rund um die Uhr. */
 const INTERVAL = {
   calendar: 5 * 60_000,
-  weather: 10 * 60_000,
+  // Die Temperatur soll auf einen Blick aktuell wirken — deshalb Ausnahme von
+  // der sonst ruhigen Taktung. Der Server-Cache in weather.ts ist gleich lang,
+  // sonst bekaeme der Client trotzdem nur alle 10 Minuten neue Werte.
+  weather: 60_000,
   trash: 30 * 60_000,
   homeAssistant: 20_000,
   sensors: 15_000,

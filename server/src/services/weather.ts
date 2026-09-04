@@ -18,7 +18,7 @@ import { loadConfig } from './config.ts';
  * Seed-Daten, damit die Karte nie leer bleibt.
  */
 const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast';
-const CACHE_TTL_MS = 10 * 60_000;
+const CACHE_TTL_MS = 60_000;
 
 let cache: { at: number; data: WeatherSummary } | null = null;
 
