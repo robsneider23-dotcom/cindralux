@@ -630,7 +630,7 @@ export type BackdropStyle =
 
 export interface AppearanceConfig {
   themeMode: ThemeMode;
-  /** Dateiname unter /assets/rubicon, z.B. "backdrop-topo.svg". */
+  /** Dateiname unter /assets/cindralux, z.B. "backdrop-topo.svg". */
   background: string;
   /** Deckkraft des Hintergrunds, 0–1. */
   backgroundOpacity: number;
@@ -743,7 +743,7 @@ export type AppConfigPatch = {
 
 export interface HealthResponse {
   ok: true;
-  service: 'rubicon-home-command-center';
+  service: 'cindralux-home-command-center';
   version: string;
   uptimeSeconds: number;
   /** Platzhalter fuer den spaeteren Pi-Systemstatus. */

@@ -91,13 +91,13 @@ export function IdleScreen({
           <PhotoSlideshow photos={photos} config={slideshow} className="absolute inset-0" />
         )}
 
-        {/* Ohne Bilder trägt der Rubicon-Hintergrund die Fläche. */}
+        {/* Ohne Bilder trägt der Cindralux-Hintergrund die Fläche. */}
         {!hasPhotos && (
           <div
             className="absolute inset-0 bg-cover bg-center opacity-40"
             style={{
               backgroundImage: config?.appearance.background
-                ? `url(/rubicon/${config.appearance.background})`
+                ? `url(/cindralux/${config.appearance.background})`
                 : undefined,
             }}
           />

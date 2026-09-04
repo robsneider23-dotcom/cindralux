@@ -315,7 +315,7 @@ export function AiAssistantPanel({
   const modeSwitch = gptLiveEnabled ? (
     <div className="flex shrink-0 gap-1.5 border-b border-white/[0.055] p-2.5">
       {[
-        { id: "assistant" as const, label: "Rubicon Assistant" },
+        { id: "assistant" as const, label: "Cindralux Assistant" },
         { id: "gpt-live" as const, label: "GPT Live" },
       ].map((entry) => (
         <button

@@ -9,7 +9,7 @@
 # Hauptrechner diese Kopien regelmaessig ab (siehe docs/raspberry-pi.md).
 #
 # Cron (crontab -e, kein sudo noetig):
-#   17 4 * * * /home/pi/rubicon/deploy/backup-config.sh >> /home/pi/rubicon/data/backups/backup.log 2>&1
+#   17 4 * * * /home/pi/cindralux/deploy/backup-config.sh >> /home/pi/cindralux/data/backups/backup.log 2>&1
 
 set -euo pipefail
 

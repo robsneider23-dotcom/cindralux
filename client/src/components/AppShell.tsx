@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { StatusHeader } from "./StatusHeader";
 import { SettingsPanel } from "./SettingsPanel";
-import { RubiconBackground } from "./RubiconBackground";
+import { CindraluxBackground } from "./CindraluxBackground";
 import { NightOverlay } from "./NightOverlay";
 import { TimerOverlay } from "./TimerOverlay";
 import { useNightMode } from "@/hooks/useNightMode";
@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         paddingBottom: "calc(0.625rem + var(--osk-height))",
       }}
     >
-      <RubiconBackground />
+      <CindraluxBackground />
       <StatusHeader onOpenSettings={() => setSettingsOpen(true)} />
       <main className="relative z-10 flex min-h-0 flex-1 flex-col gap-2.5">
         {children}

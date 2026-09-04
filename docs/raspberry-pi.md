@@ -6,11 +6,13 @@ Tastatur, ohne Mausklick — und kommt nach einem Stromausfall von allein zurüc
 Rechne mit **45 bis 60 Minuten**, davon die Hälfte Wartezeit beim Installieren.
 
 > **Dieser Pi ist bereits eingerichtet** (Stand 2. September 2026).
-> Hostname `rubicon`, Raspberry Pi 4 Model B Rev 1.5, Debian 13 (trixie),
-> Compositor labwc, Display 1920×1200. Der Rest dieser Anleitung beschreibt,
-> wie es dorthin kam — und wie du es auf einem zweiten Gerät wiederholst.
-> Was auf diesem Pi konkret gewählt wurde, steht jeweils als
-> *Auf diesem Pi:* am Abschnittsende.
+> Hostname `rubicon` (Umbenennung auf `cindralux` steht noch aus — braucht
+> `sudo hostnamectl set-hostname cindralux` mit dem Pi-Passwort, siehe
+> Abschnitt „Verbleibende manuelle Schritte" ganz unten), Raspberry Pi 4
+> Model B Rev 1.5, Debian 13 (trixie), Compositor labwc, Display 1920×1200.
+> Der Rest dieser Anleitung beschreibt, wie es dorthin kam — und wie du es
+> auf einem zweiten Gerät wiederholst. Was auf diesem Pi konkret gewählt
+> wurde, steht jeweils als *Auf diesem Pi:* am Abschnittsende.
 
 ---
 
@@ -89,8 +91,8 @@ später: `sudo apt install -y nodejs npm`, dann die PATH-Zeile aus
 Per Git (falls du das Projekt in ein Repository gelegt hast):
 
 ```bash
-git clone <dein-repo> ~/rubicon
-cd ~/rubicon
+git clone <dein-repo> ~/cindralux
+cd ~/cindralux
 ```
 
 Oder direkt vom Rechner aus kopieren:
@@ -99,7 +101,7 @@ Oder direkt vom Rechner aus kopieren:
 rsync -av --delete \
   --exclude node_modules --exclude dist --exclude .git \
   --exclude 'data/config.json' --exclude 'data/cache' \
-  ~/Projekte/Organisator/ pi@raspberrypi.local:~/rubicon/
+  ~/Projekte/Organisator/ pi@raspberrypi.local:~/cindralux/
 ```
 
 `data/config.json` ist bewusst ausgenommen — siehe Schritt 4.
@@ -109,7 +111,7 @@ rsync -av --delete \
 ## 3. Installieren und bauen
 
 ```bash
-cd ~/rubicon
+cd ~/cindralux
 npm install
 npm run build
 ```
@@ -144,15 +146,15 @@ Zwei Wege:
 **a) Datei einzeln und verschlüsselt kopieren**
 
 ```bash
-scp ~/Projekte/Organisator/data/config.json pi@raspberrypi.local:~/rubicon/data/
-chmod 600 ~/rubicon/data/config.json     # auf dem Pi
+scp ~/Projekte/Organisator/data/config.json pi@raspberrypi.local:~/cindralux/data/
+chmod 600 ~/cindralux/data/config.json     # auf dem Pi
 ```
 
 **b) Auf dem Pi neu eintragen** — Dashboard öffnen, Zahnrad, Adressen einfügen.
 Die Datei wird beim ersten Start mit Standardwerten angelegt.
 
 Alternativ können die Geheimnisse als Umgebungsvariablen in
-`~/rubicon/.env` stehen (`HA_TOKEN`, `AI_API_KEY`, …) und über die
+`~/cindralux/.env` stehen (`HA_TOKEN`, `AI_API_KEY`, …) und über die
 `EnvironmentFile`-Zeile der Unit geladen werden. Dann bleibt `config.json`
 frei von Zugangsdaten.
 
@@ -161,17 +163,17 @@ frei von Zugangsdaten.
 ## 5. Als Dienst einrichten
 
 ```bash
-sudo cp ~/rubicon/deploy/rubicon-dashboard.service /etc/systemd/system/
+sudo cp ~/cindralux/deploy/cindralux-dashboard.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now rubicon-dashboard
-systemctl status rubicon-dashboard
+sudo systemctl enable --now cindralux-dashboard
+systemctl status cindralux-dashboard
 ```
 
 Der Dienst startet beim Hochfahren, wartet aufs Netz und startet sich bei
 einem Absturz neu. Logs:
 
 ```bash
-journalctl -u rubicon-dashboard -f
+journalctl -u cindralux-dashboard -f
 ```
 
 Läuft dein Benutzer nicht `pi` oder liegt das Projekt woanders, passe in der
@@ -185,16 +187,16 @@ aktivierter automatischer Anmeldung ist das dasselbe wie beim Hochfahren:
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cat > ~/.config/systemd/user/rubicon-dashboard.service <<'UNIT'
+cat > ~/.config/systemd/user/cindralux-dashboard.service <<'UNIT'
 [Unit]
-Description=Rubicon Home Command Center
+Description=Cindralux Home Command Center
 # Kein After=network-online.target: Dieses Target gibt es im Benutzerkontext
 # nicht, die Zeile bliebe wirkungslos. Nötig ist sie auch nicht — das
 # Dashboard startet ohne Netz und zeigt zwischengespeicherte Termine.
 
 [Service]
 Type=simple
-WorkingDirectory=%h/rubicon
+WorkingDirectory=%h/cindralux
 Environment=NODE_ENV=production
 Environment=HOST=0.0.0.0
 Environment=PORT=4000
@@ -207,10 +209,10 @@ RestartSec=5
 WantedBy=default.target
 UNIT
 systemctl --user daemon-reload
-systemctl --user enable --now rubicon-dashboard
+systemctl --user enable --now cindralux-dashboard
 ```
 
-Logs dann mit `journalctl --user -u rubicon-dashboard -f`.
+Logs dann mit `journalctl --user -u cindralux-dashboard -f`.
 
 Prüfe, dass die automatische Anmeldung wirklich eingerichtet ist — sonst
 startet nichts:
@@ -250,18 +252,18 @@ sudo raspi-config
 
 ```bash
 mkdir -p ~/.config/autostart
-cp ~/rubicon/deploy/rubicon-kiosk.desktop ~/.config/autostart/
+cp ~/cindralux/deploy/cindralux-kiosk.desktop ~/.config/autostart/
 ```
 
-Falls dein Pfad nicht `/home/pi/rubicon` ist, die `Exec=`-Zeile anpassen.
+Falls dein Pfad nicht `/home/pi/cindralux` ist, die `Exec=`-Zeile anpassen.
 
 Greift der Autostart nicht, hängt es an der Sitzungsart:
 
 | Sitzung | Datei | Zeile |
 | --- | --- | --- |
-| labwc (Pi 5, neuere Bookworm) | `~/.config/labwc/autostart` | `/home/pi/rubicon/deploy/rubicon-kiosk.sh &` |
-| wayfire (Pi 4, Bookworm) | `~/.config/wayfire.ini`, Abschnitt `[autostart]` | `rubicon = /home/pi/rubicon/deploy/rubicon-kiosk.sh` |
-| X11 / LXDE | `~/.config/lxsession/LXDE-pi/autostart` | `@/home/pi/rubicon/deploy/rubicon-kiosk.sh` |
+| labwc (Pi 5, neuere Bookworm) | `~/.config/labwc/autostart` | `/home/pi/cindralux/deploy/cindralux-kiosk.sh &` |
+| wayfire (Pi 4, Bookworm) | `~/.config/wayfire.ini`, Abschnitt `[autostart]` | `cindralux = /home/pi/cindralux/deploy/cindralux-kiosk.sh` |
+| X11 / LXDE | `~/.config/lxsession/LXDE-pi/autostart` | `@/home/pi/cindralux/deploy/cindralux-kiosk.sh` |
 
 Welche läuft, verrät `echo $XDG_SESSION_TYPE` (`wayland` oder `x11`).
 
@@ -288,7 +290,7 @@ sudo reboot
 Sitzungsart, Display und Touch-Gerät musst du nicht raten — auf dem Pi:
 
 ```bash
-bash ~/rubicon/deploy/rubicon-check.sh
+bash ~/cindralux/deploy/cindralux-check.sh
 ```
 
 Das Skript liest nur aus und ändert nichts. Es nennt Modell, Architektur,
@@ -467,18 +469,18 @@ echo 30 | sudo tee /sys/class/backlight/*/brightness
 ## 10. Aktualisieren
 
 ```bash
-cd ~/rubicon
+cd ~/cindralux
 git pull                      # oder erneut rsync (ohne data/config.json!)
 npm install
 npm run build
-sudo systemctl restart rubicon-dashboard
+sudo systemctl restart cindralux-dashboard
 ```
 
 Das Dashboard im Browser lädt sich nicht von allein neu — Bildschirm berühren
 und `F5`, oder den Kiosk neu starten:
 
 ```bash
-pkill chromium; ~/rubicon/deploy/rubicon-kiosk.sh &
+pkill chromium; ~/cindralux/deploy/cindralux-kiosk.sh &
 ```
 
 ---
@@ -502,13 +504,13 @@ diesem Fehler nie betroffen.
 Zuerst immer:
 
 ```bash
-bash ~/rubicon/deploy/rubicon-check.sh
-journalctl -u rubicon-dashboard -n 50 --no-pager
+bash ~/cindralux/deploy/cindralux-check.sh
+journalctl -u cindralux-dashboard -n 50 --no-pager
 ```
 
 | Beobachtung | Ursache |
 | --- | --- |
-| Weiße Seite oder „Verbindung fehlgeschlagen" | Dienst läuft nicht — `journalctl -u rubicon-dashboard -n 50` |
+| Weiße Seite oder „Verbindung fehlgeschlagen" | Dienst läuft nicht — `journalctl -u cindralux-dashboard -n 50` |
 | `npm install` bricht mit „Killed" ab | Zu wenig RAM, Swap vergrößern (Schritt 3) |
 | Beim Start blockiert npm ein Installationsskript | Der Block `allowScripts` in der `package.json` gibt esbuild frei; er muss mitkopiert werden |
 | Kiosk startet nicht | Falsche Sitzungsart, siehe Tabelle in Schritt 6 |
@@ -529,3 +531,19 @@ journalctl -u rubicon-dashboard -n 50 --no-pager
   (WireGuard, Tailscale) statt einer Portfreigabe.
 - **Kein automatisches Update.** Ein Panel, das sich nachts selbst umbaut und
   danach nicht mehr startet, ist schlimmer als eines auf altem Stand.
+
+---
+
+## Verbleibende manuelle Schritte (Rebrand Rubicon → Cindralux)
+
+Alles, was ohne interaktives sudo-Passwort ging, ist bereits erledigt (Ordner,
+Dienst, Assets, Code). Ein einziger Schritt braucht das Passwort von Hand:
+
+```bash
+sudo hostnamectl set-hostname cindralux
+sudo systemctl restart avahi-daemon
+```
+
+Danach ist der Pi unter `cindralux.local` statt `rubicon.local` erreichbar —
+inklusive SSH (`ssh pi@cindralux.local`). Bis dahin funktioniert `rubicon.local`
+weiter wie gewohnt, es ist nur noch der alte Name für ein neu benanntes Projekt.

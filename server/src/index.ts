@@ -20,8 +20,8 @@ app.use(express.json({ limit: '256kb' }));
 
 app.use('/api', api);
 
-// Rubicon-Assets direkt aus /assets — dieselben Pfade wie im Dev-Server.
-app.use('/rubicon', express.static(`${ASSETS_DIR}/rubicon`, { maxAge: '1h' }));
+// Cindralux-Assets direkt aus /assets — dieselben Pfade wie im Dev-Server.
+app.use('/cindralux', express.static(`${ASSETS_DIR}/cindralux`, { maxAge: '1h' }));
 
 // Produktionsbetrieb: gebautes Frontend mit ausliefern, damit im Kiosk-Modus
 // nur ein einziger Prozess laeuft.
@@ -52,7 +52,7 @@ async function start(): Promise<void> {
   });
 
   app.listen(PORT, HOST, () => {
-    console.log(`\n  RUBICON Home Command Center — API`);
+    console.log(`\n  CINDRALUX Home Command Center — API`);
     console.log(`  http://${HOST}:${PORT}/api/health`);
     console.log(
       fs.existsSync(CLIENT_DIST_DIR)

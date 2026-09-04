@@ -190,9 +190,9 @@ function SystemSettings() {
               ausschalten. Führ auf dem Pi einmal aus:
             </p>
             <pre className="mt-2 overflow-x-auto rounded-[2px] bg-black/40 p-2 text-[10px] leading-relaxed text-zinc-400">
-              sudo cp ~/rubicon/deploy/rubicon-power.sudoers
-              /etc/sudoers.d/rubicon-power{"\n"}sudo chmod 440
-              /etc/sudoers.d/rubicon-power
+              sudo cp ~/cindralux/deploy/cindralux-power.sudoers
+              /etc/sudoers.d/cindralux-power{"\n"}sudo chmod 440
+              /etc/sudoers.d/cindralux-power
             </pre>
             <p className="mt-2 text-2xs text-zinc-500">
               Die Regel erlaubt ausschließlich Neustart und Herunterfahren —
@@ -1632,7 +1632,7 @@ function ConnectionSettings({
         <div className="mb-4">
           <Toggle
             label="GPT Live anbieten"
-            hint="Blendet im Assistenten den Umschalter „Rubicon Assistant / GPT Live“ ein."
+            hint="Blendet im Assistenten den Umschalter „Cindralux Assistant / GPT Live“ ein."
             checked={draft.ai.gptLive.enabled}
             onChange={(enabled) =>
               update({
@@ -1980,8 +1980,8 @@ function AppearanceSettings({ draft, update }: PaneProps) {
       </Section>
 
       <Section
-        title="Rubicon-Hintergrund"
-        description="Eigene Dateien in assets/rubicon/ ablegen und in src/theme/tokens.js ergänzen."
+        title="Cindralux-Hintergrund"
+        description="Eigene Dateien in assets/cindralux/ ablegen und in src/theme/tokens.js ergänzen."
       >
         <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
           {backgrounds.map((option) => (
@@ -1998,7 +1998,7 @@ function AppearanceSettings({ draft, update }: PaneProps) {
             >
               {option.file ? (
                 <img
-                  src={`/rubicon/${option.file}`}
+                  src={`/cindralux/${option.file}`}
                   alt=""
                   className="absolute inset-0 h-full w-full bg-surface-900 object-cover"
                   style={{ filter: "brightness(2.6) saturate(1.2)" }}

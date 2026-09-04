@@ -3,7 +3,7 @@
 # Sammelt alles, was für die Einrichtung auf dem Raspberry Pi wichtig ist:
 # Modell, System, Sitzungsart, Display und Touch-Eingabe.
 #
-# Aufruf auf dem Pi:   bash deploy/rubicon-check.sh
+# Aufruf auf dem Pi:   bash deploy/cindralux-check.sh
 #
 # Gibt nur aus, ändert nichts. Enthält keine Zugangsdaten — die Ausgabe
 # kann bedenkenlos weitergegeben werden.
@@ -77,8 +77,8 @@ else
   wert "Server" "antwortet nicht (noch nicht gestartet?)"
 fi
 if command -v systemctl >/dev/null; then
-  if systemctl cat rubicon-dashboard >/dev/null 2>&1; then
-    wert "Dienst" "$(systemctl is-active rubicon-dashboard 2>/dev/null)"
+  if systemctl cat cindralux-dashboard >/dev/null 2>&1; then
+    wert "Dienst" "$(systemctl is-active cindralux-dashboard 2>/dev/null)"
   else
     wert "Dienst" "nicht eingerichtet"
   fi

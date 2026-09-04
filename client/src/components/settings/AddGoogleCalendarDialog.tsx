@@ -168,10 +168,10 @@ export function AddGoogleCalendarDialog({
                   placeholder="marcus@gmail.com"
                   spellCheck={false}
                   autoCapitalize="off"
-                  list="rubicon-known-accounts"
+                  list="cindralux-known-accounts"
                   className="field"
                 />
-                <datalist id="rubicon-known-accounts">
+                <datalist id="cindralux-known-accounts">
                   {knownAccounts.map((entry) => (
                     <option key={entry} value={entry} />
                   ))}

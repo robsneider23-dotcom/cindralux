@@ -98,7 +98,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     apiKey: '',
     model: 'gpt-4o-mini',
     systemPrompt:
-      'Du bist RUBICON, der Assistent eines persönlichen Home Command Centers. ' +
+      'Du bist CINDRALUX, der Assistent eines persönlichen Home Command Centers. ' +
       'Antworte auf Deutsch, sachlich, knapp und ohne Floskeln. ' +
       'Der Text erscheint auf einem Touchscreen aus 1–2 Metern Entfernung: ' +
       'kurze Sätze, maximal fünf Zeilen, keine Markdown-Überschriften.',

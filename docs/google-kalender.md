@@ -21,7 +21,7 @@ tun — das Refresh-Token bleibt gültig, bis du den Zugriff selbst entziehst.
 1. [console.cloud.google.com](https://console.cloud.google.com) öffnen und mit
    dem Google-Konto anmelden, dessen Kalender du sehen willst.
 2. Oben in der Projektauswahl auf **Neues Projekt**.
-3. Name z. B. `Rubicon Dashboard`, dann **Erstellen**.
+3. Name z. B. `Cindralux Dashboard`, dann **Erstellen**.
 4. Warten, bis das Projekt oben ausgewählt ist.
 
 ## 2. Calendar-API aktivieren
@@ -37,7 +37,7 @@ Google verlangt das, bevor es einen OAuth-Client ausgibt.
 2. Nutzertyp **Extern** wählen, **Erstellen**.
    *(„Intern" gibt es nur mit Google Workspace.)*
 3. Ausfüllen:
-   - **App-Name**: `Rubicon Dashboard`
+   - **App-Name**: `Cindralux Dashboard`
    - **E-Mail-Adresse für Nutzersupport**: deine Adresse
    - **Kontaktdaten des Entwicklers**: dieselbe Adresse
 4. **Speichern und fortfahren**.
@@ -58,7 +58,7 @@ Google verlangt das, bevor es einen OAuth-Client ausgibt.
 2. Oben **+ Anmeldedaten erstellen → OAuth-Client-ID**.
 3. Anwendungstyp: **Webanwendung**.
    *(Nicht „Desktop" — wir brauchen eine feste Weiterleitungsadresse.)*
-4. Name z. B. `Rubicon lokal`.
+4. Name z. B. `Cindralux lokal`.
 5. Unter **Autorisierte Weiterleitungs-URIs** auf **+ URI hinzufügen** und
    genau das eintragen:
 
@@ -81,7 +81,7 @@ Google verlangt das, bevor es einen OAuth-Client ausgibt.
 4. Auf **Mit Google verbinden**. Es öffnet sich ein Fenster mit dem
    Google-Login.
 5. Konto wählen, bei der Warnung „Google hat diese App nicht überprüft" auf
-   **Erweitert → Weiter zu Rubicon Dashboard** und dann den Kalenderzugriff
+   **Erweitert → Weiter zu Cindralux Dashboard** und dann den Kalenderzugriff
    bestätigen.
 6. Das Fenster meldet „Google verbunden" und kann geschlossen werden.
 

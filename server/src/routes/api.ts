@@ -99,7 +99,7 @@ api.get(
 
     const payload: HealthResponse = {
       ok: true,
-      service: 'rubicon-home-command-center',
+      service: 'cindralux-home-command-center',
       version: '1.0.0',
       uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
       system: {

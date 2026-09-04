@@ -1,9 +1,9 @@
 {
-  "name": "rubicon-home-command-center",
+  "name": "cindralux-home-command-center",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
+  "description": "Cindralux — lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
   "workspaces": [
     "client",
     "server"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Startet das Dashboard im Vollbild-Kiosk mit Chromium.
 #
-# Ablegen als /home/pi/rubicon/deploy/rubicon-kiosk.sh, ausführbar machen,
+# Ablegen als /home/pi/cindralux/deploy/cindralux-kiosk.sh, ausführbar machen,
 # und aus der Autostart-Datei der Desktop-Sitzung aufrufen.
 
 set -euo pipefail
@@ -10,7 +10,7 @@ set -euo pipefail
 # der Server lauscht aber nur auf IPv4 (0.0.0.0). Chromium bevorzugt dann ::1,
 # scheitert und zeigt eine weiße Seite — curl weicht auf IPv4 aus, Chromium
 # nicht.
-URL="${RUBICON_URL:-http://127.0.0.1:4000}"
+URL="${CINDRALUX_URL:-http://127.0.0.1:4000}"
 PROFILE="$HOME/.config/chromium/Default/Preferences"
 
 # Auf Raspberry Pi OS heißt die Binärdatei mal so, mal so.
@@ -45,9 +45,9 @@ if [ -n "${WAYLAND_DISPLAY:-}" ]; then
 fi
 
 # Nur für gezielte Fehlersuche per Chrome DevTools Protocol — bewusst kein
-# Dauerzustand: RUBICON_DEBUG=1 vor dem Aufruf setzen.
+# Dauerzustand: CINDRALUX_DEBUG=1 vor dem Aufruf setzen.
 DEBUG=()
-if [ "${RUBICON_DEBUG:-}" = "1" ]; then
+if [ "${CINDRALUX_DEBUG:-}" = "1" ]; then
   DEBUG=(--remote-debugging-port=9222 --remote-allow-origins=*)
 fi
 

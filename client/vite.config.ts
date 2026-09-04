@@ -13,8 +13,8 @@ export default defineConfig({
       '@shared': path.resolve(here, '../shared'),
     },
   },
-  // Rubicon-Assets liegen ausserhalb von /client und werden unveraendert
-  // unter /rubicon/... ausgeliefert — genau wie spaeter durch Express.
+  // Cindralux-Assets liegen ausserhalb von /client und werden unveraendert
+  // unter /cindralux/... ausgeliefert — genau wie spaeter durch Express.
   publicDir: path.resolve(here, '../assets'),
   server: {
     port: 5173,

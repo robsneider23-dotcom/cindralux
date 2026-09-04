@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="640" height="640" aria-hidden="true">
+  <!-- Grossflaechiges, sehr dezentes Wasserzeichen fuer die Dashboard-Ecke.
+       Nur die Facettenkanten des Emblems als duenne Linien — kein Fuellton,
+       damit es hinter Inhalten nicht auftraegt. -->
+  <polygon points="32,10 51.1,21 51.1,43 32,54 12.9,43 12.9,21" fill="none" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="32" y1="32" x2="32" y2="10" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="32" y1="32" x2="51.1" y2="21" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="32" y1="32" x2="51.1" y2="43" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="32" y1="32" x2="32" y2="54" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="32" y1="32" x2="12.9" y2="43" stroke="#ff5a1f" stroke-width="0.7"/>
+  <line x1="32" y1="32" x2="12.9" y2="21" stroke="#ff5a1f" stroke-width="0.7"/>
+</svg>

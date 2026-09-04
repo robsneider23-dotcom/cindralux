@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Rubicon Kiosk
+Name=Cindralux Kiosk
 Comment=Startet das Dashboard im Vollbild
-Exec=/home/pi/rubicon/deploy/rubicon-kiosk.sh
+Exec=/home/pi/cindralux/deploy/cindralux-kiosk.sh
 Terminal=false
 X-GNOME-Autostart-enabled=true

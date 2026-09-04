@@ -1,7 +1,7 @@
-# Rubicon-Assets
+# Cindralux-Assets
 
 Alle Dateien hier sind **Platzhalter** und lassen sich 1:1 durch echte
-Rubicon-Assets ersetzen — Dateinamen beibehalten, dann ändert sich im Code nichts.
+Cindralux-Assets ersetzen — Dateinamen beibehalten, dann ändert sich im Code nichts.
 
 | Datei | Verwendung | Empfohlenes Format |
 | --- | --- | --- |
@@ -20,4 +20,4 @@ Rubicon-Assets ersetzen — Dateinamen beibehalten, dann ändert sich im Code ni
 3. Der neue Hintergrund erscheint automatisch in den Einstellungen unter *Darstellung*.
 
 Die Dateien werden sowohl im Dev-Server (Vite `publicDir`) als auch vom Express-Server
-unter `/rubicon/<datei>` ausgeliefert.
+unter `/cindralux/<datei>` ausgeliefert.

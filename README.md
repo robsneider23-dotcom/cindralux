@@ -1,4 +1,4 @@
-# RUBICON — Home Command Center
+# CINDRALUX — Home Command Center
 
 Lokales Touchscreen-Dashboard für einen Raspberry Pi im Chromium-Kiosk-Modus:
 Kalender aus mehreren Quellen, Uhrzeit, Wetter, Müllabholung, Smart-Home-Schnellaktionen
@@ -57,7 +57,7 @@ server/     Express + TypeScript (läuft über tsx, kein Build-Schritt nötig)
   src/routes/api.ts  alle Endpunkte
 shared/     types.ts — gemeinsames Datenmodell, reine Typen
 data/       config.json (Laufzeit), seeds/ (Demodaten), cache/
-assets/     rubicon/ — Logo, Wasserzeichen, Hintergründe
+assets/     cindralux/ — Logo, Wasserzeichen, Hintergründe
 ```
 
 `shared/types.ts` enthält bewusst **nur Typen**. Dadurch werden alle
@@ -408,7 +408,7 @@ Tagesbriefing die echte Lage beschreibt.
 
 Der Assistent hat oben einen Umschalter:
 
-**1. Rubicon Assistant** — das eigene Panel: Textfeld, Tagesbriefing, „Was steht
+**1. Cindralux Assistant** — das eigene Panel: Textfeld, Tagesbriefing, „Was steht
 heute an?", Smart-Home-Vorschlag, Timer per Sprache und der Mikrofon-Knopf für
 den Sprachmodus. Nutzt eine OpenAI-kompatible API oder antwortet aus den lokalen
 Daten, wenn kein Key hinterlegt ist.
@@ -570,10 +570,10 @@ dort greifen zwei bewusste Entscheidungen:
   Schnellaktionen. Auf einem 1024 × 600-Touchpanel verdeckt die
   Bildschirmtastatur ohnehin das halbe Dashboard.
 
-### Eigene Rubicon-Assets
+### Eigene Cindralux-Assets
 
-Dateien in `assets/rubicon/` ersetzen — Namen beibehalten, dann ändert sich im
-Code nichts. Details und Maße stehen in `assets/rubicon/README.md`.
+Dateien in `assets/cindralux/` ersetzen — Namen beibehalten, dann ändert sich im
+Code nichts. Details und Maße stehen in `assets/cindralux/README.md`.
 
 ---
 

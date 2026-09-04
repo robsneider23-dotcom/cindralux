@@ -40,7 +40,7 @@ weiter unten fortfahren.
    Berechtigungsbereich, und der Import schlägt mit einer
    Berechtigungsmeldung fehl.
 3. Neu verbinden: Konto wählen, bei der Warnung „Google hat diese App nicht
-   überprüft" auf **Erweitert → Weiter zu Rubicon Dashboard**, danach sowohl
+   überprüft" auf **Erweitert → Weiter zu Cindralux Dashboard**, danach sowohl
    den Kalender- als auch den Fotos-Zugriff bestätigen.
 
 ## 3. Bilder auswählen

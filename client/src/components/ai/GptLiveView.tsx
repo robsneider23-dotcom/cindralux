@@ -126,7 +126,7 @@ export function GptLiveView() {
             ChatGPT lässt sich nicht in dieses Dashboard einbetten — chatgpt.com verbietet die
             Anzeige in einem Rahmen, und daran führt kein zulässiger Weg vorbei. Deshalb ein
             eigenes Fenster. Für Sprache im Dashboard selbst gibt es den{' '}
-            <span className="text-zinc-400">Rubicon Assistant</span> mit dem Mikrofon-Knopf.
+            <span className="text-zinc-400">Cindralux Assistant</span> mit dem Mikrofon-Knopf.
           </p>
         </div>
       </div>

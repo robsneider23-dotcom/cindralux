@@ -18,7 +18,7 @@ export const surface = {
 };
 
 /**
- * Die drei Theme-Modi. `ember` ist der Rubicon-Standard, `crimson` faellt
+ * Die drei Theme-Modi. `ember` ist der Cindralux-Standard, `crimson` faellt
  * tiefer ins Rot, `graphite` nimmt die Farbe fast ganz zurueck.
  */
 export const accents = {
@@ -58,7 +58,7 @@ export const trashPalette = {
   sperrmuell: '#c084fc',
 };
 
-/** Auswaehlbare Hintergruende — siehe assets/rubicon/README.md. */
+/** Auswaehlbare Hintergruende — siehe assets/cindralux/README.md. */
 export const backgrounds = [
   { file: 'backdrop-topo.svg', label: 'Topografie' },
   { file: 'backdrop-waves.svg', label: 'Wellen' },

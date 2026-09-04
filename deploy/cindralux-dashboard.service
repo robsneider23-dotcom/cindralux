@@ -1,14 +1,14 @@
-# systemd-Unit für den Rubicon-Server.
+# systemd-Unit für den Cindralux-Server.
 #
-# Ablegen als /etc/systemd/system/rubicon-dashboard.service
-# Danach:  sudo systemctl daemon-reload && sudo systemctl enable --now rubicon-dashboard
+# Ablegen als /etc/systemd/system/cindralux-dashboard.service
+# Danach:  sudo systemctl daemon-reload && sudo systemctl enable --now cindralux-dashboard
 #
 # Läuft als normaler Nutzer, nicht als root — der Dienst braucht keine
 # Sonderrechte, und data/config.json enthält Geheimnisse.
 
 [Unit]
-Description=Rubicon Home Command Center
-Documentation=file:///home/pi/rubicon/docs/raspberry-pi.md
+Description=Cindralux Home Command Center
+Documentation=file:///home/pi/cindralux/docs/raspberry-pi.md
 # Erst starten, wenn das Netz steht: Kalender und Wetter werden beim Start geholt.
 After=network-online.target
 Wants=network-online.target
@@ -21,7 +21,7 @@ StartLimitIntervalSec=0
 Type=simple
 User=pi
 Group=pi
-WorkingDirectory=/home/pi/rubicon
+WorkingDirectory=/home/pi/cindralux
 
 # 0.0.0.0 macht das Dashboard auch vom Handy im WLAN erreichbar.
 # Für reinen Kiosk-Betrieb 127.0.0.1 eintragen — dann kommt niemand sonst dran.
@@ -34,7 +34,7 @@ Environment=PORT=4000
 Environment=PATH=/home/pi/.local/node/bin:/usr/local/bin:/usr/bin:/bin
 
 # Geheimnisse können statt in data/config.json auch hier stehen:
-# EnvironmentFile=-/home/pi/rubicon/.env
+# EnvironmentFile=-/home/pi/cindralux/.env
 
 ExecStart=/home/pi/.local/node/bin/npm start
 Restart=always
@@ -45,11 +45,11 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=read-only
-ReadWritePaths=/home/pi/rubicon/data
+ReadWritePaths=/home/pi/cindralux/data
 
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=rubicon
+SyslogIdentifier=cindralux
 
 [Install]
 WantedBy=multi-user.target

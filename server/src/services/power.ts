@@ -11,10 +11,10 @@ const run = promisify(execFile);
  * Neustart, Herunterfahren und Kiosk-Beenden des Geraets.
  *
  * Neustart/Herunterfahren brauchen Root und damit eine einmalige sudo-Regel
- * (deploy/rubicon-power.sudoers) — der Dienst laeuft als normaler Benutzer.
+ * (deploy/cindralux-power.sudoers) — der Dienst laeuft als normaler Benutzer.
  * "Kiosk beenden" braucht das NICHT: Chromium laeuft als derselbe Benutzer
  * wie der Server, ihn zu beenden ist kein Rechteproblem. Die eigentliche
- * Huerde ist die Neustart-Schleife in deploy/rubicon-kiosk.sh, die Chromium
+ * Huerde ist die Neustart-Schleife in deploy/cindralux-kiosk.sh, die Chromium
  * nach jedem Absturz von selbst zurueckholt — genau das soll hier einmalig
  * NICHT passieren. Die Sentinel-Datei ist das Signal dafuer: das Skript
  * prueft sie vor jedem Neustartversuch und beendet sich selbst, statt
@@ -32,8 +32,8 @@ const EXIT_SENTINEL = path.join(DATA_DIR, '.exit-kiosk');
 
 const HINWEIS =
   'Der Dienst darf das Geraet nicht neu starten. Einmalig einrichten: ' +
-  'sudo cp ~/rubicon/deploy/rubicon-power.sudoers /etc/sudoers.d/rubicon-power ' +
-  '&& sudo chmod 440 /etc/sudoers.d/rubicon-power';
+  'sudo cp ~/cindralux/deploy/cindralux-power.sudoers /etc/sudoers.d/cindralux-power ' +
+  '&& sudo chmod 440 /etc/sudoers.d/cindralux-power';
 
 export interface PowerResult {
   ok: boolean;
@@ -78,7 +78,7 @@ export async function powerAction(action: PowerAction): Promise<PowerResult> {
 
 async function exitKiosk(): Promise<PowerResult> {
   try {
-    // Leere Datei genuegt — deploy/rubicon-kiosk.sh prueft nur, ob sie existiert.
+    // Leere Datei genuegt — deploy/cindralux-kiosk.sh prueft nur, ob sie existiert.
     await writeFile(EXIT_SENTINEL, '');
   } catch (error) {
     return { ok: false, message: `Sentinel-Datei nicht schreibbar: ${describeError(error)}` };
@@ -93,6 +93,6 @@ async function exitKiosk(): Promise<PowerResult> {
     ok: true,
     message:
       'Kiosk wird beendet, der Bildschirm zeigt danach den bloßen Desktop. ' +
-      'Zurueck zum Dashboard: deploy/rubicon-kiosk.sh erneut starten oder den Pi neu starten.',
+      'Zurueck zum Dashboard: deploy/cindralux-kiosk.sh erneut starten oder den Pi neu starten.',
   };
 }

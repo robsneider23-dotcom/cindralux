@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Vereinfachte 4-Facetten-Fassung des Emblems — bei 16-32px verschwinden
+       feine Kanten, deshalb weniger Facetten und kraeftigerer Kontrast als
+       im Haupt-Logo. -->
+  <rect width="64" height="64" rx="10" fill="#0a0a0a"/>
+  <polygon points="32,32 32,10 52,32" fill="#ff8a52"/>
+  <polygon points="32,32 52,32 32,54" fill="#ff5a1f"/>
+  <polygon points="32,32 32,54 12,32" fill="#a8360f"/>
+  <polygon points="32,32 12,32 32,10" fill="#ff5a1f"/>
+  <polygon points="32,10 52,32 32,54 12,32" fill="none" stroke="#ff3c12" stroke-width="1.4" opacity="0.4"/>
+</svg>

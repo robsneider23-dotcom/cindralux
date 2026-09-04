@@ -53,13 +53,13 @@ export function StatusHeader({
       {/* Marke */}
       <div className="flex shrink-0 items-center gap-3.5">
         <img
-          src="/rubicon/logo-mark.svg"
+          src="/cindralux/logo-mark.svg"
           alt=""
           className="h-11 w-11 shrink-0 short:h-9 short:w-9"
         />
         <div className="hidden min-w-0 leading-none sm:block">
           <div className="text-[clamp(0.95rem,1.4vw,1.2rem)] font-semibold tracking-[0.2em] text-zinc-100">
-            RUBICON
+            CINDRALUX
           </div>
           <div className="label-dim mt-1.5">Home Command Center</div>
         </div>

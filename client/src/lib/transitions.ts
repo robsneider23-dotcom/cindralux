@@ -186,7 +186,7 @@ export const TRANSITIONS: TransitionSpec[] = [
   {
     id: 'scanline',
     label: 'Abtastzeile',
-    hint: 'Eine Ember-Linie schreibt das Bild auf — Rubicon-typisch.',
+    hint: 'Eine Ember-Linie schreibt das Bild auf — Cindralux-typisch.',
     duration: 2400,
     enter: `tr-scanline 2400ms linear both`,
     leave: `tr-fade-out 2400ms ${EASE} both`,
