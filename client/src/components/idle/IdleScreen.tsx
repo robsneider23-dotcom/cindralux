@@ -137,10 +137,13 @@ export function IdleScreen({
                       Sekunden sind nur ein leises Lebenszeichen darin.
                       Nicht top-1/2: Die Mitte des Glyphenkastens ist nicht die
                       Mitte der Luecke — der Doppelpunkt sitzt in seinem Kasten
-                      etwas hoch, die Sekunden klebten dort am oberen Punkt.
-                      Nachgemessen liegt der Zwischenraum bei knapp 55 %. */}
+                      etwas hoch. Per getBoundingClientRect() vermessen statt
+                      geschaetzt: oberer Punkt endet bei 43.9% der Kastenhoehe,
+                      unterer beginnt bei 72.1% — die Mitte der Luecke liegt
+                      exakt bei 58%, nicht bei 55% (das klebte sichtbar am
+                      oberen Punkt, ca. 5px zu hoch). */}
                   {showSeconds && (
-                    <span className="digits absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 text-[clamp(0.75rem,1.6vw,1.35rem)] font-light leading-none text-accent/70">
+                    <span className="digits absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 text-[clamp(0.75rem,1.6vw,1.35rem)] font-light leading-none text-accent/70">
                       {String(now.getSeconds()).padStart(2, '0')}
                     </span>
                   )}
