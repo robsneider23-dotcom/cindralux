@@ -5,11 +5,9 @@ Tastatur, ohne Mausklick — und kommt nach einem Stromausfall von allein zurüc
 
 Rechne mit **45 bis 60 Minuten**, davon die Hälfte Wartezeit beim Installieren.
 
-> **Dieser Pi ist bereits eingerichtet** (Stand 2. September 2026).
-> Hostname `rubicon` (Umbenennung auf `cindralux` steht noch aus — braucht
-> `sudo hostnamectl set-hostname cindralux` mit dem Pi-Passwort, siehe
-> Abschnitt „Verbleibende manuelle Schritte" ganz unten), Raspberry Pi 4
-> Model B Rev 1.5, Debian 13 (trixie), Compositor labwc, Display 1920×1200.
+> **Dieser Pi ist bereits eingerichtet** (Stand 5. September 2026).
+> Hostname `cindralux`, Raspberry Pi 4 Model B Rev 1.5, Debian 13 (trixie),
+> Compositor labwc, Display 1920×1200.
 > Der Rest dieser Anleitung beschreibt, wie es dorthin kam — und wie du es
 > auf einem zweiten Gerät wiederholst. Was auf diesem Pi konkret gewählt
 > wurde, steht jeweils als *Auf diesem Pi:* am Abschnittsende.
@@ -534,16 +532,16 @@ journalctl -u cindralux-dashboard -n 50 --no-pager
 
 ---
 
-## Verbleibende manuelle Schritte (Rebrand Rubicon → Cindralux)
+## Hostname setzen
 
-Alles, was ohne interaktives sudo-Passwort ging, ist bereits erledigt (Ordner,
-Dienst, Assets, Code). Ein einziger Schritt braucht das Passwort von Hand:
+Für einen sauberen Namen im Heimnetz (`cindralux.local` statt der IP):
 
 ```bash
 sudo hostnamectl set-hostname cindralux
 sudo systemctl restart avahi-daemon
 ```
 
-Danach ist der Pi unter `cindralux.local` statt `rubicon.local` erreichbar —
-inklusive SSH (`ssh pi@cindralux.local`). Bis dahin funktioniert `rubicon.local`
+Danach ist der Pi unter `cindralux.local` erreichbar — inklusive SSH
+(`ssh pi@cindralux.local`). Kollidiert der Name mit einem anderen Gerät im
+selben Netz, hängt Avahi automatisch eine Zahl an (`cindralux-2.local`).
 weiter wie gewohnt, es ist nur noch der alte Name für ein neu benanntes Projekt.

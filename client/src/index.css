@@ -100,7 +100,7 @@
     --accent-soft: 255 138 82;
     --accent-hot: 255 60 18;
     --grid-line: rgb(var(--hairline) / 0.02);
-    /* Deckkraft des Rubicon-Hintergrunds, aus den Einstellungen. */
+    /* Deckkraft des Cindralux-Hintergrunds, aus den Einstellungen. */
     --backdrop-opacity: 0.5;
   }
 
