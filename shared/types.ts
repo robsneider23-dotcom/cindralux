@@ -995,6 +995,13 @@ export interface PhotoItem {
   takenAt?: string;
   /** Manuell vergebene Personenmarkierung, fuer die "Person"-Reihenfolge. */
   person?: string;
+  /**
+   * Bildausschnitt fuer die Diashow, als CSS-`object-position`-Prozentwerte
+   * (0–100, Ursprung oben links). Fehlt er, zeigt die Diashow die Bildmitte —
+   * bei Motiven, die nicht mittig sitzen, schneidet ein reiner Mittenausschnitt
+   * sonst genau das Wichtige ab.
+   */
+  focus?: { x: number; y: number };
 }
 
 export interface PhotoLibrary {

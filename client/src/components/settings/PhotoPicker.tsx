@@ -1,9 +1,10 @@
-import { Check, CloudDownload, FolderOpen, Loader2, RefreshCw } from 'lucide-react';
+import { Check, CloudDownload, Crop, FolderOpen, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import type { GoogleStatus, PhotoLibrary } from '@shared/types';
+import type { GoogleStatus, PhotoItem, PhotoLibrary } from '@shared/types';
 import { api } from '@/lib/api';
 import { cx } from '@/lib/utils';
 import { Field } from './SettingsControls';
+import { FocusPointEditor } from './FocusPointEditor';
 
 /**
  * Bildauswahl für die Diashow.
@@ -35,6 +36,7 @@ export function PhotoPicker({
   const [googleStatus, setGoogleStatus] = useState<GoogleStatus | null>(null);
   const [googleBusy, setGoogleBusy] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<PhotoItem | null>(null);
 
   const load = useCallback(async () => {
     setBusy(true);
@@ -122,6 +124,15 @@ export function PhotoPicker({
       setLibrary(await api.setPhotoPerson(name, person));
     } catch {
       // Ein einzelnes fehlgeschlagenes Speichern ist kein Drama — Feld bleibt einfach stehen.
+    }
+  };
+
+  const saveFocus = async (focus: { x: number; y: number } | null) => {
+    if (!editing) return;
+    try {
+      setLibrary(await api.setPhotoFocus(editing.name, focus));
+    } finally {
+      setEditing(null);
     }
   };
 
@@ -229,7 +240,16 @@ export function PhotoPicker({
                     )}
                     title={photo.name}
                   >
-                    <img src={photo.url} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={photo.url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      style={
+                        photo.focus
+                          ? { objectPosition: `${photo.focus.x}% ${photo.focus.y}%` }
+                          : undefined
+                      }
+                    />
                     {photo.origin === 'google' && (
                       <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-zinc-300">
                         <CloudDownload size={12} strokeWidth={2} />
@@ -243,6 +263,14 @@ export function PhotoPicker({
                     <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/90 to-transparent px-2 py-1 text-left text-3xs text-zinc-300">
                       {photo.name}
                     </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(photo)}
+                    className="touchable flex min-h-[34px] items-center justify-center gap-1.5 rounded-[3px] border border-white/[0.08] bg-white/[0.02] text-3xs text-zinc-400 active:border-accent/40 active:text-accent-soft"
+                  >
+                    <Crop size={12} strokeWidth={1.8} />
+                    {photo.focus ? 'Ausschnitt ändern' : 'Ausschnitt wählen'}
                   </button>
                   <input
                     defaultValue={photo.person ?? ''}
@@ -259,6 +287,14 @@ export function PhotoPicker({
             })}
           </div>
         </>
+      )}
+
+      {editing && (
+        <FocusPointEditor
+          photo={editing}
+          onCancel={() => setEditing(null)}
+          onSave={(focus) => void saveFocus(focus)}
+        />
       )}
     </>
   );

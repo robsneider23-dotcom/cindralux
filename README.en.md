@@ -41,11 +41,10 @@ slideshow images, ten dashboard layout presets and five color-and-font
 theme presets, a fully local shopping list/notes panel, and a WebAudio-based
 timer/alarm system that needs no sound files.
 
-**Where this is headed:** a movable crop frame per photo in the slideshow
-picker, a Ken Burns effect with alternating pan directions instead of one
-fixed zoom, public-transport departures and commute time, and a wake word
-for voice mode instead of a button press. See *Next steps* at the bottom for
-the current state of each, and issues/PRs are welcome.
+**Where this is headed:** a Ken Burns effect with alternating pan directions
+instead of one fixed zoom, public-transport departures and commute time,
+and a wake word for voice mode instead of a button press. See *Next steps*
+at the bottom for the current state of each, and issues/PRs are welcome.
 
 ---
 
@@ -486,7 +485,7 @@ deliberately do not — they'd have expired by the time of a restart anyway.
 
 Ambient mode (see *Night dimming and burn-in protection*) can show a photo
 slideshow between the clock and the daily overview. Under *Settings →
-Appearance → Photos* there are two sources, which can be mixed:
+Idle mode → Photos* there are two sources, which can be mixed:
 
 - **Local folder** (`data/photos/` by default, changeable). Just copy
   pictures into it — jpg, png, webp, avif, gif and svg are recognized. Works
@@ -518,6 +517,12 @@ Appearance → Photos* there are two sources, which can be mixed:
 
 In both cases, the tile selection in Settings decides which photos the
 slideshow actually shows — with nothing selected, all of them play.
+
+**Crop.** A photo fills the screen via `object-fit: cover` — a plain center
+crop unless told otherwise. "Choose crop" on each tile lets you drag a
+bright frame, sized to the actual aspect ratio of the screen you're using
+right now, over the photo; the slideshow then shows exactly what sat inside
+the frame. Without a choice, it stays centered.
 
 ### Shopping list & notes
 
@@ -780,10 +785,11 @@ REST request per tile/sensor on every client poll; REST remains the
 fallback while the connection isn't up yet. Tested live against a real HA
 instance.
 
+A movable crop frame per photo in the slideshow picker is done too (see
+*Photos for the slideshow*).
+
 Open:
 
-- A movable crop frame per photo in the slideshow picker (currently a fixed
-  center crop via `object-cover`).
 - A slideshow Ken Burns effect with several, alternating pan directions
   instead of one fixed zoom-in.
 - Public-transport departures and commute time to work.

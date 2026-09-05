@@ -99,7 +99,10 @@ export function PhotoSlideshow({
           src={leaving.url}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
-          style={spec.leave ? { animation: spec.leave } : undefined}
+          style={{
+            animation: spec.leave,
+            objectPosition: leaving.focus ? `${leaving.focus.x}% ${leaving.focus.y}%` : undefined,
+          }}
         />
       )}
 
@@ -109,7 +112,10 @@ export function PhotoSlideshow({
           src={current.url}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ animation: spec.enter }}
+          style={{
+            animation: spec.enter,
+            objectPosition: current.focus ? `${current.focus.x}% ${current.focus.y}%` : undefined,
+          }}
         />
       )}
     </div>

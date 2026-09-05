@@ -42,9 +42,8 @@ fünf Farb-und-Schrift-Design-Vorlagen, ein vollständig lokales
 Einkaufslisten-/Notizen-Panel und ein per WebAudio erzeugter Timer/Wecker,
 der keine Audiodatei braucht.
 
-**Wohin sich das entwickelt:** ein verschiebbarer Bildausschnitt-Rahmen pro
-Foto in der Diashow-Auswahl, ein Ken-Burns-Effekt mit wechselnden statt einer
-festen Zoom-Richtung, ÖPNV-Abfahrten und Fahrzeit zur Arbeit, sowie ein
+**Wohin sich das entwickelt:** ein Ken-Burns-Effekt mit wechselnden statt
+einer festen Zoom-Richtung, ÖPNV-Abfahrten und Fahrzeit zur Arbeit, sowie ein
 Weckwort statt Knopfdruck für den Sprachmodus. Der Stand dazu steht unten
 unter *Nächste Schritte* — Issues und Pull Requests sind willkommen.
 
@@ -457,8 +456,8 @@ bewusst nicht — sie wären nach einem Neustart ohnehin abgelaufen.
 ### Fotos für die Diashow
 
 Der Ruhemodus (siehe *Nachtabsenkung und Einbrennschutz*) kann zwischen Uhr und
-Tagesübersicht eine Bilder-Diashow zeigen. Unter *Einstellungen → Darstellung →
-Fotos* gibt es zwei Quellen, die sich mischen lassen:
+Tagesübersicht eine Bilder-Diashow zeigen. Unter *Einstellungen → Ruhemodus →
+Bilder* gibt es zwei Quellen, die sich mischen lassen:
 
 - **Lokaler Ordner** (`data/photos/` per Default, änderbar). Bilder einfach
   hineinkopieren — jpg, png, webp, avif, gif und svg werden erkannt. Läuft
@@ -479,6 +478,13 @@ Fotos* gibt es zwei Quellen, die sich mischen lassen:
 
 In beiden Fällen entscheidet die Kachel-Auswahl in den Einstellungen, welche
 Bilder die Diashow tatsächlich zeigt — ohne jede Auswahl laufen alle.
+
+**Bildausschnitt.** Ein Foto füllt den Bildschirm per `object-fit: cover` —
+ohne weitere Angabe also mittig zugeschnitten. Bei „Ausschnitt wählen" an
+jeder Kachel lässt sich ein heller Rahmen im tatsächlichen Seitenverhältnis
+des gerade genutzten Bildschirms über das Bild ziehen; die Diashow zeigt
+danach genau das, was im Rahmen lag. Ohne eigene Wahl bleibt es bei der
+Bildmitte.
 
 ### Einkaufsliste & Notizen
 
@@ -735,10 +741,11 @@ REST-Requests je Kachel/Sensor bei jedem Client-Poll, REST bleibt Fallback,
 solange die Verbindung noch nicht steht. Live gegen eine echte HA-Instanz
 getestet.
 
+Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl ist ebenfalls
+fertig (siehe *Fotos für die Diashow*).
+
 Offen:
 
-- Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl (aktuell fester
-  Mittenausschnitt, `object-cover`).
 - Ken-Burns-Effekt der Diashow mit mehreren, wechselnden Richtungen statt eines
   festen Zoom-Ins.
 - ÖPNV-Abfahrten und Fahrzeit zur Arbeit.

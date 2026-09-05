@@ -33,6 +33,7 @@ import {
   importGooglePickerSession,
   listPhotos,
   resolvePhotoPath,
+  setPhotoFocus,
   setPhotoPerson,
   startGooglePickerSession,
 } from '../services/photos.ts';
@@ -499,6 +500,23 @@ api.patch(
     try {
       const person = String((req.body as { person?: string } | undefined)?.person ?? '');
       await setPhotoPerson(String(req.params.name), person);
+      res.json(await listPhotos());
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+    }
+  }),
+);
+
+/**
+ * Bildausschnitt eines Bilds setzen — vom Rahmen-Editor in den Einstellungen.
+ * Ohne `focus` im Body (oder `null`) geht es zurueck auf die Bildmitte.
+ */
+api.patch(
+  '/photos/:name/focus',
+  route(async (req, res) => {
+    try {
+      const focus = (req.body as { focus?: { x: number; y: number } | null } | undefined)?.focus;
+      await setPhotoFocus(String(req.params.name), focus ?? undefined);
       res.json(await listPhotos());
     } catch (error) {
       res.status(400).json({ error: error instanceof Error ? error.message : String(error) });

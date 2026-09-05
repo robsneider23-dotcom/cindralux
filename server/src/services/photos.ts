@@ -78,6 +78,8 @@ interface PhotoMeta {
   takenAt?: string;
   /** Manuell vergebene Personenmarkierung. */
   person?: string;
+  /** Bildausschnitt als object-position-Prozente (0–100), siehe shared/types.ts. */
+  focus?: { x: number; y: number };
 }
 
 async function readMeta(dir: string): Promise<Record<string, PhotoMeta>> {
@@ -145,6 +147,7 @@ export async function listPhotos(): Promise<PhotoLibrary> {
         selected: chosen.size === 0 || chosen.has(id),
         takenAt,
         person: entryMeta?.person,
+        focus: entryMeta?.focus,
       };
     }),
   );
@@ -171,6 +174,33 @@ export async function setPhotoPerson(name: string, person: string): Promise<void
 
   if (trimmed) entry.person = trimmed;
   else delete entry.person;
+
+  if (Object.keys(entry).length === 0) delete meta[name];
+  else meta[name] = entry;
+
+  await writeMeta(dir, meta);
+}
+
+/**
+ * Bildausschnitt setzen oder loeschen (ohne Argument: zurueck auf Bildmitte).
+ * `x`/`y` sind object-position-Prozente (0–100), vom Rahmen-Editor berechnet.
+ */
+export async function setPhotoFocus(name: string, focus?: { x: number; y: number }): Promise<void> {
+  const file = await resolvePhotoPath(name);
+  if (!file) throw new Error('Bild nicht gefunden');
+
+  const dir = await resolveLocalDir();
+  const meta = await readMeta(dir);
+  const entry = { ...meta[name] };
+
+  if (focus) {
+    entry.focus = {
+      x: Math.round(Math.min(100, Math.max(0, focus.x)) * 10) / 10,
+      y: Math.round(Math.min(100, Math.max(0, focus.y)) * 10) / 10,
+    };
+  } else {
+    delete entry.focus;
+  }
 
   if (Object.keys(entry).length === 0) delete meta[name];
   else meta[name] = entry;

@@ -128,6 +128,11 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ person }),
     }),
+  setPhotoFocus: (name: string, focus: { x: number; y: number } | null) =>
+    request<PhotoLibrary>(`/photos/${encodeURIComponent(name)}/focus`, {
+      method: 'PATCH',
+      body: JSON.stringify({ focus }),
+    }),
 
   googlePhotosStartSession: () =>
     post<GooglePickerSession>('/google/photos/session'),
