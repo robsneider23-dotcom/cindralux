@@ -1,4 +1,4 @@
-import { Check, Loader2, Plug, X } from "lucide-react";
+import { Check, ChevronRight, Loader2, Plug, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import type { TestResult } from "@/lib/api";
 import { cx } from "@/lib/utils";
@@ -26,31 +26,83 @@ export function Field({
   );
 }
 
+/**
+ * Aufklappbarer Abschnitt der Einstellungen.
+ *
+ * Eingeklappt zeigt ein Tab nur noch seine Überschriften — auf 1024×600 ist
+ * das der Unterschied zwischen Suchen und Finden. Der Inhalt bleibt dabei
+ * bewusst im DOM (`hidden` statt Ausbauen): Abschnitte wie die
+ * Google-Verbindung halten eigenen Zustand (halb eingetipptes Secret,
+ * geladene Kalenderliste), der beim Zuklappen sonst verloren ginge.
+ *
+ * `action` sitzt über dem Inhalt, nicht in der Kopfzeile: Neben dem Titel
+ * gequetscht liefen die „+ Hinzufügen"-Knöpfe aus dem Panel heraus, und im
+ * Aufklapp-Schalter hätten sie ohnehin nichts verloren (verschachtelte Knöpfe
+ * sind ungültig). Eingeklappt bleiben sie weg — sie würden sonst etwas
+ * anlegen, das man gar nicht sieht.
+ */
 export function Section({
   title,
   description,
   children,
   action,
+  defaultOpen = false,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
   action?: ReactNode;
+  defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+
   return (
-    <section className="mb-7">
-      <div className="mb-3.5 flex items-end justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="text-sm font-medium text-zinc-200">{title}</h3>
-          {description && (
-            <p className="mt-1 text-3xs leading-relaxed text-zinc-600">
-              {description}
-            </p>
+    <section className="mb-2.5 rounded-[3px] border border-white/[0.07] bg-white/[0.012]">
+      <button
+        type="button"
+        onClick={() => setOpen((vorher) => !vorher)}
+        aria-expanded={open}
+        className="touchable flex min-h-[60px] w-full items-center gap-3 px-3.5 py-3 text-left"
+      >
+        <ChevronRight
+          size={16}
+          strokeWidth={2}
+          className={cx(
+            "shrink-0 transition-transform duration-200",
+            open ? "rotate-90 text-accent" : "text-zinc-600",
           )}
-        </div>
-        {action}
+        />
+        <span className="min-w-0">
+          <span className="block text-sm font-medium text-zinc-200">
+            {title}
+          </span>
+          {description && (
+            // Eingeklappt nur die erste Zeile: Sonst waeren 28 Abschnitte
+            // wieder eine Scrollstrecke, und genau die soll das Aufklappen
+            // ja ersparen. Offen steht der ganze Text.
+            //
+            // `block` und `line-clamp-1` schliessen sich aus — die Klemmung
+            // braucht display:-webkit-box, das `block` ueberschreiben wuerde.
+            // Deshalb immer nur eines von beiden.
+            <span
+              className={cx(
+                "mt-1 text-3xs leading-relaxed text-zinc-600",
+                open ? "block" : "line-clamp-1",
+              )}
+            >
+              {description}
+            </span>
+          )}
+        </span>
+      </button>
+
+      <div
+        hidden={!open}
+        className="border-t border-white/[0.06] px-3.5 pb-4 pt-4"
+      >
+        {action && <div className="mb-4 flex flex-wrap gap-2">{action}</div>}
+        {children}
       </div>
-      {children}
     </section>
   );
 }
