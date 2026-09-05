@@ -50,8 +50,12 @@ loese_verwaiste_sperre() {
   # Ziel, das es als Datei nie gibt. Fuer -e ist so ein toter Symlink nicht
   # vorhanden, die Pruefung wuerde also immer durchfallen.
   [ -L "$sperre" ] || [ -e "$sperre" ] || return 0
-  pgrep -x chromium >/dev/null && return 0
-  pgrep -x chromium-browser >/dev/null && return 0
+  # Bewusst ohne -x und ohne -f: -x vergleicht exakt gegen den Prozessnamen,
+  # den der Kernel auf 15 Zeichen kuerzt — "chromium-browser" hat 16 und
+  # koennte damit nie treffen (pgrep warnt sogar). -f wiederum durchsucht die
+  # ganze Befehlszeile und faende auch den eigenen Aufruf. Das Teilmuster auf
+  # den Prozessnamen trifft beide Varianten: "chromium" und "chromium-browse".
+  pgrep chromium >/dev/null && return 0
 
   echo "Verwaiste Profilsperre gefunden ($(readlink "$sperre" 2>/dev/null)) — wird entfernt." >&2
   rm -f "$sperre" "$HOME/.config/chromium/SingletonSocket" \
