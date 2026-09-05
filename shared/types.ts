@@ -577,7 +577,24 @@ export interface RealtimeSessionResponse {
   tools: RealtimeTool[];
 }
 
-export type ThemeMode = 'ember' | 'crimson' | 'graphite';
+export type ThemeMode =
+  | 'ember'
+  | 'crimson'
+  | 'graphite'
+  | 'mint'
+  | 'violet'
+  | 'amber'
+  | 'slate'
+  | 'rose'
+  | 'custom';
+
+/**
+ * Schriftpaarung: eine Anzeigeschrift fuer Text plus eine Ziffernschrift fuer
+ * Uhr, Kalenderzeiten und Messwerte. Unabhaengig von der Akzentfarbe waehlbar
+ * — wer die Farben eines Themes mag, aber lieber eine andere Schrift haette,
+ * muss nicht beides zusammen nehmen.
+ */
+export type FontPairingId = 'standard' | 'grotesk' | 'sora' | 'manrope' | 'public' | 'outfit';
 
 /**
  * Nachtabsenkung. Ein Panel im Flur, das nachts voll leuchtet, ist nach einer
@@ -681,6 +698,9 @@ export type BackdropStyle =
 
 export interface AppearanceConfig {
   themeMode: ThemeMode;
+  /** Nur wirksam bei themeMode "custom" — als Hex, z.B. "#7c9eff". */
+  customAccent: string;
+  fontPairing: FontPairingId;
   /** Dateiname unter /assets/cindralux, z.B. "backdrop-topo.svg". */
   background: string;
   /** Deckkraft des Hintergrunds, 0–1. */

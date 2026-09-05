@@ -64,9 +64,17 @@ export default {
           idle: 'rgb(var(--signal-idle) / <alpha-value>)',
         },
       },
+      /*
+       * Wie der Akzent: zur Laufzeit ueber eine CSS-Variable austauschbar,
+       * damit die Schriftpaarung ohne Neubau umschaltbar bleibt. Der
+       * Fallback im var()-Aufruf selbst (nicht als zweites Array-Element)
+       * ist noetig — eine unbekannte Variable ohne eigenen Fallback macht
+       * sonst die ganze font-family-Deklaration ungueltig, nicht nur diesen
+       * einen Eintrag.
+       */
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+        sans: ["var(--font-sans, 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif)"],
+        mono: ["var(--font-mono, 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace)"],
       },
       letterSpacing: {
         label: '0.22em',

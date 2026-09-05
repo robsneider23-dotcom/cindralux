@@ -12,8 +12,15 @@
     <link rel="icon" type="image/svg+xml" href="/cindralux/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Alle Schriftpaarungen aus theme/tokens.js (fontPairings) in einer
+      Anfrage — geladen wird immer alles, gewechselt wird nur die
+      CSS-Variable --font-sans/--font-mono (siehe store.tsx). Das kostet beim
+      ersten Start etwas mehr Ladezeit, dafuer greift ein spaeterer
+      Schriftwechsel in den Einstellungen sofort, ohne Nachladen.
+    -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&family=Public+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
   </head>

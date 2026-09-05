@@ -18,8 +18,8 @@ import type {
 } from '@shared/types';
 import { api } from './api';
 import { usePolling } from '@/hooks/usePolling';
-import { accents } from '@/theme/tokens.js';
-import { hexToRgbTriplet } from './utils';
+import { accents, fontPairings } from '@/theme/tokens.js';
+import { deriveAccentShades, hexToRgbTriplet } from './utils';
 
 /** Aktualisierungsintervalle — bewusst ruhig, das Panel laeuft rund um die Uhr. */
 const INTERVAL = {
@@ -177,10 +177,22 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
        * unlesbar; die dunkleren Abstufungen derselben Palette lesen sich
        * sauber, ohne den Charakter zu verlieren.
        */
-      const palette = accents[config.appearance.themeMode] ?? accents.ember;
+      const palette =
+        config.appearance.themeMode === 'custom'
+          ? deriveAccentShades(config.appearance.customAccent || accents.ember.base)
+          : (accents[config.appearance.themeMode] ?? accents.ember);
       root.style.setProperty('--accent', hexToRgbTriplet(hell ? palette.hot : palette.base));
       root.style.setProperty('--accent-soft', hexToRgbTriplet(hell ? palette.dim : palette.soft));
       root.style.setProperty('--accent-hot', hexToRgbTriplet(hell ? palette.dim : palette.hot));
+
+      // Schriftpaarung — dieselbe CSS-Variablen-Technik wie beim Akzent, damit
+      // ein Wechsel ohne Neubau greift. Fehlt eine Kennung (alte config.json
+      // ohne fontPairing), foerdert der Fallback im var() selbst in
+      // tailwind.config.js "Standard" zutage — hier reicht ein leerer String,
+      // der die Variable einfach ungesetzt laesst.
+      const schrift = fontPairings[config.appearance.fontPairing] ?? fontPairings.standard;
+      root.style.setProperty('--font-sans', schrift.sans);
+      root.style.setProperty('--font-mono', schrift.mono);
     };
 
     anwenden();

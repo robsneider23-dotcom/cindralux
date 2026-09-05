@@ -263,6 +263,8 @@
   ],
   "appearance": {
     "themeMode": "ember",
+    "customAccent": "#7c9eff",
+    "fontPairing": "standard",
     "background": "",
     "backgroundOpacity": 0.5,
     "showSeconds": true,

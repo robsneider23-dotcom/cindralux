@@ -30,7 +30,6 @@ import type {
   BackdropStyle,
   WindowId,
   SensorIcon,
-  ThemeMode,
   TrashSourceKind,
   CalendarView,
   InputDevices,
@@ -55,8 +54,10 @@ import { EntityPicker } from "./settings/EntityPicker";
 import { LocationPicker } from "./settings/LocationPicker";
 import { GoogleCalendarSetup } from "./settings/GoogleCalendarSetup";
 import { LayoutEditor } from "./settings/LayoutEditor";
+import { ThemeEditor } from "./settings/ThemeEditor";
 import { TransitionPreview } from "./settings/TransitionPreview";
 import { PhotoPicker } from "./settings/PhotoPicker";
+import { LegalFooter } from "./settings/LegalFooter";
 import { PanelBackdrop, BACKDROP_LABELS } from "./PanelBackdrop";
 import { ConnectionStatusPill, type StatusTone } from "./ConnectionStatusPill";
 import { TRANSITIONS } from "@/lib/transitions";
@@ -468,11 +469,7 @@ export function SettingsPanel({
                 </button>
               ))}
 
-              <div className="mt-auto px-1 pb-1 text-3xs leading-relaxed text-zinc-700">
-                Konfiguration liegt lokal in{" "}
-                <span className="digits">data/config.json</span>. Tokens
-                verlassen das Gerät nicht.
-              </div>
+              <LegalFooter />
             </nav>
 
             {/* Inhalt */}
@@ -1977,17 +1974,14 @@ function AppearanceSettings({ draft, update }: PaneProps) {
       </Section>
 
       <Section
-        title="Akzentfarbe"
-        description="Bestimmt Glow, Marker und aktive Zustände."
+        title="Farben & Schrift"
+        description="Acht Akzentfarben plus eigene Farbe, sechs Schriftarten — unabhängig voneinander wählbar, oder als fünf fertige Vorlagen kombiniert."
       >
-        <SegmentedControl<ThemeMode>
-          value={appearance.themeMode}
-          onChange={(themeMode) => set({ themeMode })}
-          options={[
-            { value: "ember", label: "Ember" },
-            { value: "crimson", label: "Crimson" },
-            { value: "graphite", label: "Graphit" },
-          ]}
+        <ThemeEditor
+          themeMode={appearance.themeMode}
+          customAccent={appearance.customAccent}
+          fontPairing={appearance.fontPairing}
+          onChange={(patch) => set(patch)}
         />
       </Section>
 
