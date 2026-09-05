@@ -41,10 +41,9 @@ slideshow images, ten dashboard layout presets and five color-and-font
 theme presets, a fully local shopping list/notes panel, and a WebAudio-based
 timer/alarm system that needs no sound files.
 
-**Where this is headed:** a Ken Burns effect with alternating pan directions
-instead of one fixed zoom, public-transport departures and commute time,
-and a wake word for voice mode instead of a button press. See *Next steps*
-at the bottom for the current state of each, and issues/PRs are welcome.
+**Where this is headed:** public-transport departures and commute time, and
+a wake word for voice mode instead of a button press. See *Next steps* at
+the bottom for the current state of each, and issues/PRs are welcome.
 
 ---
 
@@ -524,6 +523,10 @@ bright frame, sized to the actual aspect ratio of the screen you're using
 right now, over the photo; the slideshow then shows exactly what sat inside
 the frame. Without a choice, it stays centered.
 
+**Ken Burns.** The "Ken Burns" transition doesn't always pan the same way:
+nine variants (eight directions in — including diagonals — plus one out)
+rotate randomly with every photo change.
+
 ### Shopping list & notes
 
 The **"List" button** in the taskbar opens a window with two tabs: shopping
@@ -785,13 +788,12 @@ REST request per tile/sensor on every client poll; REST remains the
 fallback while the connection isn't up yet. Tested live against a real HA
 instance.
 
-A movable crop frame per photo in the slideshow picker is done too (see
-*Photos for the slideshow*).
+A movable crop frame per photo in the slideshow picker, and a Ken Burns
+effect with nine alternating pan directions instead of one fixed zoom-in,
+are done too (see *Photos for the slideshow*).
 
 Open:
 
-- A slideshow Ken Burns effect with several, alternating pan directions
-  instead of one fixed zoom-in.
 - Public-transport departures and commute time to work.
 - A wake word instead of a button press (e.g. openWakeWord running locally
   on the Pi) — needs a microphone on the Pi first, which isn't sorted out

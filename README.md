@@ -42,10 +42,9 @@ fünf Farb-und-Schrift-Design-Vorlagen, ein vollständig lokales
 Einkaufslisten-/Notizen-Panel und ein per WebAudio erzeugter Timer/Wecker,
 der keine Audiodatei braucht.
 
-**Wohin sich das entwickelt:** ein Ken-Burns-Effekt mit wechselnden statt
-einer festen Zoom-Richtung, ÖPNV-Abfahrten und Fahrzeit zur Arbeit, sowie ein
-Weckwort statt Knopfdruck für den Sprachmodus. Der Stand dazu steht unten
-unter *Nächste Schritte* — Issues und Pull Requests sind willkommen.
+**Wohin sich das entwickelt:** ÖPNV-Abfahrten und Fahrzeit zur Arbeit, sowie
+ein Weckwort statt Knopfdruck für den Sprachmodus. Der Stand dazu steht
+unten unter *Nächste Schritte* — Issues und Pull Requests sind willkommen.
 
 ---
 
@@ -486,6 +485,10 @@ des gerade genutzten Bildschirms über das Bild ziehen; die Diashow zeigt
 danach genau das, was im Rahmen lag. Ohne eigene Wahl bleibt es bei der
 Bildmitte.
 
+**Ken Burns.** Der Übergang „Ken Burns" fährt nicht immer in dieselbe
+Richtung: neun Varianten (acht Richtungen hinein — auch diagonal — plus
+eine hinaus) wechseln bei jedem Bildwechsel zufällig durch.
+
 ### Einkaufsliste & Notizen
 
 Über den **„Liste"-Knopf** in der Startleiste öffnet sich ein Fenster mit zwei
@@ -741,13 +744,12 @@ REST-Requests je Kachel/Sensor bei jedem Client-Poll, REST bleibt Fallback,
 solange die Verbindung noch nicht steht. Live gegen eine echte HA-Instanz
 getestet.
 
-Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl ist ebenfalls
-fertig (siehe *Fotos für die Diashow*).
+Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl und ein
+Ken-Burns-Effekt mit neun wechselnden Fahrtrichtungen statt einer festen sind
+ebenfalls fertig (siehe *Fotos für die Diashow*).
 
 Offen:
 
-- Ken-Burns-Effekt der Diashow mit mehreren, wechselnden Richtungen statt eines
-  festen Zoom-Ins.
 - ÖPNV-Abfahrten und Fahrzeit zur Arbeit.
 - Weckwort statt Knopfdruck (z. B. openWakeWord lokal auf dem Pi) — braucht
   zuerst ein Mikrofon am Pi, das noch nicht geklärt ist.
