@@ -25,7 +25,18 @@ export function FocusPointEditor({ photo, onCancel, onSave }: Props) {
   const [focus, setFocus] = useState(photo.focus ?? { x: 50, y: 50 });
   const [naturalAspect, setNaturalAspect] = useState<number | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const dragState = useRef<{ rect: DOMRect; frameW: number; frameH: number } | null>(null);
+  /*
+   * Der Touchscreen meldet sich als zwei Eingabegeräte gleichzeitig (Touch
+   * UND Maus, siehe deploy/cindralux-kiosk.sh) — ein einzelner Fingertipp
+   * kann dadurch zwei ueberlappende Zeiger-Stroeme mit je eigener pointerId
+   * ausloesen. Ohne die pointerId im State wuerde der zweite, meist leicht
+   * versetzte Strom mitten in der Bewegung uebernehmen und den Rahmen
+   * springen lassen. Deshalb: nach dem ersten pointerdown zaehlt nur noch
+   * genau diese pointerId, bis sie wieder losgelassen wird.
+   */
+  const dragState = useRef<{ pointerId: number; rect: DOMRect; frameW: number; frameH: number } | null>(
+    null,
+  );
 
   // Seitenverhältnis des Bildschirms, auf dem gerade eingerichtet wird — das
   // ist der ehrlichste verfügbare Wert für "was im Screensaver gezeigt wird".
@@ -59,21 +70,25 @@ export function FocusPointEditor({ photo, onCancel, onSave }: Props) {
   };
 
   const startDrag = (event: React.PointerEvent) => {
+    // Ein Zeiger reicht — ein zweiter (typischerweise der Maus-Zwilling
+    // desselben Fingertipps) darf eine laufende Bewegung nicht kapern.
+    if (dragState.current) return;
     const img = imgRef.current;
     if (!img) return;
     const rect = img.getBoundingClientRect();
     const { w, h } = frameSize(rect);
-    dragState.current = { rect, frameW: w, frameH: h };
+    dragState.current = { pointerId: event.pointerId, rect, frameW: w, frameH: h };
     (event.target as HTMLElement).setPointerCapture(event.pointerId);
     applyPointer(event.clientX, event.clientY);
   };
 
   const duringDrag = (event: React.PointerEvent) => {
-    if (!dragState.current) return;
+    if (!dragState.current || event.pointerId !== dragState.current.pointerId) return;
     applyPointer(event.clientX, event.clientY);
   };
 
-  const endDrag = () => {
+  const endDrag = (event: React.PointerEvent) => {
+    if (dragState.current && event.pointerId !== dragState.current.pointerId) return;
     dragState.current = null;
   };
 
