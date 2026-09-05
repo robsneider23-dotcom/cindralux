@@ -5,6 +5,11 @@
   "type": "module",
   "description": "Cindralux — lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robsneider23-dotcom/cindralux.git"
+  },
+  "homepage": "https://github.com/robsneider23-dotcom/cindralux#readme",
   "workspaces": [
     "client",
     "server"
