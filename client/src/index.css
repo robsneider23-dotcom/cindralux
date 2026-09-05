@@ -533,12 +533,50 @@
   }
 
   /*
-   * Langsame Fahrt, laeuft ueber die volle Standzeit des Bildes (die Dauer
-   * setzt transitionSpec() dynamisch anhand des Wechselintervalls).
+   * Langsame Fahrten, laufen ueber die volle Standzeit des Bildes (die Dauer
+   * setzt transitionSpec() dynamisch anhand des Wechselintervalls). Neun
+   * Varianten statt einer festen Richtung — welche laeuft, wuerfelt
+   * transitions.ts bei jedem Bildwechsel neu aus. Alle bis auf die letzte
+   * zoomen dabei leicht hinein (Skalierung 1 -> 1.15); der Versatz bleibt
+   * bewusst innerhalb der so entstehenden 15%-Reserve, sonst wuerde am Rand
+   * kurz Leerflaeche sichtbar.
    */
-  @keyframes tr-kenburns {
+  @keyframes tr-kenburns-n {
     from { transform: scale(1) translate(0, 0); }
-    to   { transform: scale(1.15) translate(-2.5%, -2%); }
+    to   { transform: scale(1.15) translate(0, 2.5%); }
+  }
+  @keyframes tr-kenburns-s {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(0, -2.5%); }
+  }
+  @keyframes tr-kenburns-e {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(-2.8%, 0); }
+  }
+  @keyframes tr-kenburns-w {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(2.8%, 0); }
+  }
+  @keyframes tr-kenburns-ne {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(-2.2%, 2.2%); }
+  }
+  @keyframes tr-kenburns-nw {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(2.2%, 2.2%); }
+  }
+  @keyframes tr-kenburns-se {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(-2.2%, -2.2%); }
+  }
+  @keyframes tr-kenburns-sw {
+    from { transform: scale(1) translate(0, 0); }
+    to   { transform: scale(1.15) translate(2.2%, -2.2%); }
+  }
+  /* Die einzige Variante, die hinausfaehrt statt hinein. */
+  @keyframes tr-kenburns-out {
+    from { transform: scale(1.15) translate(-2%, -1.6%); }
+    to   { transform: scale(1) translate(0, 0); }
   }
 
   @keyframes tr-blur-in {

@@ -48,11 +48,12 @@ export const TRANSITIONS: TransitionSpec[] = [
   {
     id: 'ken-burns',
     label: 'Ken Burns',
-    hint: 'Langsame Fahrt über das Bild, überblendet.',
+    hint: 'Langsame Fahrt über das Bild, Richtung wechselt bei jedem Bild.',
     duration: 1800,
-    // Platzhalter — transitionSpec() setzt die echte Dauer anhand des
-    // Wechselintervalls ein, siehe dort. Ohne Angabe: 24s Standardwert.
-    enter: `tr-fade-in 1800ms ${EASE} both, tr-kenburns 24s linear both`,
+    // Platzhalter — transitionSpec() ersetzt sowohl die Richtung (zufällig
+    // aus KEN_BURNS_KEYFRAMES) als auch die Dauer (anhand des
+    // Wechselintervalls) bei jedem Aufruf, siehe withIntervalDuration().
+    enter: `tr-fade-in 1800ms ${EASE} both, tr-kenburns-n 24s linear both`,
     leave: `tr-fade-out 1800ms ${EASE} both`,
   },
   {
@@ -196,18 +197,41 @@ export const TRANSITIONS: TransitionSpec[] = [
 export const TRANSITION_BY_ID = new Map(TRANSITIONS.map((entry) => [entry.id, entry]));
 
 /**
- * Bei Ken Burns die 24s-Platzhalterdauer durch das tatsächliche
- * Wechselintervall ersetzen.
+ * Acht Fahrtrichtungen hinein plus eine hinaus — welche einer Anzeige zufällt,
+ * entscheidet withIntervalDuration() bei jedem Bildwechsel neu. So bleibt
+ * Ken Burns nicht bei einer einzigen Zoom-Richtung, sondern mischt: mal
+ * links, mal rechts, mal hoch, mal runter, mal diagonal, ab und zu hinaus
+ * statt hinein.
+ */
+const KEN_BURNS_KEYFRAMES = [
+  'tr-kenburns-n',
+  'tr-kenburns-s',
+  'tr-kenburns-e',
+  'tr-kenburns-w',
+  'tr-kenburns-ne',
+  'tr-kenburns-nw',
+  'tr-kenburns-se',
+  'tr-kenburns-sw',
+  'tr-kenburns-out',
+];
+
+/**
+ * Bei Ken Burns die Platzhalter-Richtung und -Dauer durch eine zufällige
+ * Richtung und das tatsächliche Wechselintervall ersetzen.
  *
- * Ohne das lief die Fahrt über eine feste Dauer, unabhängig davon, wie lange
- * ein Bild überhaupt zu sehen war — bei kürzeren Intervallen wechselte das
- * Bild, bevor die Bewegung spürbar wurde, bei längeren blieb sie am Ende
- * einfach stehen.
+ * Die Dauer ist wichtig: ohne sie lief die Fahrt über eine feste Zeit,
+ * unabhängig davon, wie lange ein Bild überhaupt zu sehen war — bei
+ * kürzeren Intervallen wechselte das Bild, bevor die Bewegung spürbar
+ * wurde, bei längeren blieb sie am Ende einfach stehen.
  */
 function withIntervalDuration(spec: TransitionSpec, intervalSeconds?: number): TransitionSpec {
-  if (spec.id !== 'ken-burns' || !intervalSeconds) return spec;
-  const seconds = Math.max(4, intervalSeconds);
-  return { ...spec, enter: spec.enter.replace('24s', `${seconds}s`) };
+  if (spec.id !== 'ken-burns') return spec;
+  const seconds = Math.max(4, intervalSeconds ?? 24);
+  const direction = KEN_BURNS_KEYFRAMES[Math.floor(Math.random() * KEN_BURNS_KEYFRAMES.length)];
+  return {
+    ...spec,
+    enter: spec.enter.replace('tr-kenburns-n', direction as string).replace('24s', `${seconds}s`),
+  };
 }
 
 export function transitionSpec(id: SlideTransition, intervalSeconds?: number): TransitionSpec {
