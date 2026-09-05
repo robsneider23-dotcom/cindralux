@@ -304,6 +304,39 @@ sich auch bei Rot-Grün- und Blau-Gelb-Schwäche deutlich (ΔE > 23). Beide Reih
 sind zusätzlich beschriftet — die Farbe allein trägt nie die Bedeutung. Dieselben
 Werte stehen für Screenreader als Tabelle im Markup.
 
+### Anordnung des Dashboards
+
+Unter *Einstellungen → Darstellung → Anordnung* legst du fest, welche Panels
+das Raster zeigt und wo sie stehen. Zehn Vorlagen decken die üblichen Fälle ab
+— jede mit einer kleinen Vorschau der Spaltenaufteilung:
+
+| Vorlage | Wofür |
+| --- | --- |
+| **Standard** | Tagesplan und Müll links, Kalender mittig, Wetter rechts |
+| **Kalender groß** | Wandkalender: der Monat bekommt neun von zwölf Spalten |
+| **Zwei Spalten** | Nur Tagesplan und Kalender, ruhigste Variante |
+| **Tagesplan** | Was heute ansteht, groß; Kalender und Wetter als Beiwerk |
+| **Wetterstation** | Wetter vorn, dazu Messwerte aus dem Haus |
+| **Smart Home** | Schnellaktionen und Messwerte dauerhaft statt im Fenster |
+| **Küche** | Einkaufsliste offen, daneben Termine und Wetter |
+| **Nur Kalender** | Volle Breite für Termine, alles andere in der Startleiste |
+| **Alles auf einen Blick** | Vier schmale Spalten, dicht, nichts muss angetippt werden |
+| **Assistent** | Der AI-Assistent steht fest rechts |
+
+Reine Spiegelungen derselben Aufteilung sind bewusst nicht dabei — „Wetter mal
+links, mal rechts" ist keine eigene Anordnung, sondern Geschmack.
+
+**Eigene Anordnung.** Wer es genauer will, wählt *Eigene* und stellt selbst
+zusammen: ein bis vier Spalten, deren Breiten und für jedes der acht Panels,
+in welcher Spalte es steht (oder ob es aus dem Raster verschwindet). Ziehen und
+Ablegen gibt es bewusst nicht — auf einem Touchpanel im Flur ist das mit
+fettigen Fingern eine Zumutung; stattdessen genügen Einzeltipps.
+
+Die Spaltensumme bleibt dabei immer zwölf: Wird eine Spalte breiter, gibt die
+breiteste andere ab. Ein ungültiges Raster kann so gar nicht erst entstehen.
+Abgewählte Panels sind nicht verloren — Smart Home, Messwerte, Assistent und
+Liste öffnen sich weiterhin über die Startleiste.
+
 ### Startleiste: Smart Home, Zuhause, Assistent
 
 Diese drei belegen keinen Platz mehr dauerhaft, sondern öffnen sich auf Tipp als

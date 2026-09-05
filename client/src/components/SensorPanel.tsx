@@ -62,7 +62,13 @@ export function SensorPanel() {
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
+      {/*
+        Spalten nach der eigenen Breite statt nach der des Bildschirms: Die
+        Messwerte stehen mal in einem breiten Fenster, mal in einer schmalen
+        Rasterspalte. Mit Viewport-Breakpoints blieben es dort vier Spalten,
+        in denen die Beschriftungen abgeschnitten werden.
+      */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(7rem,1fr))] gap-2.5">
         {ordered.map((sensor) => (
           <SensorTile key={sensor.id} sensor={sensor} />
         ))}

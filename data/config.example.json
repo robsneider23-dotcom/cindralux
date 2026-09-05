@@ -277,5 +277,29 @@
     },
     "burnInProtection": true
   },
+  "layout": {
+    "preset": "standard",
+    "custom": [
+      {
+        "span": 3,
+        "panels": [
+          "agenda",
+          "trash"
+        ]
+      },
+      {
+        "span": 6,
+        "panels": [
+          "calendar"
+        ]
+      },
+      {
+        "span": 3,
+        "panels": [
+          "weather"
+        ]
+      }
+    ]
+  },
   "calendarRefreshMinutes": 15
 }

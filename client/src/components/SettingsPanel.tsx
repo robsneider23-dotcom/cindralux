@@ -54,6 +54,7 @@ import { AddGoogleCalendarDialog } from "./settings/AddGoogleCalendarDialog";
 import { EntityPicker } from "./settings/EntityPicker";
 import { LocationPicker } from "./settings/LocationPicker";
 import { GoogleCalendarSetup } from "./settings/GoogleCalendarSetup";
+import { LayoutEditor } from "./settings/LayoutEditor";
 import { TransitionPreview } from "./settings/TransitionPreview";
 import { PhotoPicker } from "./settings/PhotoPicker";
 import { PanelBackdrop, BACKDROP_LABELS } from "./PanelBackdrop";
@@ -369,6 +370,7 @@ export function SettingsPanel({
         smartHomeActions: draft.smartHomeActions,
         weather: draft.weather,
         appearance: draft.appearance,
+        layout: draft.layout,
         calendarRefreshMinutes: draft.calendarRefreshMinutes,
         homeAssistant: {
           baseUrl: draft.homeAssistant.baseUrl,
@@ -1946,6 +1948,16 @@ function AppearanceSettings({ draft, update }: PaneProps) {
           }
           checked={effekteAn}
           onChange={setzeEffekte}
+        />
+      </Section>
+
+      <Section
+        title="Anordnung"
+        description="Welche Panels das Dashboard zeigt und wo sie stehen — zehn Vorlagen oder selbst zusammengestellt."
+      >
+        <LayoutEditor
+          layout={draft.layout}
+          onChange={(layout) => update({ layout })}
         />
       </Section>
 

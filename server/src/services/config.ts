@@ -249,6 +249,21 @@ export const DEFAULT_CONFIG: AppConfig = {
       enabled: false,
     },
   ],
+  /**
+   * Anordnung des Rasters. Die Vorlagen selbst stehen im Client
+   * (client/src/lib/layouts.ts) — nur er zeichnet sie. Hier steht bloss,
+   * welche gilt, und die eigene Anordnung, falls der Nutzer eine gebaut hat.
+   * `custom` ist mit der Standardvorlage vorbelegt: Wer auf "Eigene"
+   * umschaltet, faengt bei etwas Brauchbarem an statt bei einem leeren Raster.
+   */
+  layout: {
+    preset: 'standard',
+    custom: [
+      { span: 3, panels: ['agenda', 'trash'] },
+      { span: 6, panels: ['calendar'] },
+      { span: 3, panels: ['weather'] },
+    ],
+  },
   idle: {
     enabled: true,
     // Zwei Minuten: lang genug, dass es beim Bedienen nicht stoert.
@@ -376,6 +391,13 @@ function merge(base: AppConfig, patch: Partial<AppConfig> | null): AppConfig {
       slideshow: { ...base.idle.slideshow, ...patch.idle?.slideshow },
     },
     photos: { ...base.photos, ...patch.photos },
+    layout: {
+      ...base.layout,
+      ...patch.layout,
+      // Die eigene Anordnung ist eine Liste — die wird ersetzt, nicht
+      // verschmolzen. Sonst blieben geloeschte Spalten stehen.
+      custom: patch.layout?.custom ?? base.layout.custom,
+    },
     appearance: {
       ...base.appearance,
       ...patch.appearance,

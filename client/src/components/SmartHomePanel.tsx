@@ -121,7 +121,9 @@ export function SmartHomePanel({
 
   return (
     <section
-      className={cx("panel scanlines noise flex shrink-0 flex-col", className)}
+      // Kein shrink-0 hier: Ob das Panel waechst oder seine Hoehe behaelt,
+      // entscheidet die Stelle, die es platziert (Raster oder Fenster).
+      className={cx("panel scanlines noise flex flex-col", className)}
     >
       <header className="panel-head relative z-10">
         <div className="flex min-w-0 items-center gap-2.5">
@@ -156,7 +158,14 @@ export function SmartHomePanel({
         </div>
       </header>
 
-      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-3 gap-2 p-2.5 sm:grid-cols-4 lg:grid-cols-6 short:gap-1.5 short:p-2">
+      {/*
+        Spalten nach der eigenen Breite, nicht nach der des Bildschirms:
+        Als Panel im Raster kann dieselbe Komponente ein Viertel breit sein
+        wie auch die ganze Zeile. Viewport-Breakpoints (sm:, lg:) wussten
+        davon nichts und quetschten sechs Kacheln in eine schmale Spalte —
+        auto-fit richtet sich nach dem Platz, der tatsaechlich da ist.
+      */}
+      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-[repeat(auto-fit,minmax(7.5rem,1fr))] gap-2 p-2.5 short:gap-1.5 short:p-2">
         {actions.map((action) => (
           <SmartHomeActionTile
             key={action.id}

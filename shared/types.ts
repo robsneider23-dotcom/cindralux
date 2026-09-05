@@ -601,6 +601,57 @@ export interface NightModeConfig {
   wakeSeconds: number;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Anordnung des Dashboards                                                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Panels, die sich fest ins Raster legen lassen.
+ *
+ * Bewusst dieselben Kennungen wie `WindowId`, wo es sich deckt: Ein Panel
+ * bringt seine Hintergrundbewegung aus den Einstellungen mit, egal ob es im
+ * Raster steht oder als Fenster aus der Startleiste aufgeht.
+ */
+export type DashboardPanelId =
+  | 'agenda'
+  | 'trash'
+  | 'calendar'
+  | 'weather'
+  | 'smarthome'
+  | 'sensors'
+  | 'assistant'
+  | 'lists';
+
+/** Eine Spalte des Rasters: Breite plus Panels von oben nach unten. */
+export interface LayoutColumn {
+  /** Breite im 12-Spalten-Raster, 1–12. Die Summe aller Spalten ergibt 12. */
+  span: number;
+  panels: DashboardPanelId[];
+}
+
+/**
+ * Fertige Anordnungen. `custom` heisst: `LayoutConfig.custom` gilt, sonst die
+ * Vorlage gleichen Namens aus `client/src/lib/layouts.ts`.
+ */
+export type LayoutPresetId =
+  | 'standard'
+  | 'kalender-gross'
+  | 'zwei-spalten'
+  | 'tagesplan'
+  | 'wetterstation'
+  | 'smart-home'
+  | 'kueche'
+  | 'nur-kalender'
+  | 'uebersicht'
+  | 'assistent'
+  | 'custom';
+
+export interface LayoutConfig {
+  preset: LayoutPresetId;
+  /** Eigene Anordnung — nur wirksam, wenn `preset` auf `custom` steht. */
+  custom: LayoutColumn[];
+}
+
 /** Fenster, die eine eigene Hintergrundbewegung tragen koennen. */
 export type WindowId =
   | 'agenda'
@@ -698,6 +749,7 @@ export interface AppConfig {
   smartHomeActions: HomeAssistantAction[];
   sensors: HomeAssistantSensor[];
   appearance: AppearanceConfig;
+  layout: LayoutConfig;
   idle: IdleConfig;
   photos: PhotosConfig;
   /** Aktualisierungsintervall des Kalender-Caches in Minuten. */
