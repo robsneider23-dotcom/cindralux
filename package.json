@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Cindralux — lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
+  "license": "MIT",
   "workspaces": [
     "client",
     "server"

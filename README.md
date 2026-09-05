@@ -1,10 +1,47 @@
 # CINDRALUX — Home Command Center
 
+*[Deutsch](README.md) · [English](README.en.md)*
+
 Lokales Touchscreen-Dashboard für einen Raspberry Pi im Chromium-Kiosk-Modus:
 Kalender aus mehreren Quellen, Uhrzeit, Wetter, Müllabholung, Smart-Home-Schnellaktionen
 und ein AI-Assistent — alles auf einem Bildschirm, ohne Cloud-Zwang.
 
 ![Dashboard](docs/dashboard.png)
+
+---
+
+## Warum Cindralux?
+
+Familien-Kalender-Hubs und Smart Displays mit diesem Funktionsumfang werden
+normalerweise als Hardware-plus-Abo verkauft: einmal für den Bildschirm
+zahlen, danach dauerhaft weiterzahlen, damit der Kalender synchronisiert
+bleibt oder die „Premium"-Kacheln freigeschaltet sind. Cindralux läuft auf
+einem Raspberry Pi, den man ohnehin hat (oder für 40–80 € kauft), ist
+kostenlos und quelloffen, und jede Anbindung ist opt-in — nichts telefoniert
+nach Hause, außer man verbindet es selbst.
+
+**Eine kostenlose, selbst gehostete Alternative zu bezahlten Hubs wie:**
+
+- **Skylight Calendar** — ein Familienkalender-Tablet ab rund 130 €, mit
+  optionalem Monatsabo für zusätzliche Funktionen.
+- **Hearth Display** — ein Wand-Familienhub, der im laufenden Abo verkauft
+  wird.
+- **Google Nest Hub Max / Amazon Echo Show** — leistungsfähige Smart
+  Displays, aber um die Cloud des jeweiligen Herstellers gebaut, mit
+  manchen Funktionen hinter eigenen Abos (Nest Aware, Alexa+).
+
+**Was direkt beim ersten Start mitkommt, ganz ohne Einrichtung oder Konto:**
+ein realistischer Demo-Kalender, ein Wetter-Fallback-Datensatz, fünf
+Platzhalter-Fotos für die Diashow, zehn Layout-Vorlagen fürs Dashboard und
+fünf Farb-und-Schrift-Design-Vorlagen, ein vollständig lokales
+Einkaufslisten-/Notizen-Panel und ein per WebAudio erzeugter Timer/Wecker,
+der keine Audiodatei braucht.
+
+**Wohin sich das entwickelt:** ein verschiebbarer Bildausschnitt-Rahmen pro
+Foto in der Diashow-Auswahl, ein Ken-Burns-Effekt mit wechselnden statt einer
+festen Zoom-Richtung, ÖPNV-Abfahrten und Fahrzeit zur Arbeit, sowie ein
+Weckwort statt Knopfdruck für den Sprachmodus. Der Stand dazu steht unten
+unter *Nächste Schritte* — Issues und Pull Requests sind willkommen.
 
 ---
 
@@ -101,6 +138,28 @@ unverändert; zum Löschen sendet das Panel den Sentinel `__clear__`.
 | **Messwerte** | **echt, sobald HA verbunden ist** | Temperatur, Luftfeuchte, Fenster, Verbrauch. Ohne HA plausible Beispielwerte, die dem Tagesgang folgen. |
 | **Timer & Wecker** | **echt** | Vollständig lokal, unabhängig von HA und AI. |
 | **Fotos (Diashow)** | **echt** | Lokaler Bilderordner immer verfügbar; Google Fotos optional über den Picker (Auswahl in Googles eigenem Fenster). |
+
+### Was du wofür extern einrichten musst — Überblick
+
+Nichts davon ist Pflicht: Ohne jede Einrichtung läuft das Dashboard sofort mit
+Wetter, Müllabholung nach eigenen Regeln, Demo-Kalender und lokalen Fotos.
+Jede Zeile unten ist ein **optionaler** Ausbauschritt.
+
+| Funktion | Was extern nötig ist | Aufwand |
+| --- | --- | --- |
+| **Wetter** | nichts — Open-Meteo ohne Schlüssel | keiner |
+| **Müllabholung** | nichts (eigene Regeln) *oder* die ICS-Adresse/Datei deines Entsorgers | Adresse kopieren |
+| **Kalender per iCal** | die private iCal-Adresse aus Google/Nextcloud/iCloud/Outlook | Adresse kopieren |
+| **Kalender per Google-API** (empfohlen, fast live) | ein eigenes Google-Cloud-Projekt + OAuth-Client | ~10 Min, einmalig — [docs/google-kalender.md](docs/google-kalender.md) |
+| **Google Fotos in der Diashow** | dasselbe Google-Cloud-Projekt, zusätzlich Photos Picker API aktiviert | ~2 Min, einmalig — [docs/google-fotos.md](docs/google-fotos.md) |
+| **Home Assistant** | ein Long-Lived Access Token aus deiner eigenen HA-Instanz | ~1 Min |
+| **AI-Assistent (Text/Briefing)** | optional ein API-Key bei OpenAI oder einer OpenAI-kompatiblen API (LM Studio/Ollama laufen ganz ohne Internet) | wenige Minuten |
+| **Sprachmodus (Mikrofon)** | ein OpenAI-API-Key **mit Guthaben** — ein ChatGPT-Plus-Abo reicht dafür nicht | siehe unten |
+| **GPT Live** | nichts zwingend (öffnet chatgpt.com im Browser); optional ein Gerätebefehl für den Kiosk-Betrieb | keiner bis wenige Minuten |
+| **Spenden-Button** | nichts — reiner Link | keiner |
+
+Alle Zugangsdaten bleiben ausschließlich lokal in `data/config.json` auf
+diesem Gerät und werden nie an den Browser ausgeliefert.
 
 ### Kalender anbinden
 
@@ -416,6 +475,15 @@ Fotos* gibt es zwei Quellen, die sich mischen lassen:
 In beiden Fällen entscheidet die Kachel-Auswahl in den Einstellungen, welche
 Bilder die Diashow tatsächlich zeigt — ohne jede Auswahl laufen alle.
 
+### Einkaufsliste & Notizen
+
+Über den **„Liste"-Knopf** in der Startleiste öffnet sich ein Fenster mit zwei
+Reitern: Einkaufsliste und Notizen. Beide vollständig lokal
+(`data/lists.json`), ohne Home Assistant oder AI. Die Einkaufsliste hakt
+Einträge ab statt sie sofort zu löschen — erst der eigene
+„Erledigte löschen"-Knopf räumt auf, damit ein versehentliches Antippen nichts
+verschwinden lässt.
+
 ### Alexa
 
 **Bewusst nicht direkt integriert.** Dieses Dashboard spricht ausschließlich mit
@@ -561,7 +629,23 @@ Körnung. Zahlen laufen durchgehend tabellarisch, damit die Uhr nicht zappelt.
 Kalenderpalette und Hintergrundliste stehen genau einmal.
 
 Der Akzent liegt zur Laufzeit in der CSS-Variablen `--accent`, deshalb wirkt ein
-Wechsel des Theme-Modus (*Ember*, *Crimson*, *Graphit*) sofort ohne Neubau.
+Wechsel des Theme-Modus sofort ohne Neubau.
+
+### Farben & Schrift
+
+Unter *Einstellungen → Darstellung → Farben & Schrift*:
+
+- **Acht Akzentfarben** (Ember, Crimson, Graphit, Mint, Violett, Amber, Azurit,
+  Rose) plus **eigene Farbe** per Farbwähler — die vier nötigen Abstufungen
+  (hell/dunkel/kräftig) werden aus der einen Farbe per HSL berechnet.
+- **Sechs Schriftarten** (Standard/Inter, Space Grotesk, Sora, Manrope, Public
+  Sans, Outfit), unabhängig von der Farbe wählbar.
+- **Fünf fertige Design-Vorlagen** kombinieren beides mit einem Tipp (z. B.
+  Mint + Space Grotesk); Farbe und Schrift lassen sich danach trotzdem einzeln
+  weiter anpassen.
+
+Beides läuft über CSS-Variablen (`--font-sans`/`--font-mono` wie `--accent`) —
+ein Wechsel greift sofort, ohne Neuladen.
 
 ### Nachtabsenkung und Einbrennschutz
 
@@ -608,6 +692,22 @@ dort greifen zwei bewusste Entscheidungen:
 Dateien in `assets/cindralux/` ersetzen — Namen beibehalten, dann ändert sich im
 Code nichts. Details und Maße stehen in `assets/cindralux/README.md`.
 
+### Kiosk verlassen
+
+Unter *Einstellungen → System → Kiosk beenden* schließt Chromium und legt eine
+Sentinel-Datei an (`data/.exit-kiosk`); das Kiosk-Skript sieht sie beim
+nächsten Schleifendurchlauf und startet Chromium **nicht** automatisch neu —
+man landet auf dem bloßen Desktop. Kein `sudo` nötig, weil nichts Systemweites
+angefasst wird. Zurück zum Kiosk: das Skript erneut ausführen oder den Pi neu
+starten.
+
+### Rechtliches & Unterstützung
+
+Unten in der Einstellungs-Seitenleiste stehen Datenschutzerklärung und
+Haftungsausschluss (öffnen als eigenes Fenster) sowie ein kleiner
+Spenden-Link. Alle drei sind reiner Text bzw. ein Link — keine Anbindung an
+einen Dienst, kein Tracking.
+
 ---
 
 ## Auf dem Raspberry Pi
@@ -624,23 +724,18 @@ Prozess (`npm start`) auf Port 4000 — Frontend und API zusammen.
 
 ## Nächste Schritte
 
-Erledigt, aber lange nicht aus dieser Liste gestrichen: Google-OAuth-Kalender
-(`services/google.ts`), Müllabholung per ICS (`services/trash.ts`) und der
-Ambient-Modus (`components/idle/IdleScreen.tsx`) sind seit einiger Zeit fertig.
-Frisch dazugekommen:
+Home-Assistant-Zustände laufen über WebSocket statt Polling
+(`services/homeAssistantSocket.ts`) — eine dauerhafte Verbindung statt eines
+REST-Requests je Kachel/Sensor bei jedem Client-Poll, REST bleibt Fallback,
+solange die Verbindung noch nicht steht. Live gegen eine echte HA-Instanz
+getestet.
 
-- `/api/health` liest jetzt echte Pi-Werte (`readCpuTemperatureC()`,
-  `/sys/class/thermal/thermal_zone0/temp`) — sichtbar im Kopf als System-Pille.
-- Einkaufsliste und Notizen: `services/lists.ts`, Routen unter `/api/lists/…`,
-  Panel über den neuen „Liste"-Knopf in der Startleiste.
-- Home-Assistant-Zustände über WebSocket statt Polling
-  (`services/homeAssistantSocket.ts`) — eine dauerhafte Verbindung statt eines
-  REST-Requests je Kachel/Sensor bei jedem Client-Poll. REST bleibt Fallback,
-  solange die Verbindung noch nicht steht. Gegen eine echte HA-Instanz noch
-  nicht durchgetestet — hier war keine konfiguriert.
+Offen:
 
-Weiterhin offen:
-
-- ÖPNV-Abfahrten und Fahrzeit zur Arbeit
+- Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl (aktuell fester
+  Mittenausschnitt, `object-cover`).
+- Ken-Burns-Effekt der Diashow mit mehreren, wechselnden Richtungen statt eines
+  festen Zoom-Ins.
+- ÖPNV-Abfahrten und Fahrzeit zur Arbeit.
 - Weckwort statt Knopfdruck (z. B. openWakeWord lokal auf dem Pi) — braucht
-  zuerst ein Mikrofon am Pi, das noch nicht geklärt ist
+  zuerst ein Mikrofon am Pi, das noch nicht geklärt ist.

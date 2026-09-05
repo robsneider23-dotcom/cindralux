@@ -75,10 +75,11 @@ und Refresh-Token wie beim Kalender liegen lokal in `data/config.json`
 
 Heruntergeladene Bilder landen als normale Dateien im konfigurierten
 Bilderordner (Standard `data/photos/`). Eine kleine Datei
-`.google-origin.json` im selben Ordner merkt sich, welche Dateien aus Google
-stammen, damit sie in der Einstellungsansicht entsprechend markiert werden —
-sie enthält keine Zugangsdaten und lässt sich gefahrlos löschen (die Bilder
-gelten danach einfach als lokal).
+`.photos-meta.json` im selben Ordner merkt sich pro Bild Herkunft, Aufnahmedatum
+und optional eine Personen-Zuordnung, damit Google-Bilder in der
+Einstellungsansicht entsprechend markiert werden — sie enthält keine
+Zugangsdaten und lässt sich gefahrlos löschen (die Bilder gelten danach
+einfach als lokal, ohne Aufnahmedatum/Personen-Tag).
 
 Der angeforderte Bereich ist `photospicker.mediaitems.readonly` — eingeschränkt
 auf genau die Bilder, die im Picker-Fenster ausdrücklich ausgewählt werden.
