@@ -36,6 +36,28 @@ saeubere_profil() {
     "$PROFILE" || true
 }
 
+# Verwaiste Profilsperre entfernen, wenn kein Chromium mehr laeuft.
+#
+# Chromium legt SingletonLock als Symlink "<rechnername>-<pid>" an. Passt der
+# Rechnername nicht mehr — etwa nach einer Umbenennung des Hosts —, haelt
+# Chromium die Sperre fuer die eines FREMDEN Rechners (gedacht fuer Profile auf
+# Netzlaufwerken), weigert sich zu starten und der Kiosk bleibt schwarz. Genau
+# das ist beim Rebrand rubicon -> cindralux passiert. Laeuft nachweislich kein
+# Chromium mehr, ist die Sperre wertlos und darf weg.
+loese_verwaiste_sperre() {
+  local sperre="$HOME/.config/chromium/SingletonLock"
+  # -L statt -e: Die Sperre ist ein Symlink auf "<rechnername>-<pid>" — ein
+  # Ziel, das es als Datei nie gibt. Fuer -e ist so ein toter Symlink nicht
+  # vorhanden, die Pruefung wuerde also immer durchfallen.
+  [ -L "$sperre" ] || [ -e "$sperre" ] || return 0
+  pgrep -x chromium >/dev/null && return 0
+  pgrep -x chromium-browser >/dev/null && return 0
+
+  echo "Verwaiste Profilsperre gefunden ($(readlink "$sperre" 2>/dev/null)) — wird entfernt." >&2
+  rm -f "$sperre" "$HOME/.config/chromium/SingletonSocket" \
+        "$HOME/.config/chromium/SingletonCookie"
+}
+
 # Unter Wayland (labwc, wayfire) muss Chromium ausdrücklich auf Ozone gestellt
 # werden. Ohne das sucht es einen X-Server, findet keinen und beendet sich mit
 # „Missing X server or $DISPLAY".
@@ -77,6 +99,7 @@ while true; do
 
   warte_auf_server
   saeubere_profil
+  loese_verwaiste_sperre
   beginn=$SECONDS
 
   "$BROWSER" \
