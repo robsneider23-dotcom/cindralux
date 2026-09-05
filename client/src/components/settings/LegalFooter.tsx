@@ -2,10 +2,7 @@ import { Heart } from "lucide-react";
 import { useState } from "react";
 import { LegalDialog } from "./LegalDialog";
 
-/**
- * TODO: echten PayPal.me-Link eintragen, sobald bekannt — Platzhalter bisher.
- */
-const DONATE_URL = "https://paypal.me/cindralux";
+const DONATE_URL = "https://www.paypal.com/donate/?hosted_button_id=XLHVSK6YUXPP2";
 
 const DATENSCHUTZ = [
   "Cindralux läuft vollständig lokal auf diesem Raspberry Pi. Es gibt keinen Cloud-Dienst des Projekts und keine Telemetrie — nichts, was an den Entwickler übertragen wird.",
