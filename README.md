@@ -2,6 +2,11 @@
 
 *[Deutsch](README.md) · [English](README.en.md)*
 
+> 🚧 **In aktiver Entwicklung.** Läuft stabil im Alltag auf einem echten Pi,
+> aber es kommen laufend neue Funktionen dazu und Struktur/API können sich
+> noch ändern. Kein „fertiges" 1.0 in dem Sinne, dass nichts mehr passiert —
+> siehe *Nächste Schritte* unten für den aktuellen Stand.
+
 Lokales Touchscreen-Dashboard für einen Raspberry Pi im Chromium-Kiosk-Modus:
 Kalender aus mehreren Quellen, Uhrzeit, Wetter, Müllabholung, Smart-Home-Schnellaktionen
 und ein AI-Assistent — alles auf einem Bildschirm, ohne Cloud-Zwang.

@@ -2,6 +2,11 @@
 
 *[Deutsch](README.md) · [English](README.en.md)*
 
+> 🚧 **Actively developed.** Runs stably day-to-day on a real Pi, but new
+> features keep landing and structure/API may still shift. Not "finished" in
+> the sense that nothing more is happening — see *Next steps* below for the
+> current state.
+
 A local touchscreen dashboard for a Raspberry Pi running Chromium in kiosk
 mode: calendars from multiple sources, a clock, weather, trash pickup,
 smart-home quick actions and an AI assistant — all on one screen, with no
