@@ -126,6 +126,14 @@ while true; do
     --check-for-update-interval=31536000 \
     --overscroll-history-navigation=0 \
     --disable-pinch \
+    `# Touch erzwingen. Das Panel meldet zwei Schnittstellen: einen echten` \
+    `# Touchscreen (libinput: "Capabilities: touch") UND eine Maus. Chromium` \
+    `# sieht die Maus, haelt die Eingabe fuer einen Zeiger und schaltet die` \
+    `# Touch-Ereignisse ganz ab — messbar an fehlendem ontouchstart und` \
+    `# "hover: true". Ein Fingerzug kommt dann als Maus-Ziehen an, und darauf` \
+    `# scrollt kein Browser. Mit "enabled" wertet Blink die Beruehrungen wieder` \
+    `# als Touch, und Wischen scrollt wie erwartet.` \
+    --touch-events=enabled \
     `# Mikrofon ohne Nachfrage freigeben — im Kiosk kann niemand zustimmen.` \
     --use-fake-ui-for-media-stream \
     `# Der Timer-Klingelton soll auch ohne vorherige Berührung laufen.` \

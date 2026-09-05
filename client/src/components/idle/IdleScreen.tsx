@@ -132,19 +132,22 @@ export function IdleScreen({
                 {String(now.getHours()).padStart(2, '0')}
                 <span className="relative mx-2 inline-block text-accent/80">
                   :
-                  {/* Sekunden nisten sich unter den Doppelpunkt statt die
-                      Zeile mit einem dritten Zahlenpaar zu verlaengern — auf
-                      einem Ruhebildschirm soll die Uhr HH:MM bleiben, die
-                      Sekunden sind nur ein leises Lebenszeichen daneben. */}
+                  {/* Sekunden sitzen in der Luecke zwischen den beiden Punkten
+                      des Doppelpunkts — die Uhr bleibt optisch HH:MM, die
+                      Sekunden sind nur ein leises Lebenszeichen darin.
+                      Nicht top-1/2: Die Mitte des Glyphenkastens ist nicht die
+                      Mitte der Luecke — der Doppelpunkt sitzt in seinem Kasten
+                      etwas hoch, die Sekunden klebten dort am oberen Punkt.
+                      Nachgemessen liegt der Zwischenraum bei knapp 55 %. */}
                   {showSeconds && (
-                    <span className="digits absolute left-1/2 top-[93%] -translate-x-1/2 text-[clamp(0.85rem,1.8vw,1.5rem)] font-light leading-none text-accent/70">
+                    <span className="digits absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 text-[clamp(0.75rem,1.6vw,1.35rem)] font-light leading-none text-accent/70">
                       {String(now.getSeconds()).padStart(2, '0')}
                     </span>
                   )}
                 </span>
                 {String(now.getMinutes()).padStart(2, '0')}
               </div>
-              <div className={cx('text-[clamp(1rem,2vw,1.6rem)] font-light text-zinc-300', showSeconds ? 'mt-5' : 'mt-3')}>
+              <div className="mt-3 text-[clamp(1rem,2vw,1.6rem)] font-light text-zinc-300">
                 {formatWeekday(now)}, {formatDateLong(now)}
               </div>
             </div>
