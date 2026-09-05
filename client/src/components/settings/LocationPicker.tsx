@@ -95,7 +95,7 @@ export function LocationPicker({
         <div className="min-w-[16rem] flex-1">
           <Field
             label="Ort suchen"
-            hint="Stadt oder Ortsteil eingeben, z. B. „Berlin“."
+            hint="Stadt oder Ortsteil eingeben, z. B. „Regensburg“."
           >
             <div className="relative">
               <Search
