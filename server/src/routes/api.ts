@@ -39,6 +39,7 @@ import {
 } from '../services/photos.ts';
 import {
   buildAuthUrl,
+  consumeOAuthState,
   createEvent as createGoogleEvent,
   disconnect as googleDisconnect,
   exchangeCode,
@@ -314,6 +315,23 @@ api.get(
     const code = String(req.query.code ?? '');
     if (!code) {
       res.status(400).type('html').send(page('Kein Code erhalten', 'Bitte erneut versuchen.', false));
+      return;
+    }
+
+    // SICHERHEIT: state muss zum zuletzt selbst ausgestellten passen — sonst
+    // koennte ein fremder Autorisierungscode eingeschleust und so ein falsches
+    // Google-Konto verbunden werden (Login-CSRF).
+    if (!consumeOAuthState(String(req.query.state ?? ''))) {
+      res
+        .status(400)
+        .type('html')
+        .send(
+          page(
+            'Ungültige Anfrage',
+            'Der Sicherheits-Code passt nicht oder ist abgelaufen. Bitte den Verbindungsvorgang erneut starten.',
+            false,
+          ),
+        );
       return;
     }
 

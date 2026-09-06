@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import fs from 'node:fs';
 import { api } from './routes/api.ts';
 import { ASSETS_DIR, CACHE_DIR, CLIENT_DIST_DIR, DATA_DIR } from './lib/paths.ts';
@@ -15,7 +14,16 @@ const HOST = process.env.HOST ?? '127.0.0.1';
 
 const app = express();
 
-app.use(cors({ origin: true }));
+/*
+ * SICHERHEIT: bewusst kein CORS-Middleware. Das Frontend läuft immer
+ * same-origin — im Build wird es von diesem Server selbst ausgeliefert, im
+ * Dev-Modus reicht Vites eigener /api-Proxy (siehe vite.config.ts). Ohne
+ * CORS-Header blockiert der Browser jeden Cross-Origin-Zugriff auf diese API
+ * von selbst; ein `origin: true` hätte genau das aufgehoben und jeder
+ * beliebigen Webseite erlaubt, die API eines Besuchers im selben Netz per
+ * fetch() anzusprechen — bei einer Route wie PUT /config, die ungeprüft
+ * schreibt, waere das eine Rechteausweitung allein durch Seitenbesuch.
+ */
 app.use(express.json({ limit: '256kb' }));
 
 app.use('/api', api);

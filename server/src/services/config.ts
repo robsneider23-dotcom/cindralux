@@ -441,22 +441,58 @@ export async function loadConfig(): Promise<AppConfig> {
   return cached;
 }
 
+/**
+ * Patch auf die bekannte Form von DEFAULT_CONFIG zurechtstutzen, bevor er
+ * gemischt wird.
+ *
+ * SICHERHEIT: `PUT /api/config` nahm den Request-Body bislang ungeprüft
+ * entgegen — nur ein TypeScript-Cast, keine Laufzeitprüfung. Jeder Schlüssel
+ * mit jedem Typ war damit speicherbar, auch komplett unbekannte Felder.
+ * `sanitizePatch()` behält von jedem Objekt nur Schlüssel, die auch in
+ * `DEFAULT_CONFIG` existieren, und nur, wenn ihr Typ zum Standardwert passt;
+ * Objekte werden rekursiv genauso behandelt. Bewusst kein vollständiges
+ * Schema — Listen wie `calendars`/`smartHomeActions`/`sensors` werden nur auf
+ * Array-Ebene geprüft, nicht feldweise —, aber jeder unbekannte Schlüssel und
+ * jeder Typ-Fehltreffer wird verworfen statt gespeichert.
+ */
+function sanitizePatch(patch: unknown, reference: unknown): unknown {
+  if (reference === null || Array.isArray(reference) || typeof reference !== 'object') {
+    if (Array.isArray(reference)) return Array.isArray(patch) ? patch : undefined;
+    if (patch === undefined) return undefined;
+    return typeof patch === typeof reference ? patch : undefined;
+  }
+
+  if (typeof patch !== 'object' || patch === null || Array.isArray(patch)) return undefined;
+
+  const result: Record<string, unknown> = {};
+  for (const key of Object.keys(reference as Record<string, unknown>)) {
+    if (!(key in (patch as Record<string, unknown>))) continue;
+    const cleaned = sanitizePatch(
+      (patch as Record<string, unknown>)[key],
+      (reference as Record<string, unknown>)[key],
+    );
+    if (cleaned !== undefined) result[key] = cleaned;
+  }
+  return result;
+}
+
 export async function saveConfig(patch: AppConfigPatch): Promise<AppConfig> {
   const current = await loadConfig();
-  const next = merge(current, patch as Partial<AppConfig>);
+  const safePatch = sanitizePatch(patch, DEFAULT_CONFIG) as Partial<AppConfig>;
+  const next = merge(current, safePatch);
 
   // Ein leerer String im Patch bedeutet "unveraendert lassen", nicht "loeschen".
   // Zum Loeschen schickt der Client den Sentinel-Wert "__clear__".
   // Kalenderadressen wie Geheimnisse behandeln: Der Client kennt sie nicht und
   // schickt sie deshalb leer zurueck — das darf sie nicht loeschen.
   next.calendars = mergeCalendars(current.calendars, next.calendars);
-  next.trash.icsUrl = resolveSecret(current.trash.icsUrl, patch.trash?.icsUrl);
-  next.trash.icsContent = resolveSecret(current.trash.icsContent, patch.trash?.icsContent);
+  next.trash.icsUrl = resolveSecret(current.trash.icsUrl, safePatch.trash?.icsUrl);
+  next.trash.icsContent = resolveSecret(current.trash.icsContent, safePatch.trash?.icsContent);
 
-  next.homeAssistant.token = resolveSecret(current.homeAssistant.token, patch.homeAssistant?.token);
-  next.ai.apiKey = resolveSecret(current.ai.apiKey, patch.ai?.apiKey);
-  next.google.clientSecret = resolveSecret(current.google.clientSecret, patch.google?.clientSecret);
-  next.google.refreshToken = resolveSecret(current.google.refreshToken, patch.google?.refreshToken);
+  next.homeAssistant.token = resolveSecret(current.homeAssistant.token, safePatch.homeAssistant?.token);
+  next.ai.apiKey = resolveSecret(current.ai.apiKey, safePatch.ai?.apiKey);
+  next.google.clientSecret = resolveSecret(current.google.clientSecret, safePatch.google?.clientSecret);
+  next.google.refreshToken = resolveSecret(current.google.refreshToken, safePatch.google?.refreshToken);
 
   cached = next;
   await writeJson(CONFIG_FILE, next);

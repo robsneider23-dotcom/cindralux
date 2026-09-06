@@ -7,6 +7,7 @@ import type {
   GooglePickerStatus,
   GoogleStatus,
 } from '../../../shared/types.ts';
+import crypto from 'node:crypto';
 import { fetchWithTimeout, describeError } from '../lib/http.ts';
 import { loadConfig, saveConfig } from './config.ts';
 
@@ -126,15 +127,42 @@ async function apiGet<T>(path: string, params: Record<string, string> = {}): Pro
 /* OAuth-Ablauf                                                                */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Offener `state`-Wert des zuletzt gestarteten Zustimmungsdialogs, samt
+ * Ablaufzeit. Ein einzelner Wert genügt — das Dashboard hat nur einen
+ * Nutzer, und ein neuer Verbindungsversuch macht den vorherigen ohnehin
+ * ungültig.
+ *
+ * SICHERHEIT: `state` sichert den Callback gegen Login-CSRF ab — ohne ihn
+ * könnte ein fremder Autorisierungscode (etwa aus dem eigenen Google-Konto
+ * eines Angreifers) in den Callback eingeschleust werden und das Dashboard
+ * zwingen, das falsche Konto zu verbinden.
+ */
+let pendingOAuthState: { value: string; expiresAt: number } | null = null;
+
+/** `state` aus dem Callback gegen den zuletzt ausgestellten prüfen — einmalig gültig. */
+export function consumeOAuthState(state: string): boolean {
+  const valid =
+    !!pendingOAuthState &&
+    pendingOAuthState.expiresAt > Date.now() &&
+    pendingOAuthState.value === state;
+  pendingOAuthState = null;
+  return valid;
+}
+
 export async function buildAuthUrl(): Promise<string> {
   const config = await loadConfig();
   if (!config.google.clientId) throw new Error('Client-ID fehlt');
+
+  const state = crypto.randomUUID();
+  pendingOAuthState = { value: state, expiresAt: Date.now() + 10 * 60_000 };
 
   const params = new URLSearchParams({
     client_id: config.google.clientId,
     redirect_uri: redirectUri(),
     response_type: 'code',
     scope: SCOPE,
+    state,
     // Ohne diese beiden gibt Google kein refresh_token zurück.
     access_type: 'offline',
     prompt: 'consent',

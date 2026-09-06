@@ -214,6 +214,29 @@ export async function getStatus(): Promise<HomeAssistantStatus> {
   }
 }
 
+/**
+ * Prueft, ob (domain, service, entityId) zu einer der in den Einstellungen
+ * eingerichteten Schnellaktionen passt — inklusive ihres serviceOff fuer
+ * Toggle-Kacheln.
+ *
+ * SICHERHEIT: Ohne diese Pruefung nahm die Route jede beliebige Kombination
+ * aus dem Request-Body entgegen und haette damit jeden HA-Service ausloesen
+ * koennen, den der hinterlegte Token erlaubt — nicht nur die im Dashboard
+ * sichtbaren Kacheln. Beide Aufrufstellen im Client (SmartHomePanel,
+ * AiAssistantPanel) leiten domain/service/entityId ohnehin ausschliesslich
+ * aus `smartHomeActions` ab; diese Pruefung spiegelt genau das auf dem Server.
+ */
+async function isAllowedServiceCall(request: HomeAssistantCallRequest): Promise<boolean> {
+  const { domain, service, entityId } = request;
+  const config = await loadConfig();
+  return config.smartHomeActions.some(
+    (action) =>
+      action.domain === domain &&
+      (action.service === service || action.serviceOff === service) &&
+      (action.entityId ?? undefined) === (entityId ?? undefined),
+  );
+}
+
 export async function callService(
   request: HomeAssistantCallRequest,
 ): Promise<HomeAssistantCallResult> {
@@ -221,6 +244,14 @@ export async function callService(
 
   if (!domain || !service) {
     return { ok: false, mode: 'mock', message: 'domain und service sind erforderlich' };
+  }
+
+  if (!(await isAllowedServiceCall(request))) {
+    return {
+      ok: false,
+      mode: 'mock',
+      message: 'Dieser Service ist keiner eingerichteten Schnellaktion zugeordnet.',
+    };
   }
 
   if (!(await isConfigured())) {
