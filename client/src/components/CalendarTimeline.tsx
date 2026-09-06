@@ -12,6 +12,7 @@ import type { CalendarEvent, CalendarView } from "@shared/types";
 import { api } from "@/lib/api";
 import { useDashboard } from "@/lib/store";
 import { useClock } from "@/hooks/useClock";
+import { useSwipe } from "@/hooks/useSwipe";
 import {
   addDays,
   formatDateShort,
@@ -57,6 +58,8 @@ export function CalendarTimeline({ className }: { className?: string }) {
   const [view, setView] = useState<CalendarView>(defaultView);
   // Tag, den die Tagesansicht zeigt — per Tipp im Monatsraster wählbar.
   const [pickedDay, setPickedDay] = useState<Date | null>(null);
+  // Monat, den das Monatsraster zeigt — per Wischen oder Pfeil-Buttons.
+  const [pickedMonth, setPickedMonth] = useState<Date | null>(null);
   // Tagesblatt: Termine des Tages ansehen und neue anlegen.
   const [sheetDay, setSheetDay] = useState<Date | null>(null);
   const returnTimer = useRef<number | undefined>(undefined);
@@ -81,6 +84,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
       touched.current = false;
       setView(defaultView);
       setPickedDay(null);
+      setPickedMonth(null);
     }, autoReturnMinutes * 60_000);
   }, [autoReturnMinutes, defaultView]);
 
@@ -95,6 +99,27 @@ export function CalendarTimeline({ className }: { className?: string }) {
   useEffect(() => () => window.clearTimeout(returnTimer.current), []);
 
   const shownDay = pickedDay ?? now;
+  const shownMonth = pickedMonth ?? now;
+
+  const navigateDay = (delta: number) => switchView("tag", addDays(shownDay, delta));
+  const navigateMonth = (delta: number) => {
+    touched.current = true;
+    setPickedMonth(new Date(shownMonth.getFullYear(), shownMonth.getMonth() + delta, 1));
+    scheduleReturn();
+  };
+
+  // Wischen: nur horizontal, damit vertikales Scrollen (Tagesansicht, Woche)
+  // unberührt bleibt — siehe useSwipe.ts. Ansicht wechseln bleibt bewusst den
+  // Tabs vorbehalten: ein vertikaler Wisch würde sich sonst mit dem Scrollen
+  // derselben Fläche in die Quere kommen.
+  const daySwipe = useSwipe(
+    () => navigateDay(1),
+    () => navigateDay(-1),
+  );
+  const monthSwipe = useSwipe(
+    () => navigateMonth(1),
+    () => navigateMonth(-1),
+  );
 
   const days = useMemo<DayBucket[]>(() => {
     const today = startOfDay(now);
@@ -141,7 +166,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
   const monthTitle = new Intl.DateTimeFormat("de-DE", {
     month: "long",
     year: "numeric",
-  }).format(now);
+  }).format(shownMonth);
   const dayTitle = `${relativeDayLabel(shownDay, now)}, ${formatDateShort(shownDay)}`;
 
   const refresh = async () => {
@@ -189,7 +214,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
               <button
                 type="button"
                 aria-label="Vorheriger Tag"
-                onClick={() => switchView("tag", addDays(shownDay, -1))}
+                onClick={() => navigateDay(-1)}
                 className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
               >
                 <ChevronLeft size={14} strokeWidth={1.8} />
@@ -197,7 +222,29 @@ export function CalendarTimeline({ className }: { className?: string }) {
               <button
                 type="button"
                 aria-label="Nächster Tag"
-                onClick={() => switchView("tag", addDays(shownDay, 1))}
+                onClick={() => navigateDay(1)}
+                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+              >
+                <ChevronRight size={14} strokeWidth={1.8} />
+              </button>
+            </span>
+          )}
+
+          {/* Monatsnavigation, nur im Monatsraster */}
+          {view === "monat" && (
+            <span className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Vorheriger Monat"
+                onClick={() => navigateMonth(-1)}
+                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+              >
+                <ChevronLeft size={14} strokeWidth={1.8} />
+              </button>
+              <button
+                type="button"
+                aria-label="Nächster Monat"
+                onClick={() => navigateMonth(1)}
                 className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
               >
                 <ChevronRight size={14} strokeWidth={1.8} />
@@ -230,17 +277,40 @@ export function CalendarTimeline({ className }: { className?: string }) {
       {pending.calendar ? (
         <LoadingState text="Lade Kalender …" />
       ) : view === "monat" ? (
-        <MonthGrid
-          events={calendar?.events ?? []}
-          now={now}
-          onPickDay={(day) => {
-            touched.current = true;
-            scheduleReturn();
-            setSheetDay(day);
-          }}
-        />
+        // touch-action: pan-y erlaubt dem Browser weiterhin senkrechtes
+        // Scrollen (hier zwar ungenutzt, aber konsistent), verhindert aber,
+        // dass er einen waagerechten Zug selbst als Scrollversuch deutet und
+        // die Zeigerfolge per pointercancel abbricht, bevor unser eigener
+        // pointerup-Handler die Wischrichtung auswerten kann.
+        <div
+          className="flex h-full min-h-0 flex-col"
+          style={{ touchAction: "pan-y" }}
+          {...monthSwipe}
+        >
+          <MonthGrid
+            events={calendar?.events ?? []}
+            now={now}
+            month={shownMonth}
+            onPickDay={(day) => {
+              touched.current = true;
+              scheduleReturn();
+              setSheetDay(day);
+            }}
+          />
+        </div>
       ) : view === "tag" ? (
-        <DayView events={calendar?.events ?? []} day={shownDay} now={now} />
+        // DayView scrollt bereits selbst intern (siehe DayView.tsx) — dieser
+        // Wrapper reicht nur die Wisch-Erkennung durch, ohne einen zweiten,
+        // verschachtelten Scrollbereich aufzumachen. touch-action: pan-y wie
+        // oben — sonst haelt der Browser jeden Zug fuer einen Scrollversuch
+        // und bricht unsere Zeigerfolge per pointercancel ab.
+        <div
+          className="flex h-full min-h-0 flex-col"
+          style={{ touchAction: "pan-y" }}
+          {...daySwipe}
+        >
+          <DayView events={calendar?.events ?? []} day={shownDay} now={now} />
+        </div>
       ) : total === 0 ? (
         <EmptyState
           icon={<CalendarDays size={26} strokeWidth={1.2} />}

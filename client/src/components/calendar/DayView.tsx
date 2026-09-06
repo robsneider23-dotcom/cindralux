@@ -109,7 +109,17 @@ export function DayView({
           Keine Termine an diesem Tag
         </p>
       ) : (
-        <div className="relative min-h-0 flex-1 overflow-y-auto no-scrollbar">
+        <div
+          className="relative min-h-0 flex-1 overflow-y-auto no-scrollbar"
+          // Explizit, nicht nur vom Wrapper geerbt: Ein eigener Scroll-
+          // Container entscheidet ueber Touch-Gesten offenbar anhand seines
+          // eigenen touch-action-Werts, nicht (nur) des vom Elternelement
+          // geerbten — ohne das brach die Wisch-Erkennung fuer Tag-Wechsel
+          // (CalendarTimeline.tsx) hier zuverlaessig per pointercancel ab,
+          // waehrend dieselbe Geste im Monatsraster (kein Scroll-Container)
+          // anstandslos funktionierte.
+          style={{ touchAction: "pan-y" }}
+        >
           <div className="relative" style={{ height: gridHeight }}>
             {Array.from({ length: hours + 1 }, (_, index) => {
               const hour = START_HOUR + index;

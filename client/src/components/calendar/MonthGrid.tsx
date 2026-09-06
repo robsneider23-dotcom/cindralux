@@ -15,14 +15,17 @@ const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 export function MonthGrid({
   events,
   now,
+  month,
   onPickDay,
 }: {
   events: CalendarEvent[];
   now: Date;
+  /** Angezeigter Monat — unabhängig von `now`, damit sich vor-/zurückblättern lässt. */
+  month: Date;
   onPickDay: (date: Date) => void;
 }) {
   const { weeks, monthIndex } = useMemo(() => {
-    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const first = new Date(month.getFullYear(), month.getMonth(), 1);
     // Woche beginnt montags: Sonntag (0) auf 6 abbilden.
     const leading = (first.getDay() + 6) % 7;
     const gridStart = addDays(first, -leading);
@@ -35,8 +38,8 @@ export function MonthGrid({
         ),
       );
     }
-    return { weeks: rows, monthIndex: now.getMonth() };
-  }, [now]);
+    return { weeks: rows, monthIndex: month.getMonth() };
+  }, [month]);
 
   // Termine nach Tag bündeln — einmal, statt je Zelle zu filtern.
   const byDay = useMemo(() => {
