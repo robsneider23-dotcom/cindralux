@@ -325,6 +325,7 @@ export function SettingsPanel({
   const [tab, setTab] = useState<Tab>("kalender");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Secrets werden nie ausgeliefert. Leer = unverändert lassen.
   const [haToken, setHaToken] = useState("");
@@ -337,6 +338,7 @@ export function SettingsPanel({
       setHaToken("");
       setAiKey("");
       setSaved(false);
+      setSaveError(null);
     }
   }, [open, config]);
 
@@ -358,6 +360,8 @@ export function SettingsPanel({
 
   const save = async () => {
     setSaving(true);
+    setSaveError(null);
+    setSaved(false);
     try {
       const patch: AppConfigPatch = {
         // Leere Adresse = unverändert lassen. Der Server kennt die echte,
@@ -368,7 +372,12 @@ export function SettingsPanel({
           url: entry.url ?? "",
         })),
         trashRules: draft.trashRules,
+        trash: draft.trash,
+        calendarView: draft.calendarView,
         smartHomeActions: draft.smartHomeActions,
+        sensors: draft.sensors,
+        idle: draft.idle,
+        photos: draft.photos,
         weather: draft.weather,
         appearance: draft.appearance,
         layout: draft.layout,
@@ -381,6 +390,8 @@ export function SettingsPanel({
           baseUrl: draft.ai.baseUrl,
           model: draft.ai.model,
           systemPrompt: draft.ai.systemPrompt,
+          realtime: draft.ai.realtime,
+          gptLive: draft.ai.gptLive,
           ...(aiKey ? { apiKey: aiKey } : {}),
         },
       };
@@ -391,6 +402,8 @@ export function SettingsPanel({
       setHaToken("");
       setAiKey("");
       window.setTimeout(() => setSaved(false), 2600);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Speichern fehlgeschlagen.");
     } finally {
       setSaving(false);
     }
@@ -444,6 +457,12 @@ export function SettingsPanel({
               </button>
             </div>
           </header>
+
+          {saveError && (
+            <p role="alert" className="mx-4 my-2 shrink-0 text-sm text-signal-warn">
+              Einstellungen konnten nicht gespeichert werden: {saveError}
+            </p>
+          )}
 
           <div className="flex min-h-0 flex-1">
             {/* Reiter */}
