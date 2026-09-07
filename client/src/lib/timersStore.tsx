@@ -29,8 +29,11 @@ interface TimersValue {
 
 const TimersContext = createContext<TimersValue | null>(null);
 
+// serverTime wird im Client nicht verwendet; allein sein Ticken ist kein UI-Update.
+const timerKey = (response: TimerListResponse) => JSON.stringify(response.timers);
+
 export function TimersProvider({ children }: { children: ReactNode }) {
-  const timers = usePolling(() => api.timers(), TIMERS_INTERVAL_MS);
+  const timers = usePolling(() => api.timers(), TIMERS_INTERVAL_MS, [], timerKey);
 
   const value = useMemo<TimersValue>(
     () => ({ timers: timers.data, reloadTimers: timers.reload }),

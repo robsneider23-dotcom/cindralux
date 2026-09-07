@@ -19,7 +19,7 @@ export function hexToRgbTriplet(hex: string): string {
 
 /** Farbe mit Alpha, ohne die Farbe selbst zu kennen. */
 export function withAlpha(hex: string, alpha: number): string {
-  return `rgb(${hexToRgbTriplet(hex).split(' ').join(', ')} / ${alpha})`;
+  return `rgb(${hexToRgbTriplet(hex)} / ${alpha})`;
 }
 
 function hexToHsl(hex: string): [number, number, number] {

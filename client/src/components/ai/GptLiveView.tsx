@@ -1,7 +1,7 @@
 import { AlertTriangle, ExternalLink, Loader2, MonitorSmartphone } from 'lucide-react';
 import { useState } from 'react';
 import { api } from '@/lib/api';
-import { useDashboard } from '@/lib/store';
+import { useDashboardConfig } from '@/lib/store';
 import { cx } from '@/lib/utils';
 
 /**
@@ -13,7 +13,7 @@ import { cx } from '@/lib/utils';
  * Fenster.
  */
 export function GptLiveView() {
-  const { config } = useDashboard();
+  const config = useDashboardConfig();
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
 

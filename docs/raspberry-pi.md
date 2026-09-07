@@ -98,11 +98,15 @@ Oder direkt vom Rechner aus kopieren:
 ```bash
 rsync -av --delete \
   --exclude node_modules --exclude dist --exclude .git \
-  --exclude 'data/config.json' --exclude 'data/cache' \
-  ~/Projekte/Organisator/ pi@raspberrypi.local:~/cindralux/
+  --exclude 'data/' \
+  ~/Projekte/Rubicon/pi-dashboard/ pi@cindralux.local:~/cindralux/
 ```
 
-`data/config.json` ist bewusst ausgenommen — siehe Schritt 4.
+Das gesamte Verzeichnis `data/` ist bewusst ausgenommen, damit Konfiguration,
+Listen und Fotos auf dem Pi erhalten bleiben — siehe Schritt 4.
+
+Der Kiosk läuft unter `http://127.0.0.1:4000`. Verwaltung vom Rechner aus
+erfolgt über einen SSH-Tunnel oder einen HTTPS-Proxy: **[Zugriff und Betrieb](security.md)**.
 
 ---
 
@@ -194,9 +198,10 @@ Description=Cindralux Home Command Center
 
 [Service]
 Type=simple
+UMask=0077
 WorkingDirectory=%h/cindralux
 Environment=NODE_ENV=production
-Environment=HOST=0.0.0.0
+Environment=HOST=127.0.0.1
 Environment=PORT=4000
 Environment=PATH=%h/.local/node/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=%h/.local/node/bin/npm start
@@ -300,11 +305,14 @@ keine Zugangsdaten und kann weitergegeben werden.
 
 Getippt wird fast nur einmal — Kalenderadressen, Orte, Schlüssel. Das ist
 auf einem Touchpanel mühsam. Öffne die Einstellungen stattdessen vom
-Laptop oder Handy im selben Netz:
+Laptop über einen SSH-Tunnel:
 
-```text
-http://<IP-des-Pi>:4000
+```bash
+ssh -N -L 4000:127.0.0.1:4000 pi@cindralux.local
 ```
+
+Öffne dann `http://127.0.0.1:4000`. Für Zugriff vom Handy einen
+HTTPS-Proxy mit Anmeldung einrichten, siehe [Zugriff und Betrieb](security.md).
 
 Alles, was du dort einträgst, landet in `data/config.json` auf dem Pi und
 erscheint sofort auf dem Panel — der Server liest die Datei im laufenden
@@ -472,6 +480,8 @@ git pull                      # oder erneut rsync (ohne data/config.json!)
 npm install
 npm run build
 sudo systemctl restart cindralux-dashboard
+# Beim Benutzerdienst stattdessen:
+# systemctl --user restart cindralux-dashboard
 ```
 
 Das Dashboard im Browser lädt sich nicht von allein neu — Bildschirm berühren
@@ -523,10 +533,10 @@ journalctl -u cindralux-dashboard -n 50 --no-pager
 
 - **Kein Docker.** Ein Node-Prozess und eine systemd-Unit sind auf einem Pi
   weniger beweglich als ein Container-Stack.
-- **Kein Reverse-Proxy, kein HTTPS.** Das Dashboard hört standardmäßig auf
-  `0.0.0.0:4000` ohne Anmeldung. Das ist für ein Heimnetz gedacht — **niemals
-  ins Internet weiterleiten.** Wer von unterwegs zugreifen will, nimmt ein VPN
-  (WireGuard, Tailscale) statt einer Portfreigabe.
+- **Kein Reverse-Proxy im Standard-Setup.** Das Dashboard hört auf
+  `127.0.0.1:4000`. Zugriff vom Rechner erfolgt über einen SSH-Tunnel;
+  Netzwerkzugriff benötigt einen lokalen HTTPS-Proxy und Anmeldung, siehe
+  [Zugriff und Betrieb](security.md).
 - **Kein automatisches Update.** Ein Panel, das sich nachts selbst umbaut und
   danach nicht mehr startet, ist schlimmer als eines auf altem Stand.
 

@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import type { LayoutColumn } from "@shared/types";
 import { LauncherBar } from "./LauncherBar";
 import { panelDefinition } from "./dashboard/panelRegistry";
-import { useDashboard } from "@/lib/store";
+import { useDashboardConfig } from "@/lib/store";
 import { presetColumns } from "@/lib/layouts";
 import { cx } from "@/lib/utils";
 
@@ -38,7 +38,7 @@ const SPAN_KLASSE: Record<number, string> = {
 };
 
 export function DashboardPage() {
-  const { config } = useDashboard();
+  const config = useDashboardConfig();
 
   const layout = config?.layout;
   const spalten: LayoutColumn[] =

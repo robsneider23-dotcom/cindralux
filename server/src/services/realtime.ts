@@ -225,6 +225,7 @@ async function mintClientSecret(model: string, voice: string): Promise<MintResul
           body: JSON.stringify(attempt.body),
         },
         15_000,
+    { allowPrivate: true },
       );
 
       const body = (await response.json().catch(() => ({}))) as ClientSecretResponse;

@@ -33,7 +33,8 @@ export function WeekList({
           <div
             key={day.date}
             className={cx(
-              "flex items-center gap-3 rounded-[3px] px-2.5",
+              "flex items-center rounded-lg px-2.5",
+              card ? "gap-1.5 2xl:gap-3" : "gap-3",
               card ? "py-3" : "py-2",
               isToday && "bg-accent/[0.07]",
             )}
@@ -41,14 +42,14 @@ export function WeekList({
             <span
               className={cx(
                 "shrink-0 text-2xs",
-                card ? "w-20" : "w-24",
+                card ? "w-[4.5rem] 2xl:w-20" : "w-24",
                 isToday ? "text-accent-soft" : "text-zinc-300",
               )}
             >
               {isToday ? "Heute" : formatWeekday(`${day.date}T12:00:00`)}
             </span>
 
-            <WeatherGlyph icon={day.icon} size={20} strokeWidth={1.3} />
+            <WeatherGlyph icon={day.icon} size={20} strokeWidth={1.3} className="shrink-0" />
 
             {!card && (
               <span className="hidden w-36 shrink-0 truncate text-3xs text-zinc-500 md:block">
@@ -56,7 +57,7 @@ export function WeekList({
               </span>
             )}
 
-            <span className="digits w-10 shrink-0 text-right text-2xs text-signal-info">
+            <span className={cx("digits shrink-0 text-right text-2xs text-signal-info", card ? "w-7 2xl:w-10" : "w-10")}>
               {Math.round(day.min)}°
             </span>
 
@@ -72,14 +73,14 @@ export function WeekList({
               />
             </span>
 
-            <span className="digits w-10 shrink-0 text-2xs text-signal-warn">
+            <span className={cx("digits shrink-0 text-2xs text-signal-warn", card ? "w-7 2xl:w-10" : "w-10")}>
               {Math.round(day.max)}°
             </span>
 
             <span
               className={cx(
                 "digits w-14 shrink-0 items-center justify-end gap-1 text-3xs text-zinc-500",
-                card ? "flex" : "hidden sm:flex",
+                card ? "hidden 2xl:flex" : "hidden sm:flex",
               )}
             >
               <CloudRain size={11} strokeWidth={1.6} />

@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { AppTimer, CreateTimerRequest, TimerListResponse } from '../../../shared/types.ts';
 import { DATA_DIR } from '../lib/paths.ts';
 import { readJson, writeJson } from '../lib/jsonStore.ts';
@@ -106,8 +107,16 @@ export async function listTimers(): Promise<TimerListResponse> {
   };
 }
 
+const timerInput = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('timer'), seconds: z.number().finite().min(1).max(86400), label: z.string().max(200).optional() }),
+  z.object({ kind: z.literal('alarm'), time: z.string().regex(/^(?:[01]?\d|2[0-3]):[0-5]\d$/), repeatWeekdays: z.array(z.number().int().min(0).max(6)).max(7).optional(), label: z.string().max(200).optional() }),
+]);
 export async function createTimer(request: CreateTimerRequest): Promise<AppTimer> {
+  const parsed = timerInput.safeParse(request);
+  if (!parsed.success) throw new Error('Ungültiger Timer oder Wecker.');
+  request = parsed.data;
   const list = await load();
+  if (list.length >= 100) throw new Error('Höchstens 100 Timer und Wecker erlaubt.');
   const now = new Date();
 
   let dueAt: Date;

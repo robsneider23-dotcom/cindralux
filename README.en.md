@@ -119,7 +119,7 @@ systemd unit on the Pi, without storing secrets in the JSON):
 | `HA_BASE_URL` / `HA_TOKEN` | Home Assistant |
 | `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` | AI assistant |
 | `PORT` | API port (default 4000) |
-| `HOST` | bind address (default 127.0.0.1; `0.0.0.0` for access on the LAN) |
+| `HOST` | bind address (default 127.0.0.1; remote access requires an SSH tunnel or authenticated HTTPS proxy; see [security](docs/security.md)) |
 
 Secrets are never sent to the client — the API only reports `hasToken` or
 `hasApiKey`. Leaving a field empty when saving keeps the existing value

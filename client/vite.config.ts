@@ -18,12 +18,12 @@ export default defineConfig({
   publicDir: path.resolve(here, '../assets'),
   server: {
     port: 5173,
-    // Damit das Dashboard im LAN auch vom Handy erreichbar ist.
-    host: process.env.VITE_HOST ?? '127.0.0.1',
+    // Entwicklung nur lokal; LAN-Zugriff über den geschützten Produktionsserver.
+    host: '127.0.0.1',
     proxy: {
       '/api': {
         target: `http://127.0.0.1:${process.env.API_PORT ?? 4000}`,
-        changeOrigin: true,
+        changeOrigin: false,
       },
     },
   },

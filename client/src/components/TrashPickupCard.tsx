@@ -1,6 +1,6 @@
 import { AlertTriangle, Trash2 } from "lucide-react";
 import type { TrashPickup } from "@shared/types";
-import { useDashboard } from "@/lib/store";
+import { useTrashData } from "@/lib/store";
 import { formatWeekday, formatDateShort } from "@/lib/format";
 import { cx, withAlpha } from "@/lib/utils";
 import { Panel, EmptyState, LoadingState } from "./Panel";
@@ -28,9 +28,9 @@ function dayLabel(pickup: TrashPickup): string {
  * sehen muss, ohne hinzugehen.
  */
 export function TrashPickupCard({ className }: { className?: string }) {
-  const { trash, pending, errors } = useDashboard();
+  const { data: trash, loading, error } = useTrashData();
 
-  if (pending.trash) {
+  if ((loading && trash === null)) {
     return (
       <Panel
         title="Müllabholung"
@@ -53,7 +53,7 @@ export function TrashPickupCard({ className }: { className?: string }) {
       >
         <EmptyState
           icon={<Trash2 size={26} strokeWidth={1.2} />}
-          text={errors.trash ?? "Keine Abfuhrtermine hinterlegt"}
+          text={error ?? "Keine Abfuhrtermine hinterlegt"}
         />
       </Panel>
     );
@@ -102,7 +102,7 @@ export function TrashPickupCard({ className }: { className?: string }) {
                 height: 46,
                 background: pickup.color,
                 boxShadow: urgent
-                  ? `0 0 18px ${withAlpha(pickup.color, 0.65)}`
+                  ? `0 0 18px ${withAlpha(pickup.color, 0.2)}`
                   : "none",
               }}
             />

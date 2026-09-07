@@ -120,7 +120,7 @@ systemd-Unit auf dem Pi, ohne Secrets in der JSON abzulegen):
 | `HA_BASE_URL` / `HA_TOKEN` | Home Assistant |
 | `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` | AI-Assistent |
 | `PORT` | API-Port (Standard 4000) |
-| `HOST` | Bind-Adresse (Standard 127.0.0.1; `0.0.0.0` für Zugriff im LAN) |
+| `HOST` | Bind-Adresse (Standard 127.0.0.1; Netzwerkzugriff siehe [Zugriff und Betrieb](docs/security.md)) |
 
 Secrets werden nie an den Client ausgeliefert — die API meldet nur `hasToken`
 bzw. `hasApiKey`. Ein leeres Feld beim Speichern lässt einen bestehenden Wert

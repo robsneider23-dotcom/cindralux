@@ -77,13 +77,15 @@ else
   wert "Server" "antwortet nicht (noch nicht gestartet?)"
 fi
 if command -v systemctl >/dev/null; then
-  if systemctl cat cindralux-dashboard >/dev/null 2>&1; then
+  if systemctl --user cat cindralux-dashboard >/dev/null 2>&1; then
+    wert "Benutzerdienst" "$(systemctl --user is-active cindralux-dashboard 2>/dev/null)"
+  elif systemctl cat cindralux-dashboard >/dev/null 2>&1; then
     wert "Dienst" "$(systemctl is-active cindralux-dashboard 2>/dev/null)"
   else
     wert "Dienst" "nicht eingerichtet"
   fi
 fi
-ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
-wert "Adresse im Netz" "http://${ip:-$(hostname).local}:4000"
+wert "Kiosk-Adresse" "http://127.0.0.1:4000"
+wert "Netzwerkzugriff" "SSH-Tunnel oder HTTPS-Proxy (docs/security.md)"
 
 echo

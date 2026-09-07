@@ -19,14 +19,14 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=simple
+UMask=0077
 User=pi
 Group=pi
 WorkingDirectory=/home/pi/cindralux
 
-# 0.0.0.0 macht das Dashboard auch vom Handy im WLAN erreichbar.
-# Für reinen Kiosk-Betrieb 127.0.0.1 eintragen — dann kommt niemand sonst dran.
+# Nur lokal lauschen. LAN-Zugriff über einen HTTPS-Proxy: docs/security.md.
 Environment=NODE_ENV=production
-Environment=HOST=0.0.0.0
+Environment=HOST=127.0.0.1
 Environment=PORT=4000
 
 # node/npm liegen hier unter dem Nutzer, nicht systemweit unter /usr/bin —

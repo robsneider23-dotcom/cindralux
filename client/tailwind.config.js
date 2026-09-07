@@ -77,8 +77,8 @@ export default {
         mono: ["var(--font-mono, 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace)"],
       },
       letterSpacing: {
-        label: '0.22em',
-        wide2: '0.14em',
+        label: '0.16em',
+        wide2: '0.1em',
       },
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '0.95rem' }],

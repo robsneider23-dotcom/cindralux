@@ -52,15 +52,15 @@ export async function resolveLocalDir(): Promise<string> {
  * Systems ausliefern.
  */
 export async function resolvePhotoPath(name: string): Promise<string | null> {
-  const dir = await resolveLocalDir();
-  const target = path.resolve(dir, name);
-  const withinDir = target === dir || target.startsWith(dir + path.sep);
-  if (!withinDir) return null;
-  if (!EXTENSIONS.has(path.extname(target).toLowerCase())) return null;
-
+  // Nur unmittelbare Dateien. realpath schließt Symlinks aus dem Ordner aus.
+  if (!name || name !== path.basename(name) || /[\\/\x00]/.test(name) || !EXTENSIONS.has(path.extname(name).toLowerCase())) return null;
   try {
-    const stat = await fs.stat(target);
-    return stat.isFile() ? target : null;
+    const dir = await fs.realpath(await resolveLocalDir());
+    const target = path.join(dir, name);
+    const stat = await fs.lstat(target);
+    if (!stat.isFile() || stat.isSymbolicLink()) return null;
+    const real = await fs.realpath(target);
+    return path.dirname(real) === dir ? real : null;
   } catch {
     return null;
   }
@@ -235,9 +235,10 @@ const CONTENT_TYPE_EXTENSIONS: Record<string, string> = {
  */
 function safeGoogleFilename(item: PickerMediaItem, contentType: string): string {
   const rawStem = path.basename(item.filename, path.extname(item.filename));
-  const stem = rawStem.replace(/[^\w-]+/g, '_').slice(0, 60) || item.id;
+  const stem = rawStem.replace(/[^\w-]+/g, '_').slice(0, 60) || 'photo';
+  const id = item.id.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40) || 'image';
   const ext = CONTENT_TYPE_EXTENSIONS[contentType.split(';')[0]?.trim() ?? ''] ?? '.jpg';
-  return `google-${item.id.slice(0, 12)}-${stem}${ext}`;
+  return `google-${id}-${stem}${ext}`;
 }
 
 export async function startGooglePickerSession(): Promise<GooglePickerSession> {
@@ -264,7 +265,10 @@ export async function importGooglePickerSession(sessionId: string): Promise<Phot
     try {
       const { buffer, contentType } = await downloadPickerMediaFile(item);
       const filename = safeGoogleFilename(item, contentType);
-      await fs.writeFile(path.join(dir, filename), buffer);
+      // O_EXCL verhindert das Überschreiben bestehender Dateien oder Symlink-Ziele.
+      await fs.writeFile(path.join(dir, filename), buffer, { flag: 'wx', mode: 0o600 }).catch((error: NodeJS.ErrnoException) => {
+        if (error.code !== 'EEXIST') throw error;
+      });
       meta[filename] = { ...meta[filename], origin: 'google', takenAt: item.createTime };
     } catch (error) {
       // Ein einzelnes fehlgeschlagenes Bild darf den Rest des Imports nicht kippen.

@@ -1,0 +1,18 @@
+[Unit]
+Description=Cindralux Home Command Center
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+UMask=0077
+WorkingDirectory=%h/cindralux
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=4000
+Environment=PATH=%h/.local/node/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/node/bin/npm start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

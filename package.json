@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Cindralux — lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
+  "description": "Cindralux \u2014 lokales Touchscreen-Dashboard fuer Raspberry-Pi-Kiosk: Kalender, Wetter, Muellabholung, Smart Home, AI.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
     "build": "npm run build --workspace client",
     "start": "npm run start --workspace server",
     "preview": "npm run preview --workspace client",
-    "typecheck": "npm run typecheck --workspace client && npm run typecheck --workspace server"
+    "typecheck": "npm run typecheck --workspace client && npm run typecheck --workspace server",
+    "test:security": "node --import tsx --test server/tests/security.test.ts"
   },
   "devDependencies": {
     "concurrently": "^9.2.4"
@@ -34,6 +35,6 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
-    "esbuild@0.21.5": true
+    "esbuild@0.25.12": true
   }
 }

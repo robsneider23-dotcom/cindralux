@@ -17,7 +17,7 @@ import type {
   WeatherSummary,
 } from '@shared/types';
 import { api } from './api';
-import { usePolling } from '@/hooks/usePolling';
+import { usePolling, type PollingState } from '@/hooks/usePolling';
 import { accents, fontPairings } from '@/theme/tokens.js';
 import { deriveAccentShades, hexToRgbTriplet } from './utils';
 
@@ -69,6 +69,29 @@ interface DashboardValue {
 }
 
 const DashboardContext = createContext<DashboardValue | null>(null);
+
+// Panels abonnieren nur ihre Daten; Sensorabfragen sollen keinen Kalender zeichnen.
+const ConfigContext = createContext<PublicAppConfig | null>(null);
+const CalendarContext = createContext<PollingState<CalendarEventsResponse> | null>(null);
+const WeatherContext = createContext<PollingState<WeatherSummary> | null>(null);
+const TrashContext = createContext<PollingState<TrashResponse> | null>(null);
+
+export const useDashboardConfig = () => useContext(ConfigContext);
+export function useCalendarData() {
+  const value = useContext(CalendarContext);
+  if (!value) throw new Error('DashboardProvider fehlt');
+  return value;
+}
+export function useWeatherData() {
+  const value = useContext(WeatherContext);
+  if (!value) throw new Error('DashboardProvider fehlt');
+  return value;
+}
+export function useTrashData() {
+  const value = useContext(TrashContext);
+  if (!value) throw new Error('DashboardProvider fehlt');
+  return value;
+}
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<PublicAppConfig | null>(null);
@@ -210,7 +233,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       homeAssistant.reload(),
       sensors.reload(),
     ]);
-  }, [reloadConfig, calendar, weather, trash, homeAssistant, sensors]);
+  }, [reloadConfig, calendar.reload, weather.reload, trash.reload, homeAssistant.reload, sensors.reload]);
 
   const value = useMemo<DashboardValue>(
     () => ({
@@ -256,7 +279,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     ],
   );
 
-  return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
+  return (
+    <DashboardContext.Provider value={value}>
+      <ConfigContext.Provider value={config}>
+        <CalendarContext.Provider value={calendar}>
+          <WeatherContext.Provider value={weather}>
+            <TrashContext.Provider value={trash}>{children}</TrashContext.Provider>
+          </WeatherContext.Provider>
+        </CalendarContext.Provider>
+      </ConfigContext.Provider>
+    </DashboardContext.Provider>
+  );
 }
 
 export function useDashboard(): DashboardValue {

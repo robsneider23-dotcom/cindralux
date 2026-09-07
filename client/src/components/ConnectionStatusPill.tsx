@@ -10,8 +10,8 @@ const TONE: Record<
   ok: {
     dot: "#34d399",
     text: "text-signal-ok",
-    border: "border-signal-ok/25",
-    bg: "bg-signal-ok/[0.07]",
+    border: "border-signal-ok/15",
+    bg: "bg-signal-ok/[0.04]",
   },
   warn: {
     dot: "#fbbf24",
@@ -67,7 +67,7 @@ function StatusDot({
           width: size,
           height: size,
           background: color,
-          boxShadow: `0 0 8px ${color}, inset 0 0 2px rgba(255,255,255,0.6)`,
+          boxShadow: "0 0 0 3px rgb(var(--hairline) / 0.04)",
         }}
       />
     </span>
@@ -105,7 +105,7 @@ export function ConnectionStatusPill({
     <Element
       {...(onClick ? { onClick, type: "button" as const } : {})}
       className={cx(
-        "flex items-center gap-2.5 rounded-[3px] border px-3 py-2 text-left transition-all duration-200 ease-calm",
+        "flex items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition-all duration-200 ease-calm",
         style.border,
         style.bg,
         onClick && "touchable min-h-0 active:scale-[0.97]",

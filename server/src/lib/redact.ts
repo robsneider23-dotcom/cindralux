@@ -28,11 +28,20 @@ export function urlHint(rawUrl: string): string | undefined {
     const last = segments.at(-1);
     // Nur den letzten Abschnitt zeigen, und auch den nur, wenn er harmlos
     // aussieht — ein langer Zufallsstring waere selbst schon das Geheimnis.
-    const safeLast = last && last.length <= 24 && !/private|secret|token/i.test(last)
+    const safeLast = last && /^(?:basic|calendar|feed)\.ics$/i.test(last)
       ? last
       : undefined;
     return safeLast ? `${parsed.host}/…/${safeLast}` : parsed.host;
   } catch {
     return 'ungültige Adresse';
   }
+}
+
+let secrets: string[] = [];
+export function registerSecrets(values: string[]): void {
+  secrets = [...new Set(values.filter((value) => value.length >= 4))].sort((a, b) => b.length - a.length);
+}
+export function redactSecrets(message: string): string {
+  for (const secret of secrets) message = message.replaceAll(secret, '[Geheimnis entfernt]');
+  return message;
 }

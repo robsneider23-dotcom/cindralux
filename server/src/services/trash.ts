@@ -1,4 +1,5 @@
 import ical from 'node-ical';
+import { parseTrashIsolated } from '../lib/icsWorker.ts';
 import type { TrashKind, TrashPickup, TrashResponse, TrashRule } from '../../../shared/types.ts';
 import { addDays, daysBetween, fromDateKey, startOfDay, toDateKey } from '../lib/dates.ts';
 import { fetchWithTimeout, describeError } from '../lib/http.ts';
@@ -72,7 +73,7 @@ async function trashFromIcs(
 ): Promise<TrashResponse> {
   try {
     const text = trash.icsUrl.trim()
-      ? await loadTrashIcs(trash.icsUrl.trim())
+      ? await loadTrashIcs(trash.icsUrl.trim(), true)
       : trash.icsContent;
 
     if (!text.trim()) {
@@ -84,7 +85,7 @@ async function trashFromIcs(
       };
     }
 
-    const upcoming = parseTrashIcs(text, today, HORIZON_DAYS).sort(
+    const upcoming = (await parseTrashIsolated(text, today, HORIZON_DAYS)).sort(
       (a, b) => a.date.localeCompare(b.date) || a.label.localeCompare(b.label, 'de'),
     );
 
@@ -128,7 +129,7 @@ function classify(summary: string): { kind: TrashKind; label: string } {
 }
 
 /** ICS-Text in Abholtermine uebersetzen. */
-function parseTrashIcs(text: string, from: Date, horizonDays: number): TrashPickup[] {
+export function parseTrashIcs(text: string, from: Date, horizonDays: number): TrashPickup[] {
   const parsed = ical.sync.parseICS(text);
   const until = addDays(from, horizonDays);
   const pickups: TrashPickup[] = [];
@@ -162,14 +163,14 @@ function parseTrashIcs(text: string, from: Date, horizonDays: number): TrashPick
 let icsCache: { at: number; text: string; url: string } | null = null;
 const ICS_TTL_MS = 6 * 3600_000;
 
-async function loadTrashIcs(url: string): Promise<string> {
-  if (icsCache && icsCache.url === url && Date.now() - icsCache.at < ICS_TTL_MS) {
+async function loadTrashIcs(url: string, allowPrivate = false): Promise<string> {
+  if (icsCache && icsCache.url === url && allowPrivate && Date.now() - icsCache.at < ICS_TTL_MS) {
     return icsCache.text;
   }
 
   const response = await fetchWithTimeout(url.replace(/^webcal:\/\//i, 'https://'), {
     headers: { Accept: 'text/calendar, text/plain;q=0.9, */*;q=0.5' },
-  });
+  }, 10_000, { allowPrivate });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
   const text = await response.text();
@@ -195,7 +196,7 @@ export async function validateTrashIcs(
   try {
     const text = await loadTrashIcs(url.trim());
     const today = startOfDay(new Date());
-    const pickups = parseTrashIcs(text, today, 365);
+    const pickups = await parseTrashIsolated(text, today, 365);
     const kinds = [...new Set(pickups.map((entry) => entry.label))];
     return {
       ok: pickups.length > 0,

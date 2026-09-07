@@ -59,7 +59,7 @@ export function PanelBackdrop({
   return (
     <div
       aria-hidden
-      className={cx('pointer-events-none absolute inset-0 overflow-hidden', className)}
+      className={cx('pointer-events-none absolute inset-0 overflow-hidden opacity-40', className)}
     >
       {render(variant, tint)}
     </div>

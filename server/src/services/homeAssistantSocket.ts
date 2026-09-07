@@ -1,4 +1,5 @@
-import { describeError } from '../lib/http.ts';
+import { WebSocket } from 'undici';
+import { describeError, safeHttpUrl, configuredAgent } from '../lib/http.ts';
 import { loadConfig, onConfigChanged } from './config.ts';
 
 /**
@@ -59,7 +60,7 @@ const MAX_RECONNECT_DELAY_MS = 30_000;
 let connectingFor = '';
 
 function toWebSocketUrl(baseUrl: string): string {
-  const url = new URL(baseUrl);
+  const url = safeHttpUrl(baseUrl, true);
   url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
   url.pathname = url.pathname.replace(/\/+$/, '') + '/api/websocket';
   return url.toString();
@@ -109,7 +110,7 @@ async function connect(): Promise<void> {
 
   let ws: WebSocket;
   try {
-    ws = new WebSocket(toWebSocketUrl(baseUrl));
+    ws = new WebSocket(toWebSocketUrl(baseUrl), { dispatcher: configuredAgent });
   } catch (error) {
     console.warn(`[ha-socket] Verbindung nicht aufbaubar: ${describeError(error)}`);
     scheduleReconnect(key);

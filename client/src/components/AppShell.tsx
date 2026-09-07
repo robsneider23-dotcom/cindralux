@@ -1,16 +1,20 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { StatusHeader } from "./StatusHeader";
-import { SettingsPanel } from "./SettingsPanel";
 import { CindraluxBackground } from "./CindraluxBackground";
 import { NightOverlay } from "./NightOverlay";
 import { TimerOverlay } from "./TimerOverlay";
 import { useNightMode } from "@/hooks/useNightMode";
 import { useIdle } from "@/hooks/useIdle";
 import { IdleScreen } from "./idle/IdleScreen";
-import { useDashboard } from "@/lib/store";
+import { useDashboardConfig } from "@/lib/store";
 import { unlockAudio } from "@/lib/chime";
 import { TouchKeyboard } from "./TouchKeyboard";
 import { useOnScreenKeyboard } from "@/hooks/useOnScreenKeyboard";
+
+// Einmal beim ersten Öffnen laden; danach bleibt der gewählte Reiter erhalten.
+const SettingsPanel = lazy(() => import("./SettingsPanel").then((module) => ({
+  default: module.SettingsPanel,
+})));
 
 /**
  * Rahmen der Anwendung: Hintergrundebene, Statusleiste, Inhalt und das
@@ -19,7 +23,13 @@ import { useOnScreenKeyboard } from "@/hooks/useOnScreenKeyboard";
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { config } = useDashboard();
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const openSettings = useCallback(() => {
+    setSettingsLoaded(true);
+    setSettingsOpen(true);
+  }, []);
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
+  const config = useDashboardConfig();
   const { idle, wake } = useIdle(
     config?.idle.enabled ?? false,
     config?.idle.afterSeconds ?? 120,
@@ -71,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       }}
     >
       <CindraluxBackground />
-      <StatusHeader onOpenSettings={() => setSettingsOpen(true)} />
+      <StatusHeader onOpenSettings={openSettings} />
       <main className="relative z-10 flex min-h-0 flex-1 flex-col gap-2.5">
         {children}
       </main>
@@ -80,10 +90,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       <NightOverlay night={night} />
       <TimerOverlay />
       <TouchKeyboard aktiv={tastatur} />
-      <SettingsPanel
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
+      {settingsLoaded && (
+        <Suspense fallback={
+          <div role="status" className="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/95 text-zinc-300">
+            Einstellungen werden geladen …
+          </div>
+        }>
+          <SettingsPanel open={settingsOpen} onClose={closeSettings} />
+        </Suspense>
+      )}
     </div>
   );
 }

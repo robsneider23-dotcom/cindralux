@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
  * Uhrzeit, die exakt auf der Sekunden- bzw. Minutengrenze tickt.
  * Ein fixes setInterval driftet mit der Zeit sichtbar auseinander.
  */
-export function useClock(withSeconds: boolean): Date {
+export function useClock(withSeconds: boolean, enabled = true): Date {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
+    if (!enabled) return;
     let timer: number;
 
     const schedule = () => {
@@ -22,7 +23,7 @@ export function useClock(withSeconds: boolean): Date {
 
     schedule();
     return () => window.clearTimeout(timer);
-  }, [withSeconds]);
+  }, [withSeconds, enabled]);
 
   return now;
 }

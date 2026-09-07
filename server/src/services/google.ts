@@ -146,7 +146,7 @@ export function consumeOAuthState(state: string): boolean {
     !!pendingOAuthState &&
     pendingOAuthState.expiresAt > Date.now() &&
     pendingOAuthState.value === state;
-  pendingOAuthState = null;
+  if (valid || (pendingOAuthState && pendingOAuthState.expiresAt <= Date.now())) pendingOAuthState = null;
   return valid;
 }
 
@@ -605,6 +605,7 @@ export async function downloadPickerMediaFile(
     `${item.baseUrl}=w2048-h2048`,
     { headers: { Authorization: `Bearer ${token}` } },
     20_000,
+    { maxBytes: 20 * 1024 * 1024 },
   );
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
 

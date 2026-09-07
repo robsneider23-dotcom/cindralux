@@ -34,7 +34,7 @@ export function LauncherBar({ className }: { className?: string }) {
 
   return (
     <>
-      <section className={cx('panel scanlines noise flex shrink-0 items-stretch gap-px', className)}>
+      <section className={cx('panel flex shrink-0 items-stretch gap-1 p-1.5', className)}>
         <LauncherButton
           icon={<House size={22} strokeWidth={1.5} />}
           label="Smart Home"
@@ -78,7 +78,7 @@ export function LauncherBar({ className }: { className?: string }) {
             type="button"
             onClick={() => setTimerDialog(true)}
             aria-label="Timer oder Wecker stellen"
-            className="touchable flex h-11 w-11 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.09] bg-white/[0.025] text-zinc-400 active:border-accent/50 active:bg-accent/15 active:text-accent-soft short:h-9 short:w-9"
+            className="touchable flex h-11 w-11 min-h-0 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.025] text-zinc-400 active:border-accent/50 active:bg-accent/15 active:text-accent-soft short:h-9 short:w-9"
           >
             <Plus size={19} strokeWidth={1.8} />
           </button>
@@ -173,9 +173,9 @@ function LauncherButton({
     <button
       type="button"
       onClick={onClick}
-      className="touchable relative flex min-w-0 flex-1 items-center gap-3.5 px-5 text-left transition-colors duration-200 active:bg-accent/[0.09] short:gap-2.5 short:px-3.5"
+      className="touchable launcher-button relative flex min-w-0 flex-1 items-center gap-3.5 px-5 text-left transition-colors duration-200 active:bg-accent/[0.09] short:gap-2.5 short:px-3.5"
     >
-      <span className="shrink-0 text-zinc-400">{icon}</span>
+      <span className="launcher-icon shrink-0">{icon}</span>
       <span className="min-w-0">
         <span className="block truncate text-[clamp(0.9rem,1.2vw,1.05rem)] font-medium leading-tight text-zinc-100">
           {label}

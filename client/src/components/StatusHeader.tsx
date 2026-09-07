@@ -49,7 +49,7 @@ export function StatusHeader({
     : (errors.config ?? "Offline");
 
   return (
-    <header className="panel scanlines noise relative z-10 flex shrink-0 items-center gap-4 overflow-hidden px-4 py-3 short:py-2 lg:gap-5 lg:px-5">
+    <header className="panel relative z-10 flex shrink-0 items-center gap-4 overflow-hidden px-4 py-3 short:py-2 lg:gap-5 lg:px-5">
       {/* Marke */}
       <div className="flex shrink-0 items-center gap-3.5">
         <img
@@ -58,7 +58,7 @@ export function StatusHeader({
           className="h-11 w-11 shrink-0 short:h-9 short:w-9"
         />
         <div className="hidden min-w-0 leading-none sm:block">
-          <div className="text-[clamp(0.95rem,1.4vw,1.2rem)] font-semibold tracking-[0.2em] text-zinc-100">
+          <div className="text-[clamp(0.95rem,1.4vw,1.2rem)] font-semibold tracking-[0.16em] text-zinc-100">
             CINDRALUX
           </div>
           <div className="label-dim mt-1.5">Home Command Center</div>
@@ -117,7 +117,7 @@ export function StatusHeader({
           type="button"
           onClick={onOpenSettings}
           aria-label="Einstellungen öffnen"
-          className="touchable flex h-14 w-14 items-center justify-center rounded-[3px] border border-white/[0.09] bg-white/[0.028] text-zinc-400 active:border-accent/50 active:bg-accent/15 active:text-accent-soft short:h-12 short:w-12"
+          className="touchable flex h-14 w-14 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.028] text-zinc-400 active:border-accent/50 active:bg-accent/15 active:text-accent-soft short:h-12 short:w-12"
         >
           <Settings2 size={22} strokeWidth={1.5} />
         </button>

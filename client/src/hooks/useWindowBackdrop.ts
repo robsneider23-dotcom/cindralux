@@ -1,5 +1,5 @@
 import type { BackdropStyle, WindowId } from '@shared/types';
-import { useDashboard } from '@/lib/store';
+import { useDashboardConfig } from '@/lib/store';
 
 /**
  * Den in den Einstellungen gewählten Hintergrundstil eines Fensters holen.
@@ -8,7 +8,7 @@ import { useDashboard } from '@/lib/store';
  * genau einer Stelle steht und die Einstellungen sofort durchschlagen.
  */
 export function useWindowBackdrop(window: WindowId | undefined): BackdropStyle | null {
-  const { config } = useDashboard();
+  const config = useDashboardConfig();
   if (!window) return null;
   return config?.appearance.windowBackdrops[window] ?? null;
 }

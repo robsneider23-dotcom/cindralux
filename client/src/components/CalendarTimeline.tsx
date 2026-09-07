@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CalendarEvent, CalendarView } from "@shared/types";
 import { api } from "@/lib/api";
-import { useDashboard } from "@/lib/store";
+import { useCalendarData, useDashboardConfig } from "@/lib/store";
 import { useClock } from "@/hooks/useClock";
 import { useSwipe } from "@/hooks/useSwipe";
 import {
@@ -48,7 +48,8 @@ const VIEW_LABELS: Array<{ id: CalendarView; label: string }> = [
 ];
 
 export function CalendarTimeline({ className }: { className?: string }) {
-  const { calendar, config, pending, reloadCalendar, errors } = useDashboard();
+  const config = useDashboardConfig();
+  const { data: calendar, loading, error, reload: reloadCalendar } = useCalendarData();
   const now = useClock(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -190,7 +191,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
       meta={
         <span className="flex items-center gap-2">
           {/* Ansichtsumschalter */}
-          <span className="flex overflow-hidden rounded-[3px] border border-white/[0.08]">
+          <span className="flex overflow-hidden rounded-lg border border-white/[0.08]">
             {VIEW_LABELS.map((entry) => (
               <button
                 key={entry.id}
@@ -215,7 +216,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
                 type="button"
                 aria-label="Vorheriger Tag"
                 onClick={() => navigateDay(-1)}
-                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-lg border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
               >
                 <ChevronLeft size={14} strokeWidth={1.8} />
               </button>
@@ -223,7 +224,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
                 type="button"
                 aria-label="Nächster Tag"
                 onClick={() => navigateDay(1)}
-                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-lg border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
               >
                 <ChevronRight size={14} strokeWidth={1.8} />
               </button>
@@ -237,7 +238,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
                 type="button"
                 aria-label="Vorheriger Monat"
                 onClick={() => navigateMonth(-1)}
-                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-lg border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
               >
                 <ChevronLeft size={14} strokeWidth={1.8} />
               </button>
@@ -245,7 +246,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
                 type="button"
                 aria-label="Nächster Monat"
                 onClick={() => navigateMonth(1)}
-                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+                className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-lg border border-white/[0.08] text-zinc-500 active:border-accent/50 active:text-accent-soft"
               >
                 <ChevronRight size={14} strokeWidth={1.8} />
               </button>
@@ -262,7 +263,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
             type="button"
             onClick={refresh}
             aria-label="Kalender neu laden"
-            className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.02] text-zinc-500 active:border-accent/50 active:text-accent-soft"
+            className="touchable -my-1 flex h-9 w-9 min-h-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.02] text-zinc-500 active:border-accent/50 active:text-accent-soft"
           >
             <RefreshCw
               size={14}
@@ -274,7 +275,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
       }
       scroll={view === "woche"}
     >
-      {pending.calendar ? (
+      {(loading && calendar === null) ? (
         <LoadingState text="Lade Kalender …" />
       ) : view === "monat" ? (
         // touch-action: pan-y erlaubt dem Browser weiterhin senkrechtes
@@ -314,7 +315,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
       ) : total === 0 ? (
         <EmptyState
           icon={<CalendarDays size={26} strokeWidth={1.2} />}
-          text={errors.calendar ?? "Keine Termine in den nächsten 7 Tagen"}
+          text={error ?? "Keine Termine in den nächsten 7 Tagen"}
         />
       ) : (
         <div className="px-3 pb-3 pt-2">
@@ -477,7 +478,7 @@ function DaySection({ day, now }: { day: DayBucket; now: Date }) {
 function AllDayRow({ event }: { event: CalendarEvent }) {
   return (
     <div
-      className="flex items-center gap-2.5 rounded-[3px] border px-3 py-2"
+      className="flex items-center gap-2.5 rounded-lg border px-3 py-2"
       style={{
         borderColor: withAlpha(event.calendarColor, 0.28),
         background: withAlpha(event.calendarColor, 0.09),
@@ -516,8 +517,8 @@ function TimedRow({
   return (
     <div
       className={cx(
-        "flex items-stretch gap-3 rounded-[3px] py-2 pl-1 pr-2.5 transition-opacity duration-200",
-        past && "opacity-35",
+        "flex items-stretch gap-3 rounded-lg py-2 pl-1 pr-2.5 transition-opacity duration-200",
+        past && "opacity-60",
         running && "bg-white/[0.035]",
       )}
       style={

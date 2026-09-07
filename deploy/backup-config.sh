@@ -12,6 +12,7 @@
 #   17 4 * * * /home/pi/cindralux/deploy/backup-config.sh >> /home/pi/cindralux/data/backups/backup.log 2>&1
 
 set -euo pipefail
+umask 077
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="$ROOT/data/config.json"
@@ -21,6 +22,8 @@ KEEP_DAYS=14
 [ -f "$SRC" ] || { echo "$(date -Is) config.json fehlt — nichts zu sichern"; exit 0; }
 
 mkdir -p "$DEST_DIR"
+chmod 700 "$DEST_DIR"
+find "$DEST_DIR" -maxdepth 1 -type f -name 'config-*.json.gz' -exec chmod 600 {} +
 STAMP="$(date +%Y-%m-%d_%H%M)"
 gzip -c "$SRC" > "$DEST_DIR/config-$STAMP.json.gz"
 echo "$(date -Is) gesichert: config-$STAMP.json.gz"

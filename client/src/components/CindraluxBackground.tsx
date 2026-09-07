@@ -1,4 +1,4 @@
-import { useDashboard } from "@/lib/store";
+import { useDashboardConfig } from "@/lib/store";
 
 /**
  * Hintergrundebene des Dashboards.
@@ -8,7 +8,7 @@ import { useDashboard } from "@/lib/store";
  * Scan-Streifen. Alles ohne Interaktion und hinter dem gesamten Inhalt.
  */
 export function CindraluxBackground() {
-  const { config } = useDashboard();
+  const config = useDashboardConfig();
   const background = config?.appearance.background ?? "";
 
   return (
@@ -21,8 +21,8 @@ export function CindraluxBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(90% 60% at 12% -10%, rgb(var(--accent) / 0.16), transparent 60%)," +
-            "radial-gradient(70% 50% at 100% 108%, rgba(34, 211, 238, 0.07), transparent 62%)",
+            "radial-gradient(90% 60% at 12% -10%, rgb(var(--accent) / 0.09), transparent 60%)," +
+            "radial-gradient(70% 50% at 100% 108%, rgba(34, 211, 238, 0.035), transparent 62%)",
         }}
       />
 
@@ -33,7 +33,7 @@ export function CindraluxBackground() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url(/cindralux/${background})`,
-            opacity: "var(--backdrop-opacity)",
+            opacity: "calc(var(--backdrop-opacity) * 0.35)",
             maskImage:
               "radial-gradient(120% 100% at 70% 40%, #000 20%, transparent 78%)",
             WebkitMaskImage:
@@ -46,7 +46,7 @@ export function CindraluxBackground() {
       <img
         src="/cindralux/watermark.svg"
         alt=""
-        className="absolute -bottom-[14vh] -right-[8vw] w-[52vh] min-w-[320px] opacity-[0.07] animate-spin-slow"
+        className="absolute -bottom-[14vh] -right-[8vw] w-[52vh] min-w-[320px] opacity-[0.025]"
       />
 
       {/* Sehr langsamer Lichtstreifen — gibt der Flaeche Leben, ohne zu stoeren */}
@@ -57,7 +57,7 @@ export function CindraluxBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 90% at 50% 45%, transparent 45%, rgba(0,0,0,0.72) 100%)",
+            "radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(var(--shade) / 0.3) 100%)",
         }}
       />
     </div>

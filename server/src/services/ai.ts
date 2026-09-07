@@ -231,6 +231,7 @@ async function callChatCompletions(messages: AiMessage[]): Promise<AiChatRespons
       }),
     },
     30_000,
+    { allowPrivate: true },
   );
 
   const data = (await response.json()) as ChatCompletionResponse;

@@ -1,6 +1,6 @@
 import { ChevronRight, CloudRain, Droplets, MapPin, Wind } from "lucide-react";
 import { useState } from "react";
-import { useDashboard } from "@/lib/store";
+import { useWeatherData } from "@/lib/store";
 import { formatTemp, formatWeekdayShort, toDateKey } from "@/lib/format";
 import { cx } from "@/lib/utils";
 import { Panel, EmptyState, LoadingState } from "./Panel";
@@ -10,17 +10,17 @@ import { WeekList } from "./weather/WeekList";
 
 /** Wetter mit aktuellem Wert, Tageshoch/-tief und 7-Tage-Vorschau. */
 export function WeatherCard({ className }: { className?: string }) {
-  const { weather, pending, errors } = useDashboard();
+  const { data: weather, loading, error } = useWeatherData();
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   if (!weather) {
     return (
       <Panel title="Wetter" className={className}>
         <div className="py-10">
-          {pending.weather ? (
+          {(loading && weather === null) ? (
             <LoadingState text="Lade Wetterdaten …" />
           ) : (
-            <EmptyState text={errors.weather ?? "Keine Wetterdaten"} />
+            <EmptyState text={error ?? "Keine Wetterdaten"} />
           )}
         </div>
       </Panel>
@@ -42,14 +42,14 @@ export function WeatherCard({ className }: { className?: string }) {
     <>
       <Panel
         title="Wetter"
-        className={className}
+        className={cx("weather-panel", className)}
         backdrop="weather"
         onActivate={() => setDetailsOpen(true)}
         activateLabel="Wetterdetails öffnen"
         meta={
-          <span className="flex items-center gap-1.5">
-            <MapPin size={11} strokeWidth={1.6} />
-            {weather.locationName}
+          <span className="flex min-w-0 items-center gap-1.5">
+            <MapPin size={11} strokeWidth={1.6} className="shrink-0" />
+            <span className="truncate" title={weather.locationName}>{weather.locationName}</span>
             {weather.source === "seed" && (
               <span className="text-signal-warn">· Demo</span>
             )}
@@ -101,7 +101,7 @@ export function WeatherCard({ className }: { className?: string }) {
                 </span>
               </span>
 
-              <span className="digits ml-auto hidden shrink-0 items-center gap-2.5 text-3xs text-zinc-500 xl:flex">
+              <span className="weather-extra digits ml-auto hidden shrink-0 items-center gap-2.5 text-3xs text-zinc-500 2xl:flex">
                 <span className="flex items-center gap-1">
                   <CloudRain size={11} strokeWidth={1.6} />
                   {weather.precipitationChance} %
@@ -121,7 +121,7 @@ export function WeatherCard({ className }: { className?: string }) {
               <span className="truncate text-sm text-zinc-400 short:text-2xs">
                 {weather.description}
               </span>
-              <span className="digits hidden shrink-0 text-3xs text-zinc-600 xl:block">
+              <span className="weather-apparent digits hidden shrink-0 text-3xs text-zinc-600 2xl:block">
                 gefühlt {formatTemp(weather.apparentTemperature)}
               </span>
             </div>

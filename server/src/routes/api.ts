@@ -1,4 +1,5 @@
 import os from 'node:os';
+import { z } from 'zod';
 import { Router, type NextFunction, type Request, type Response } from 'express';
 import type {
   AiChatRequest,
@@ -76,6 +77,7 @@ import { chat, dailyBriefing, testAiConnection } from '../services/ai.ts';
 import { createRealtimeSession, RealtimeError, testRealtime } from '../services/realtime.ts';
 import { openGptLive } from '../services/gptLive.ts';
 import { describeError } from '../lib/http.ts';
+import { escapeHtml } from '../lib/security.ts';
 import { readCpuTemperatureC } from '../lib/systemTemp.ts';
 
 export const api = Router();
@@ -133,7 +135,21 @@ api.put(
   '/config',
   route(async (req, res) => {
     const patch = (req.body ?? {}) as AppConfigPatch;
-    const saved = await saveConfig(patch);
+    const current = await loadConfig();
+    if (!res.locals.deviceLocal && (
+      (patch.ai?.gptLive?.command !== undefined && patch.ai.gptLive.command !== current.ai.gptLive.command) ||
+      (patch.photos?.localDir !== undefined && patch.photos.localDir !== current.photos.localDir)
+    )) {
+      res.status(403).json({ error: 'Gerätebefehle und Bilderordner dürfen nur direkt am Gerät geändert werden.' });
+      return;
+    }
+    let saved;
+    try { saved = await saveConfig(patch); }
+    catch (error) {
+      if (!(error instanceof z.ZodError)) throw error;
+      res.status(400).json({ error: 'Ungültige Einstellungen.', fields: error.issues.map((issue) => issue.path.join('.')) });
+      return;
+    }
 
     // Kalender- und Wetterdaten haengen direkt an der Konfiguration.
     invalidateCalendarCache();
@@ -208,7 +224,7 @@ api.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        message: error instanceof Error ? error.message : String(error),
+        message: describeError(error),
       });
     }
   }),
@@ -234,9 +250,8 @@ api.post(
 /*
  * Neustart und Herunterfahren.
  *
- * Achtung: Das Dashboard hat keine Anmeldung und lauscht im Heimnetz. Wer die
- * Adresse kennt, kann den Pi damit ausschalten. Fuer ein Geraet an der Wand
- * ist das vertretbar — ins Internet gehoert es ohnehin nie.
+ * Die zentrale Zugriffskontrolle und der CSRF-Schutz in app.ts gelten auch
+ * für diese Routen. Fremde Formulare dürfen niemals Systemaktionen auslösen.
  */
 api.get(
   '/system/power',
@@ -278,7 +293,7 @@ api.get(
     try {
       res.json({ url: await buildAuthUrl(), redirectUri: redirectUri() });
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -293,7 +308,7 @@ api.get(
   '/google/callback',
   route(async (req, res) => {
     const page = (title: string, detail: string, ok: boolean) => `<!doctype html>
-<html lang="de"><head><meta charset="utf-8"><title>${title}</title>
+<html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
 <style>
  body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
       background:#080808;color:#e4e4e7;font-family:Inter,system-ui,sans-serif}
@@ -301,7 +316,7 @@ api.get(
       background:linear-gradient(180deg,rgba(22,22,22,.9),rgba(8,8,8,.95));text-align:center}
  h1{font-size:1.25rem;font-weight:500;margin:0 0 .75rem;color:${ok ? '#ff8a52' : '#f43f5e'}}
  p{font-size:.85rem;line-height:1.7;color:#a1a1aa;margin:0}
-</style></head><body><div class="box"><h1>${title}</h1><p>${detail}</p></div></body></html>`;
+</style></head><body><div class="box"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(detail)}</p></div></body></html>`;
 
     const error = req.query.error;
     if (error) {
@@ -355,7 +370,7 @@ api.get(
         .send(
           page(
             'Verbindung fehlgeschlagen',
-            cause instanceof Error ? cause.message : String(cause),
+            describeError(cause),
             false,
           ),
         );
@@ -374,7 +389,7 @@ api.get(
     try {
       res.json({ calendars: await listGoogleCalendars(inUse) });
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -507,7 +522,9 @@ api.get(
       res.status(404).json({ error: 'Bild nicht gefunden' });
       return;
     }
-    res.sendFile(file, { maxAge: '1h' });
+    // SVG bleibt als Bild nutzbar, darf bei direkter Navigation aber nichts ausführen.
+    res.set('Content-Security-Policy', "sandbox; default-src 'none'; style-src 'unsafe-inline'");
+    res.sendFile(file, { maxAge: 0 });
   }),
 );
 
@@ -520,7 +537,7 @@ api.patch(
       await setPhotoPerson(String(req.params.name), person);
       res.json(await listPhotos());
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -537,7 +554,7 @@ api.patch(
       await setPhotoFocus(String(req.params.name), focus ?? undefined);
       res.json(await listPhotos());
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -555,7 +572,7 @@ api.post(
     try {
       res.json(await startGooglePickerSession());
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -566,7 +583,7 @@ api.get(
     try {
       res.json(await googlePickerSessionStatus(String(req.params.id)));
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -577,7 +594,7 @@ api.post(
     try {
       res.json(await importGooglePickerSession(String(req.params.id)));
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -607,7 +624,7 @@ api.post(
     try {
       res.status(201).json(await createTimer((req.body ?? {}) as CreateTimerRequest));
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -656,7 +673,7 @@ api.post(
     try {
       res.status(201).json(await addShoppingItem((req.body ?? {}) as CreateShoppingItemRequest));
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -695,7 +712,7 @@ api.post(
     try {
       res.status(201).json(await addNote((req.body ?? {}) as CreateNoteRequest));
     } catch (error) {
-      res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: describeError(error) });
     }
   }),
 );
@@ -716,14 +733,12 @@ api.post(
   '/ai/chat',
   route(async (req, res) => {
     const body = (req.body ?? {}) as AiChatRequest;
-    const messages = Array.isArray(body.messages) ? body.messages : [];
-
-    if (messages.length === 0) {
-      res.status(400).json({ error: 'messages darf nicht leer sein' });
+    const result = z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string().min(1).max(10000) })).min(1).max(50).safeParse(body.messages);
+    if (!result.success) {
+      res.status(400).json({ error: 'Ungültiger Gesprächsverlauf.' });
       return;
     }
-
-    res.json(await chat(messages, body.includeContext !== false));
+    res.json(await chat(result.data, body.includeContext !== false));
   }),
 );
 
@@ -826,6 +841,6 @@ api.post(
 );
 
 api.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  console.error('[api]', error);
-  res.status(500).json({ error: 'Interner Fehler', detail: describeError(error) });
+  console.error('[api]', describeError(error));
+  res.status(500).json({ error: 'Interner Fehler' });
 });

@@ -8,13 +8,13 @@
 
 /** Grundflaechen — von der tiefsten Ebene bis zur obersten Kachel. */
 export const surface = {
-  900: '#050505',
-  800: '#080808',
-  700: '#0d0d0d',
-  600: '#111111',
-  500: '#161616',
-  400: '#1c1c1c',
-  300: '#242424',
+  900: '#0a0c0f',
+  800: '#0e1014',
+  700: '#13161b',
+  600: '#181b21',
+  500: '#1d2127',
+  400: '#24282f',
+  300: '#2d323a',
 };
 
 /**
@@ -151,7 +151,7 @@ export const backgrounds = [
 
 export const shadows = {
   panel:
-    'inset 0 1px 0 0 rgba(255,255,255,0.05), inset 0 -30px 50px -40px rgba(0,0,0,1), 0 28px 70px -45px rgba(0,0,0,1)',
+    'inset 0 1px 0 rgb(var(--hairline) / 0.035), 0 8px 28px -12px rgb(var(--shade) / 0.28)',
   tile: 'inset 0 1px 0 0 rgba(255,255,255,0.06), 0 18px 40px -28px rgba(0,0,0,0.95)',
   glow: '0 0 0 1px rgba(255,90,31,0.28), 0 0 34px -8px rgba(255,90,31,0.5)',
   press: 'inset 0 2px 12px -2px rgba(0,0,0,0.9)',

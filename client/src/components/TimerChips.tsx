@@ -30,11 +30,11 @@ function remaining(dueAt: string, now: Date): string {
  */
 export function TimerChips() {
   const { timers, reloadTimers } = useTimers();
-  const now = useClock(true);
 
   const entries = (timers?.timers ?? []).filter(
     (entry) => entry.enabled && !entry.ringing,
   );
+  const now = useClock(true, entries.some((entry) => entry.kind === "timer"));
   if (entries.length === 0) return null;
 
   // Höchstens drei zeigen, damit die Kopfleiste nicht überläuft.

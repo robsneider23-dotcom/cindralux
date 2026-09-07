@@ -10,7 +10,7 @@ import { loadConfig } from './config.ts';
  * `frame-ancestors`, und inoffizielle Umwege wären weder stabil noch erlaubt.
  *
  * SICHERHEIT: Der Befehl kommt ausschließlich aus `data/config.json`, nie aus
- * der Anfrage. Der Client löst nur aus. Gestartet wird ohne Shell, damit auch
+ * der Start-Anfrage. Änderungen am Befehl sind nur lokal am Gerät erlaubt. Gestartet wird ohne Shell, damit auch
  * eine seltsame URL in der Konfiguration keine Befehlskette auslösen kann.
  */
 

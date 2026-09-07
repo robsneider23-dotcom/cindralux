@@ -1,7 +1,7 @@
 import { CalendarCheck2, CircleDot, Clock3, MapPin } from "lucide-react";
 import { useMemo } from "react";
 import type { CalendarEvent } from "@shared/types";
-import { useDashboard } from "@/lib/store";
+import { useCalendarData } from "@/lib/store";
 import { useClock } from "@/hooks/useClock";
 import {
   formatTime,
@@ -17,7 +17,7 @@ import { Panel, EmptyState, LoadingState } from "./Panel";
  * laufenden bzw. nächsten Termin deutlich hervor.
  */
 export function TodayAgenda({ className }: { className?: string }) {
-  const { calendar, pending, errors } = useDashboard();
+  const { data: calendar, loading, error } = useCalendarData();
   const now = useClock(false);
 
   const { events, current, next, done } = useMemo(() => {
@@ -54,19 +54,19 @@ export function TodayAgenda({ className }: { className?: string }) {
       bodyClassName="flex flex-col"
       scroll
     >
-      {pending.calendar ? (
+      {(loading && calendar === null) ? (
         <LoadingState text="Lade Termine …" />
       ) : events.length === 0 ? (
         <EmptyState
           icon={<CalendarCheck2 size={26} strokeWidth={1.2} />}
-          text={errors.calendar ?? "Keine Termine heute"}
+          text={error ?? "Keine Termine heute"}
         />
       ) : (
         <>
           {/* Hervorgehobener Termin */}
           {highlight && (
             <div
-              className="relative mx-3 mt-3 shrink-0 overflow-hidden rounded-[3px] border p-3.5"
+              className="relative mx-3 mt-3 shrink-0 overflow-hidden rounded-lg border p-3.5"
               style={{
                 borderColor: withAlpha(highlight.calendarColor, 0.32),
                 background: `linear-gradient(115deg, ${withAlpha(highlight.calendarColor, 0.14)}, transparent 70%)`,
@@ -147,8 +147,8 @@ function AgendaRow({
   return (
     <li
       className={cx(
-        "flex items-center gap-3 rounded-[3px] py-2 pl-1 pr-2 transition-opacity duration-200",
-        past && "opacity-35",
+        "flex items-center gap-3 rounded-lg py-2 pl-1 pr-2 transition-opacity duration-200",
+        past && "opacity-60",
         highlighted && "bg-white/[0.03]",
       )}
     >

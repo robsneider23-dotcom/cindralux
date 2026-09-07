@@ -4,8 +4,10 @@ import type {
   CalendarSource,
   PublicAppConfig,
 } from '../../../shared/types.ts';
-import { urlHint } from '../lib/redact.ts';
+import { urlHint, registerSecrets } from '../lib/redact.ts';
 import { CONFIG_FILE, DATA_DIR } from '../lib/paths.ts';
+import { validateConfigPatch } from '../lib/configValidation.ts';
+import { chmod, stat } from 'node:fs/promises';
 import { watch, type FSWatcher } from 'node:fs';
 import path from 'node:path';
 import { ensureDir, readJson, writeJson } from '../lib/jsonStore.ts';
@@ -320,6 +322,10 @@ export const DEFAULT_CONFIG: AppConfig = {
 };
 
 let cached: AppConfig | null = null;
+function protectSecrets(config: AppConfig): void {
+  registerSecrets([config.ai.apiKey, config.homeAssistant.token, config.google.clientSecret,
+    config.google.refreshToken, config.trash.icsUrl, ...config.calendars.map((entry) => entry.url)]);
+}
 
 /**
  * Aenderungen an data/config.json von Hand uebernehmen.
@@ -350,7 +356,7 @@ function watchConfigFile(): void {
     //
     // Kurze Sammelfrist: Editoren schreiben oft mehrfach hintereinander.
     let timer: NodeJS.Timeout | undefined;
-    watcher = watch(DATA_DIR, (_event, filename) => {
+    watcher = watch(DATA_DIR, { persistent: false }, (_event, filename) => {
       if (filename && filename !== configFileName) return;
       clearTimeout(timer);
       timer = setTimeout(() => {
@@ -436,49 +442,24 @@ export async function loadConfig(): Promise<AppConfig> {
     await writeJson(CONFIG_FILE, DEFAULT_CONFIG);
     console.log('[config] data/config.json mit Standardwerten angelegt.');
   }
+  // chmod erzeugt selbst Watch-Ereignisse, auch bei unverändertem Modus.
+  // Nur tatsächlich nötige Korrekturen vornehmen, sonst lädt der Watcher endlos neu.
+  if (((await stat(CONFIG_FILE)).mode & 0o777) !== 0o600) await chmod(CONFIG_FILE, 0o600);
   cached = applyEnv(merge(DEFAULT_CONFIG, stored));
+  protectSecrets(cached);
   watchConfigFile();
   return cached;
 }
 
-/**
- * Patch auf die bekannte Form von DEFAULT_CONFIG zurechtstutzen, bevor er
- * gemischt wird.
- *
- * SICHERHEIT: `PUT /api/config` nahm den Request-Body bislang ungeprüft
- * entgegen — nur ein TypeScript-Cast, keine Laufzeitprüfung. Jeder Schlüssel
- * mit jedem Typ war damit speicherbar, auch komplett unbekannte Felder.
- * `sanitizePatch()` behält von jedem Objekt nur Schlüssel, die auch in
- * `DEFAULT_CONFIG` existieren, und nur, wenn ihr Typ zum Standardwert passt;
- * Objekte werden rekursiv genauso behandelt. Bewusst kein vollständiges
- * Schema — Listen wie `calendars`/`smartHomeActions`/`sensors` werden nur auf
- * Array-Ebene geprüft, nicht feldweise —, aber jeder unbekannte Schlüssel und
- * jeder Typ-Fehltreffer wird verworfen statt gespeichert.
- */
-function sanitizePatch(patch: unknown, reference: unknown): unknown {
-  if (reference === null || Array.isArray(reference) || typeof reference !== 'object') {
-    if (Array.isArray(reference)) return Array.isArray(patch) ? patch : undefined;
-    if (patch === undefined) return undefined;
-    return typeof patch === typeof reference ? patch : undefined;
-  }
-
-  if (typeof patch !== 'object' || patch === null || Array.isArray(patch)) return undefined;
-
-  const result: Record<string, unknown> = {};
-  for (const key of Object.keys(reference as Record<string, unknown>)) {
-    if (!(key in (patch as Record<string, unknown>))) continue;
-    const cleaned = sanitizePatch(
-      (patch as Record<string, unknown>)[key],
-      (reference as Record<string, unknown>)[key],
-    );
-    if (cleaned !== undefined) result[key] = cleaned;
-  }
-  return result;
+let saveQueue: Promise<unknown> = Promise.resolve();
+export function saveConfig(patch: AppConfigPatch): Promise<AppConfig> {
+  const saved = saveQueue.then(() => persistConfig(patch));
+  saveQueue = saved.catch(() => undefined);
+  return saved;
 }
-
-export async function saveConfig(patch: AppConfigPatch): Promise<AppConfig> {
+async function persistConfig(patch: AppConfigPatch): Promise<AppConfig> {
   const current = await loadConfig();
-  const safePatch = sanitizePatch(patch, DEFAULT_CONFIG) as Partial<AppConfig>;
+  const safePatch = validateConfigPatch(patch, DEFAULT_CONFIG) as Partial<AppConfig>;
   const next = merge(current, safePatch);
 
   // Ein leerer String im Patch bedeutet "unveraendert lassen", nicht "loeschen".
@@ -494,8 +475,9 @@ export async function saveConfig(patch: AppConfigPatch): Promise<AppConfig> {
   next.google.clientSecret = resolveSecret(current.google.clientSecret, safePatch.google?.clientSecret);
   next.google.refreshToken = resolveSecret(current.google.refreshToken, safePatch.google?.refreshToken);
 
-  cached = next;
   await writeJson(CONFIG_FILE, next);
+  cached = next;
+  protectSecrets(next);
   return next;
 }
 
@@ -562,4 +544,3 @@ export function toPublicConfig(config: AppConfig): PublicAppConfig {
     },
   };
 }
-

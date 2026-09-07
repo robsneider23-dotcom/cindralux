@@ -1,4 +1,5 @@
 import ical from "node-ical";
+import { parseCalendarIsolated } from "../lib/icsWorker.ts";
 import type {
   CalendarEvent,
   CalendarEventsResponse,
@@ -196,7 +197,7 @@ function expandEvent(
 
   const rrule = (
     event as unknown as {
-      rrule?: { between(a: Date, b: Date, inc: boolean): Date[] };
+      rrule?: { between(a: Date, b: Date, inc: boolean, iterator: (date: Date, index: number) => boolean): Date[] };
     }
   ).rrule;
 
@@ -222,6 +223,7 @@ function expandEvent(
     addDays(rangeStart, -2),
     addDays(rangeEnd, 2),
     true,
+    (_date, index) => { if (index >= 10000) throw new Error("Zu viele Wiederholungen."); return true; },
   );
   const result: CalendarEvent[] = [];
 
@@ -338,7 +340,7 @@ async function loadFeed(
     const url = source.url.replace(/^webcal:\/\//i, "https://");
     const response = await fetchWithTimeout(url, {
       headers: { Accept: "text/calendar, text/plain;q=0.9, */*;q=0.5" },
-    });
+    }, 10_000, { allowPrivate: true });
     if (!response.ok) {
       throw new Error(
         fetchFailureHint(url, response.status) ?? `HTTP ${response.status}`,
@@ -353,15 +355,7 @@ async function loadFeed(
       throw new Error(notACalendarMessage(url));
     }
 
-    const parsed = await ical.async.parseICS(text);
-    const events: CalendarEvent[] = [];
-
-    for (const entry of Object.values(parsed)) {
-      if (!entry || (entry as ical.VEvent).type !== "VEVENT") continue;
-      events.push(
-        ...expandEvent(entry as ical.VEvent, source, rangeStart, rangeEnd),
-      );
-    }
+    const events = await parseCalendarIsolated(text, source, rangeStart, rangeEnd);
 
     return {
       events,
@@ -637,4 +631,16 @@ function withinRange(
     if (to !== undefined && start > to) return false;
     return true;
   });
+}
+
+/** Nur im begrenzten Worker ausführen; Export für dessen Einstiegspunkt. */
+export async function parseCalendarText(text: string, source: CalendarSource, rangeStart: Date, rangeEnd: Date): Promise<CalendarEvent[]> {
+  const parsed = await ical.async.parseICS(text);
+  const events: CalendarEvent[] = [];
+  for (const entry of Object.values(parsed)) {
+    if (!entry || (entry as ical.VEvent).type !== "VEVENT") continue;
+    events.push(...expandEvent(entry as ical.VEvent, source, rangeStart, rangeEnd));
+    if (events.length > 10000) throw new Error('Zu viele Kalendertermine.');
+  }
+  return events;
 }

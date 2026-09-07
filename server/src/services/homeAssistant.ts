@@ -103,6 +103,7 @@ async function haFetch(path: string, init: RequestInit = {}): Promise<Response> 
       },
     },
     8_000,
+    { allowPrivate: true },
   );
 }
 
@@ -226,10 +227,10 @@ export async function getStatus(): Promise<HomeAssistantStatus> {
  * AiAssistantPanel) leiten domain/service/entityId ohnehin ausschliesslich
  * aus `smartHomeActions` ab; diese Pruefung spiegelt genau das auf dem Server.
  */
-async function isAllowedServiceCall(request: HomeAssistantCallRequest): Promise<boolean> {
+async function configuredServiceCall(request: HomeAssistantCallRequest) {
   const { domain, service, entityId } = request;
   const config = await loadConfig();
-  return config.smartHomeActions.some(
+  return config.smartHomeActions.find(
     (action) =>
       action.domain === domain &&
       (action.service === service || action.serviceOff === service) &&
@@ -240,13 +241,14 @@ async function isAllowedServiceCall(request: HomeAssistantCallRequest): Promise<
 export async function callService(
   request: HomeAssistantCallRequest,
 ): Promise<HomeAssistantCallResult> {
-  const { domain, service, entityId, serviceData } = request;
+  const { domain, service, entityId } = request;
 
   if (!domain || !service) {
     return { ok: false, mode: 'mock', message: 'domain und service sind erforderlich' };
   }
 
-  if (!(await isAllowedServiceCall(request))) {
+  const action = await configuredServiceCall(request);
+  if (!action) {
     return {
       ok: false,
       mode: 'mock',
@@ -277,7 +279,8 @@ export async function callService(
   }
 
   try {
-    const payload: Record<string, unknown> = { ...serviceData };
+    // Parameter stammen wie Ziel und Service aus der freigegebenen Aktion.
+    const payload: Record<string, unknown> = { ...action.serviceData };
     // `all` ist kein HA-Entity-Ziel — ohne entity_id wirkt der Call auf die
     // gesamte Domain, was „Alles aus" genau machen soll.
     if (entityId && entityId !== 'all') payload.entity_id = entityId;

@@ -25,8 +25,7 @@ interface PanelProps {
 }
 
 /**
- * Gehaeuse fuer alle Bereiche des Dashboards. Traegt Eckwinkel (via .panel),
- * Scanlines, Koernung und einen Kopf mit Uppercase-Label.
+ * Gemeinsamer Rahmen mit ruhiger Flaeche und klar abgesetzter Kopfzeile.
  */
 export function Panel({
   title,
@@ -74,7 +73,7 @@ export function Panel({
   return (
     <section
       className={cx(
-        "panel scanlines noise flex min-h-0 flex-col",
+        "panel flex min-h-0 flex-col",
         onActivate &&
           "cursor-pointer transition-transform duration-200 ease-calm active:scale-[0.99]",
         className,
@@ -100,10 +99,10 @@ export function Panel({
         <div className="flex min-w-0 items-center gap-2.5">
           <span
             className="h-3.5 w-[2px] shrink-0 rounded-full"
-            style={{ background: marker, boxShadow: `0 0 10px ${marker}` }}
+            style={{ background: marker }}
           />
           {icon && <span className="shrink-0 text-zinc-500">{icon}</span>}
-          <h2 className="label truncate text-zinc-400">{title}</h2>
+          <h2 className="label truncate text-zinc-300">{title}</h2>
         </div>
         {meta ? (
           <div className="label-dim shrink-0 whitespace-nowrap">{meta}</div>
