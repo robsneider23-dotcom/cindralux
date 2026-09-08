@@ -290,6 +290,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     themeMode: 'ember',
     customAccent: '#7c9eff',
     fontPairing: 'standard',
+    skin: 'default',
     background: 'backdrop-topo.svg',
     backgroundOpacity: 0.5,
     showSeconds: true,

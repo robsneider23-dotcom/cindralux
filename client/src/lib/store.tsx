@@ -18,7 +18,7 @@ import type {
 } from '@shared/types';
 import { api } from './api';
 import { usePolling, type PollingState } from '@/hooks/usePolling';
-import { accents, fontPairings } from '@/theme/tokens.js';
+import { accents, fontPairings, skins } from '@/theme/tokens.js';
 import { deriveAccentShades, hexToRgbTriplet } from './utils';
 
 /** Aktualisierungsintervalle — bewusst ruhig, das Panel laeuft rund um die Uhr. */
@@ -139,11 +139,32 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
    */
   useEffect(() => {
     if (!config) return;
-    const { colorScheme, night } = config.appearance;
+    const { colorScheme, night, skin: skinId } = config.appearance;
     const root = document.documentElement;
     const heute = weather.data?.forecast?.[0];
 
+    /*
+     * Design-Richtung (appearance.skin): ein festes Gesamtpaket, siehe
+     * theme/skins.css und deren Kommentar. Bei aktivem Skin (alles ausser
+     * "default") legt der Skin Hell/Dunkel, Akzent und Schrift komplett
+     * fest — themeMode/fontPairing/colorScheme greifen dann nicht.
+     */
+    const skin = skinId && skinId !== 'default' ? skins[skinId as keyof typeof skins] : null;
+    root.dataset.skin = skinId ?? 'default';
+
     const anwenden = () => {
+      if (skin) {
+        const hell = skin.mode === 'light';
+        const neu = hell ? 'light' : 'dark';
+        root.dataset.theme = neu;
+        root.style.setProperty('--accent', hexToRgbTriplet(skin.accent.base));
+        root.style.setProperty('--accent-soft', hexToRgbTriplet(skin.accent.soft));
+        root.style.setProperty('--accent-hot', hexToRgbTriplet(skin.accent.hot));
+        root.style.setProperty('--font-sans', skin.fontSans);
+        root.style.setProperty('--font-mono', skin.fontMono);
+        return;
+      }
+
       let hell = colorScheme === 'light';
       if (colorScheme === 'auto') {
         const jetzt = new Date();

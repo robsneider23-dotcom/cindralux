@@ -42,6 +42,7 @@ const enums: Record<string, [string, ...string[]]> = {
   'ai.gptLive.mode': ['browser-tab', 'local-command'],
   'appearance.themeMode': ['ember', 'crimson', 'graphite', 'mint', 'violet', 'amber', 'slate', 'rose', 'custom'],
   'appearance.fontPairing': ['standard', 'grotesk', 'sora', 'manrope', 'public', 'outfit'],
+  'appearance.skin': ['default', 'phosphor', 'broadsheet', 'aurora', 'schema', 'dusk-garden', 'herbarium', 'chintz', 'greenhouse', 'petal-wash', 'ikebana', 'cockpit', 'neumorph', 'neon-grid', 'holoform', 'circuit'],
   'appearance.colorScheme': ['dark', 'light', 'auto'],
   'appearance.onScreenKeyboard': ['off', 'auto', 'always'],
   'layout.preset': ['standard', 'kalender-gross', 'zwei-spalten', 'tagesplan', 'wetterstation', 'smart-home', 'kueche', 'nur-kalender', 'uebersicht', 'assistent', 'custom'],

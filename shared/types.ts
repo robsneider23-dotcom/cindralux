@@ -597,6 +597,32 @@ export type ThemeMode =
 export type FontPairingId = 'standard' | 'grotesk' | 'sora' | 'manrope' | 'public' | 'outfit';
 
 /**
+ * Design-Richtung: ein komplettes, fest designtes Gesamtpaket aus Farben,
+ * Schrift und Panel-Optik — anders als `themeMode`/`fontPairing`, die nur die
+ * Akzentfarbe bzw. Schriftpaarung innerhalb des Standard-Erscheinungsbilds
+ * austauschen. Bei aktivem Skin (alles ausser "default") gelten Akzentfarbe,
+ * Schriftpaarung und Hell/Dunkel-Wahl nicht mehr einzeln — der Skin legt sie
+ * fest.
+ */
+export type SkinId =
+  | 'default'
+  | 'phosphor'
+  | 'broadsheet'
+  | 'aurora'
+  | 'schema'
+  | 'dusk-garden'
+  | 'herbarium'
+  | 'chintz'
+  | 'greenhouse'
+  | 'petal-wash'
+  | 'ikebana'
+  | 'cockpit'
+  | 'neumorph'
+  | 'neon-grid'
+  | 'holoform'
+  | 'circuit';
+
+/**
  * Nachtabsenkung. Ein Panel im Flur, das nachts voll leuchtet, ist nach einer
  * Woche eine Zumutung — deshalb zeitgesteuert abdunkeln.
  *
@@ -701,6 +727,8 @@ export interface AppearanceConfig {
   /** Nur wirksam bei themeMode "custom" — als Hex, z.B. "#7c9eff". */
   customAccent: string;
   fontPairing: FontPairingId;
+  /** Design-Richtung, siehe `SkinId`. "default" = heutiges Verhalten. */
+  skin: SkinId;
   /** Dateiname unter /assets/cindralux, z.B. "backdrop-topo.svg". */
   background: string;
   /** Deckkraft des Hintergrunds, 0–1. */

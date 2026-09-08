@@ -1,5 +1,5 @@
 /** Typen fuer die zentrale Theme-Datei (tokens.js). */
-import type { FontPairingId, ThemeMode, TrashKind } from '@shared/types';
+import type { FontPairingId, SkinId, ThemeMode, TrashKind } from '@shared/types';
 
 export interface AccentPalette {
   base: string;
@@ -25,11 +25,25 @@ export interface ThemePreset {
   fontPairing: FontPairingId;
 }
 
+/** Alle Skin-Kennungen außer "default" — dafür gibt es kein Gesamtpaket. */
+export type NamedSkinId = Exclude<SkinId, 'default'>;
+
+export interface SkinDefinition {
+  label: string;
+  hint: string;
+  mode: 'light' | 'dark';
+  accent: { base: string; soft: string; hot: string };
+  fontSans: string;
+  fontMono: string;
+}
+
 export declare const surface: Record<'300' | '400' | '500' | '600' | '700' | '800' | '900', string>;
 export declare const accents: Record<NamedThemeMode, AccentPalette>;
 export declare const themeLabels: Record<NamedThemeMode, string>;
 export declare const fontPairings: Record<FontPairingId, FontPairing>;
 export declare const themePresets: ThemePreset[];
+export declare const skins: Record<NamedSkinId, SkinDefinition>;
+export declare const skinOrder: NamedSkinId[];
 export declare const signal: Record<'ok' | 'warn' | 'err' | 'info' | 'idle', string>;
 export declare const calendarPalette: string[];
 export declare const trashPalette: Record<TrashKind, string>;
@@ -42,6 +56,8 @@ declare const tokens: {
   themeLabels: typeof themeLabels;
   fontPairings: typeof fontPairings;
   themePresets: typeof themePresets;
+  skins: typeof skins;
+  skinOrder: typeof skinOrder;
   signal: typeof signal;
   calendarPalette: typeof calendarPalette;
   trashPalette: typeof trashPalette;

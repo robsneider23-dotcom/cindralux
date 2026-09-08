@@ -110,6 +110,102 @@ export const themePresets = [
   { id: 'rose', label: 'Rose', hint: 'Kraeftig und warm, ohne ins Rote zu fallen.', fontPairing: 'outfit' },
 ];
 
+/**
+ * Design-Richtungen (appearance.skin): feste Gesamtpakete aus Akzentfarbe,
+ * Schriftpaarung und Hell/Dunkel-Modus. Anders als `themePresets` bleiben
+ * diese Werte nicht einzeln nachjustierbar — store.tsx setzt sie komplett,
+ * solange ein Skin aktiv ist (nicht "default"), und uebergeht dabei
+ * `themeMode`/`fontPairing`/`colorScheme`. Die Flaechen- und Textfarben
+ * (surface/ink/hairline/shade/signal) sowie die Panel-Optik kommen aus
+ * `theme/skins.css` (`html[data-skin="…"]`); hier stehen nur die Werte, die
+ * store.tsx weiterhin inline setzen muss (Akzent, Schrift — wie bei
+ * themeMode/fontPairing schlagen Inline-Styles jede Stylesheet-Regel).
+ */
+export const skins = {
+  phosphor: {
+    label: 'Phosphor', hint: 'Terminal/Konsole: Monospace, scharfe Kanten, Scanlines.', mode: 'dark',
+    accent: { base: '#7cffb2', soft: '#4ade80', hot: '#a8ffcc' },
+    fontSans: "'JetBrains Mono', ui-monospace, monospace", fontMono: "'JetBrains Mono', ui-monospace, monospace",
+  },
+  broadsheet: {
+    label: 'Broadsheet', hint: 'Warmes Papier, Serifen-Headlines, Linien statt Kacheln.', mode: 'light',
+    accent: { base: '#b5502e', soft: '#d97a54', hot: '#8a3a1f' },
+    fontSans: "'Newsreader', Georgia, serif", fontMono: "'Work Sans', system-ui, sans-serif",
+  },
+  aurora: {
+    label: 'Aurora', hint: 'Frostglas auf diffusem Farbverlauf, weich und raeumlich.', mode: 'dark',
+    accent: { base: '#c9b6ff', soft: '#7dd3fc', hot: '#e879f9' },
+    fontSans: "'Sora', system-ui, sans-serif", fontMono: "'Manrope', system-ui, sans-serif",
+  },
+  schema: {
+    label: 'Schema', hint: 'Blaupause mit Rasterlinien und Eckklammern.', mode: 'dark',
+    accent: { base: '#7dd3fc', soft: '#38bdf8', hot: '#bae6fd' },
+    fontSans: "'Space Grotesk', system-ui, sans-serif", fontMono: "'IBM Plex Mono', ui-monospace, monospace",
+  },
+  'dusk-garden': {
+    label: 'Dusk Garden', hint: 'Warmer Daemmerlicht-Verlauf, kursive Serifenzahlen.', mode: 'dark',
+    accent: { base: '#e2a97f', soft: '#c98a5e', hot: '#f0c29c' },
+    fontSans: "'Instrument Serif', Georgia, serif", fontMono: "'Outfit', system-ui, sans-serif",
+  },
+  herbarium: {
+    label: 'Herbarium', hint: 'Botanisches Linienbild, Herbarkarten-Optik, gedeckte Farben.', mode: 'light',
+    accent: { base: '#a8654a', soft: '#c98a7a', hot: '#7d4a35' },
+    fontSans: "'EB Garamond', Georgia, serif", fontMono: "'Karla', system-ui, sans-serif",
+  },
+  chintz: {
+    label: 'Chintz', hint: 'Viktorianische Tapete, Doppelrahmen, Smaragd/Gold/Wein.', mode: 'dark',
+    accent: { base: '#efc978', soft: '#d8ad5a', hot: '#ff8fa3' },
+    fontSans: "'Playfair Display', Georgia, serif", fontMono: "'Jost', system-ui, sans-serif",
+  },
+  greenhouse: {
+    label: 'Greenhouse', hint: 'Modernes Pflanzenladen-Gefuehl, frisches Gruen auf Weiss.', mode: 'light',
+    accent: { base: '#2f8f5b', soft: '#4ba876', hot: '#1f6e43' },
+    fontSans: "'Plus Jakarta Sans', system-ui, sans-serif", fontMono: "'Plus Jakarta Sans', system-ui, sans-serif",
+  },
+  'petal-wash': {
+    label: 'Petal Wash', hint: 'Aquarell-Pastell, weich verlaufende Bluetentoene.', mode: 'light',
+    accent: { base: '#c2708f', soft: '#d98fab', hot: '#a5567a' },
+    fontSans: "'Quicksand', system-ui, sans-serif", fontMono: "'Mulish', system-ui, sans-serif",
+  },
+  ikebana: {
+    label: 'Ikebana', hint: 'Japanische Zurueckhaltung, ein Kirschbluetenzweig, viel Leere.', mode: 'light',
+    accent: { base: '#a83c3c', soft: '#c26060', hot: '#822a2a' },
+    fontSans: "'Shippori Mincho', Georgia, serif", fontMono: "'Zen Kaku Gothic New', system-ui, sans-serif",
+  },
+  cockpit: {
+    label: 'Cockpit', hint: 'Sci-Fi-HUD, angeschnittene Ecken, Cyan/Magenta-Glow.', mode: 'dark',
+    accent: { base: '#35e0ff', soft: '#7deeff', hot: '#ff3df0' },
+    fontSans: "'Rajdhani', system-ui, sans-serif", fontMono: "'Orbitron', sans-serif",
+  },
+  neumorph: {
+    label: 'Neumorph', hint: 'Weiches gepraegtes Geraetepanel, ein Neon-Akzent.', mode: 'light',
+    accent: { base: '#3fa8ff', soft: '#6cc0ff', hot: '#1f8ae6' },
+    fontSans: "'Urbanist', system-ui, sans-serif", fontMono: "'Urbanist', system-ui, sans-serif",
+  },
+  'neon-grid': {
+    label: 'Neon Grid', hint: 'Cyberpunk, VHS-Scanlines, Pink/Cyan auf Schwarz.', mode: 'dark',
+    accent: { base: '#00f0ff', soft: '#ff2ee0', hot: '#ff8bf1' },
+    fontSans: "'Chakra Petch', system-ui, sans-serif", fontMono: "'Audiowide', sans-serif",
+  },
+  holoform: {
+    label: 'Holoform', hint: 'Sehr helles Minimal-Futurismus, holografischer Schimmer.', mode: 'light',
+    accent: { base: '#6b7ce8', soft: '#939fee', hot: '#4c5cc4' },
+    fontSans: "'Hanken Grotesk', system-ui, sans-serif", fontMono: "'Unbounded', sans-serif",
+  },
+  circuit: {
+    label: 'Circuit', hint: 'Platinenoptik, Leiterbahnen, Via-Punkte, Kupfer/Gruen.', mode: 'dark',
+    accent: { base: '#4ade80', soft: '#86efac', hot: '#e0a458' },
+    fontSans: "'Share Tech Mono', ui-monospace, monospace", fontMono: "'Share Tech Mono', ui-monospace, monospace",
+  },
+};
+
+/** Reihenfolge der Skin-Kacheln in den Einstellungen. */
+export const skinOrder = [
+  'phosphor', 'broadsheet', 'aurora', 'schema', 'dusk-garden',
+  'herbarium', 'chintz', 'greenhouse', 'petal-wash', 'ikebana',
+  'cockpit', 'neumorph', 'neon-grid', 'holoform', 'circuit',
+];
+
 /** Statusfarben — bewusst kuehl, damit Ember die einzige warme Farbe bleibt. */
 export const signal = {
   ok: '#34d399',
@@ -163,6 +259,8 @@ export default {
   themeLabels,
   fontPairings,
   themePresets,
+  skins,
+  skinOrder,
   signal,
   calendarPalette,
   trashPalette,

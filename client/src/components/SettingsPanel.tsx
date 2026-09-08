@@ -1979,11 +1979,16 @@ function AppearanceSettings({ draft, update }: PaneProps) {
 
       <Section
         title="Design"
-        description="Hell oder dunkel. „Automatisch“ folgt dem Sonnenstand deines Ortes — hell ab Sonnenaufgang, dunkel ab Sonnenuntergang. Die Zeiten kommen aus der Wettervorhersage."
+        description={
+          appearance.skin === "default"
+            ? "Hell oder dunkel. „Automatisch“ folgt dem Sonnenstand deines Ortes — hell ab Sonnenaufgang, dunkel ab Sonnenuntergang. Die Zeiten kommen aus der Wettervorhersage."
+            : "Von der Design-Richtung fest vorgegeben — siehe „Farben & Schrift“ unten."
+        }
       >
         <SegmentedControl<ColorScheme>
           value={appearance.colorScheme}
           onChange={(colorScheme) => set({ colorScheme })}
+          disabled={appearance.skin !== "default"}
           options={[
             { value: "dark", label: "Dunkel" },
             { value: "light", label: "Hell" },
@@ -1994,12 +1999,13 @@ function AppearanceSettings({ draft, update }: PaneProps) {
 
       <Section
         title="Farben & Schrift"
-        description="Acht Akzentfarben plus eigene Farbe, sechs Schriftarten — unabhängig voneinander wählbar, oder als fünf fertige Vorlagen kombiniert."
+        description="Fünfzehn Design-Richtungen als fertige Gesamtpakete, oder darunter acht Akzentfarben plus eigene Farbe und sechs Schriftarten einzeln kombiniert."
       >
         <ThemeEditor
           themeMode={appearance.themeMode}
           customAccent={appearance.customAccent}
           fontPairing={appearance.fontPairing}
+          skin={appearance.skin}
           onChange={(patch) => set(patch)}
         />
       </Section>

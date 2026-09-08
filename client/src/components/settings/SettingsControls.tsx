@@ -200,17 +200,21 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
+  disabled = false,
 }: {
   options: Array<{ value: T; label: string }>;
   value: T;
   onChange: (value: T) => void;
+  /** z.B. wenn eine Design-Richtung die Auswahl schon festlegt. */
+  disabled?: boolean;
 }) {
   return (
-    <div className="flex gap-1.5">
+    <div className={cx("flex gap-1.5", disabled && "pointer-events-none opacity-40")}>
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
+          disabled={disabled}
           onClick={() => onChange(option.value)}
           className={cx(
             "touchable flex-1 rounded-[3px] border px-3 text-2xs uppercase tracking-wide2",
