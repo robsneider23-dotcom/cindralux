@@ -2339,6 +2339,11 @@ function IdleSettings({ draft, update }: PaneProps) {
             checked={idle.showAgenda}
             onChange={(showAgenda) => setIdle({ showAgenda })}
           />
+          <Toggle
+            label="Weltuhren zeigen"
+            checked={idle.showWorldClocks}
+            onChange={(showWorldClocks) => setIdle({ showWorldClocks })}
+          />
         </div>
       </Section>
 

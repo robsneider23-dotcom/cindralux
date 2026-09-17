@@ -4,7 +4,15 @@ import type { PhotoItem } from '@shared/types';
 import { api } from '@/lib/api';
 import { useDashboard } from '@/lib/store';
 import { useClock } from '@/hooks/useClock';
-import { formatDateLong, formatTemp, formatTime, formatWeekday, toDateKey } from '@/lib/format';
+import {
+  formatDateLong,
+  formatTemp,
+  formatTime,
+  formatTimeInZone,
+  formatWeekday,
+  hourInZone,
+  toDateKey,
+} from '@/lib/format';
 import { cx, withAlpha } from '@/lib/utils';
 import { WeatherGlyph } from '../WeatherGlyph';
 import { PhotoSlideshow } from './PhotoSlideshow';
@@ -22,6 +30,16 @@ import { Portal } from '../Portal';
  * schonender fuer die Augen nachts und fuer das Display bei einem hellen,
  * grossflaechigen Vollbild tagsueber.
  */
+/** Staedte der Weltuhr-Kachelreihe — Reihenfolge ist die Anzeigereihenfolge. */
+const WORLD_CLOCK_CITIES: { name: string; timezone: string }[] = [
+  { name: 'London', timezone: 'Europe/London' },
+  { name: 'New York', timezone: 'America/New_York' },
+  { name: 'Tokio', timezone: 'Asia/Tokyo' },
+  { name: 'Kiew', timezone: 'Europe/Kyiv' },
+  { name: 'Sydney', timezone: 'Australia/Sydney' },
+  { name: 'Rom', timezone: 'Europe/Rome' },
+];
+
 const DARK_VARS: CSSProperties = {
   ['--surface-900' as string]: '5 5 5',
   ['--surface-800' as string]: '8 8 8',
@@ -156,7 +174,8 @@ export function IdleScreen({
             </div>
           )}
 
-          {/* Unten: Wetter und Termine */}
+          {/* Unten: Wetter, Termine und Weltuhren */}
+          <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-end justify-between gap-8">
             {idle?.showAgenda !== false && (
               <div className="min-w-0 max-w-2xl">
@@ -216,6 +235,37 @@ export function IdleScreen({
                 </div>
               </div>
             )}
+          </div>
+
+          {idle?.showWorldClocks && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              {WORLD_CLOCK_CITIES.map((city) => {
+                const hour = hourInZone(now, city.timezone);
+                const isNight = hour < 6 || hour >= 20;
+                return (
+                  <div
+                    key={city.timezone}
+                    className="rounded-[6px] border border-zinc-50/10 bg-black/30 px-3 py-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-2xs uppercase tracking-label text-zinc-500">
+                        {city.name}
+                      </span>
+                      <span
+                        className={cx(
+                          'h-1 w-1 shrink-0 rounded-full',
+                          isNight ? 'bg-zinc-500' : 'bg-accent/85',
+                        )}
+                      />
+                    </div>
+                    <div className="digits mt-0.5 text-[clamp(0.9rem,1.8vw,1.4rem)] font-light text-zinc-50/90">
+                      {formatTimeInZone(now, city.timezone)}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           </div>
         </div>
 

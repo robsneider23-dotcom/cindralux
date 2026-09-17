@@ -26,6 +26,34 @@ export function formatDateShort(value: string | Date): string {
   return dateShort.format(typeof value === 'string' ? new Date(value) : value);
 }
 
+const timeInZoneFormatters = new Map<string, Intl.DateTimeFormat>();
+
+/** Uhrzeit in einer beliebigen IANA-Zeitzone, z.B. fuer die Weltuhr im Ruhemodus. */
+export function formatTimeInZone(date: Date, timezone: string): string {
+  let formatter = timeInZoneFormatters.get(timezone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat('de-DE', {
+      timeZone: timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+    timeInZoneFormatters.set(timezone, formatter);
+  }
+  return formatter.format(date);
+}
+
+/** Stunde (0–23) in einer Zeitzone — fuer den Tag/Nacht-Punkt der Weltuhr. */
+export function hourInZone(date: Date, timezone: string): number {
+  const hour = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    hour: 'numeric',
+    hour12: false,
+  }).format(date);
+  // "24" an Mitternacht in manchen Locales — auf 0 normalisieren.
+  return Number(hour) % 24;
+}
+
 /** Temperatur ohne Nachkommastelle — auf 2 m Entfernung zaehlt nur die Zahl. */
 export function formatTemp(value: number): string {
   return `${Math.round(value)}°`;

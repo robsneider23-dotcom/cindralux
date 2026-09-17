@@ -1004,6 +1004,7 @@ export interface IdleConfig {
   showClock: boolean;
   showWeather: boolean;
   showAgenda: boolean;
+  showWorldClocks: boolean;
   slideshow: SlideshowConfig;
 }
 

@@ -273,6 +273,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     showClock: true,
     showWeather: true,
     showAgenda: true,
+    showWorldClocks: false,
     slideshow: {
       enabled: true,
       intervalSeconds: 20,
