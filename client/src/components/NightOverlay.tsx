@@ -44,11 +44,16 @@ export function NightOverlay({ night }: { night: NightMode }) {
       {night.clockOnly && (
         <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-surface-900 transition-opacity duration-700">
           {night.starfield && (
-            <div
-              className="absolute inset-0"
-              style={{ opacity: nightOpacity }}
-            >
+            <div className="absolute inset-0">
+              {/*
+                Die Resthelligkeit geht in den Sternenhimmel hinein, nicht als
+                Deckkraft darüber: Ein halbdurchsichtiger Canvas lässt die
+                Flächenfarbe des Skins durchscheinen, und der Himmel bekommt
+                je nach gewähltem Design einen Farbstich. Gedimmt werden sollen
+                die Sterne, nicht die Nacht dahinter.
+              */}
               <Starfield
+                opacity={nightOpacity}
                 still={config?.appearance.reducedMotion ?? false}
                 className="h-full w-full"
               />
