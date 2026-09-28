@@ -642,6 +642,21 @@ export interface NightModeConfig {
   clockOnly: boolean;
   /** Sekunden, die eine Berührung das Panel wieder voll aufweckt. */
   wakeSeconds: number;
+  /**
+   * Animierter Sternenhimmel hinter der Nachtuhr statt schwarzer Flaeche.
+   * Wirkt nur zusammen mit `clockOnly` — ohne die Uhranzeige gibt es keine
+   * Flaeche, auf der er zu sehen waere.
+   */
+  starfield: boolean;
+  /**
+   * Stromsparmodus: nachts seltener abrufen und alle Bewegung anhalten.
+   *
+   * Betrifft die Abrufintervalle im Client (Wetter, Kalender, Sensoren, ...)
+   * und schaltet Animationen ab wie `reducedMotion`. Die Diashow steht
+   * waehrend der reinen Uhranzeige ohnehin still — dort gibt es kein Bild,
+   * das wechseln koennte.
+   */
+  powerSave: boolean;
 }
 
 /* -------------------------------------------------------------------------- */

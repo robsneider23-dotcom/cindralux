@@ -40,6 +40,18 @@ export function AppShell({ children }: { children: ReactNode }) {
     config?.appearance.burnInProtection ?? false,
   );
 
+  /*
+   * Nachts verdrängt die Nachtansicht den Ruhebildschirm.
+   *
+   * Beide wollen dieselbe Fläche, und der Ruhebildschirm liegt höher — ohne
+   * das hier liefe die Diashow weiter über der Nachtuhr, mit einem
+   * Bildwechsel alle paar Sekunden. Genau das soll nachts aufhören: ein
+   * wechselndes Vollbild leuchtet ins dunkle Zimmer und hält das Panel wach.
+   * Bei reiner Abdunklung ohne Stromsparen bleibt die Diashow erlaubt — dann
+   * hat sich jemand bewusst dafür entschieden.
+   */
+  const nightTakesOver = night.clockOnly || (night.dimmed && night.powerSave);
+
   // Browser erlauben Ton erst nach einer Nutzerinteraktion. Auf einem
   // Touch-Panel wird ohnehin getippt — die erste Berührung schaltet ihn frei,
   // damit ein Timer später auch ohne Geste klingeln darf.
@@ -86,7 +98,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      {idle && <IdleScreen onWake={wake} shift={night.shift} />}
+      {idle && !nightTakesOver && <IdleScreen onWake={wake} shift={night.shift} />}
       <NightOverlay night={night} />
       <TimerOverlay />
       <TouchKeyboard aktiv={tastatur} />

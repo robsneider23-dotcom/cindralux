@@ -2233,12 +2233,30 @@ function AppearanceSettings({ draft, update }: PaneProps) {
           </Field>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           <Toggle
             label="Nachts nur die Uhr zeigen"
-            hint="Blendet das Dashboard aus und zeigt groß Uhrzeit, Datum und eine anstehende Müllabholung."
+            hint="Blendet das Dashboard aus und zeigt mittig Uhrzeit, Datum und eine anstehende Müllabholung. Die Diashow steht dabei still."
             checked={night.clockOnly}
             onChange={(clockOnly) => setNight({ clockOnly })}
+          />
+
+          <Toggle
+            label="Sternenhimmel hinter der Uhr"
+            hint={
+              night.clockOnly
+                ? "Ein langsam funkelnder Nachthimmel statt schwarzer Fläche."
+                : "Braucht „Nachts nur die Uhr zeigen“ — ohne die Uhranzeige gibt es keine Fläche dafür."
+            }
+            checked={night.starfield}
+            onChange={(starfield) => setNight({ starfield })}
+          />
+
+          <Toggle
+            label="Stromsparmodus"
+            hint="Ruft nachts viermal seltener ab (Wetter, Kalender, Sensoren) und hält alle Bewegung an. Der Sternenhimmel läuft weiter."
+            checked={night.powerSave}
+            onChange={(powerSave) => setNight({ powerSave })}
           />
         </div>
 

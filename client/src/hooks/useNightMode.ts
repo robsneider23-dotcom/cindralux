@@ -16,6 +16,10 @@ export interface NightMode {
   awake: boolean;
   /** Nur Uhr zeigen (aus der Konfiguration, während der Nacht). */
   clockOnly: boolean;
+  /** Sternenhimmel hinter der Nachtuhr zeigen. */
+  starfield: boolean;
+  /** Stromsparmodus greift gerade: seltener abrufen, keine Bewegung. */
+  powerSave: boolean;
   /** Deckkraft der Abdunklung, 0 = normal. */
   overlayOpacity: number;
   /** Versatz des Einbrennschutzes in Pixeln. */
@@ -30,16 +34,19 @@ function inWindow(hour: number, start: number, end: number): boolean {
   return start < end ? hour >= start && hour < end : hour >= start || hour < end;
 }
 
-export function useNightMode(
-  config: NightModeConfig | undefined,
-  burnInProtection: boolean,
-): NightMode {
+/**
+ * Nur die Frage "ist gerade Nachtfenster?" — ohne Wecken, Abdunklung und
+ * Einbrennschutz.
+ *
+ * useNightMode() laeuft in der AppShell, also unterhalb des Datenspeichers.
+ * Der Stromsparmodus muss aber die Abrufintervalle im Speicher selbst
+ * drosseln, und der kann den Zustand von dort nicht lesen. Beide Stellen
+ * rechnen deshalb dasselbe aus statt ihn durchzureichen — die Rechnung ist
+ * eine Stundenabfrage, das ist billiger als ein weiterer Kontext.
+ */
+export function useNightWindow(config: NightModeConfig | undefined): boolean {
   const [night, setNight] = useState(false);
-  const [awake, setAwake] = useState(false);
-  const [shift, setShift] = useState({ x: 0, y: 0 });
-  const wakeTimer = useRef<number | undefined>(undefined);
 
-  // Minütlich prüfen, ob das Nachtfenster begonnen oder geendet hat.
   useEffect(() => {
     const check = () => {
       if (!config?.enabled) {
@@ -53,6 +60,18 @@ export function useNightMode(
     const timer = window.setInterval(check, 30_000);
     return () => window.clearInterval(timer);
   }, [config?.enabled, config?.startHour, config?.endHour]);
+
+  return night;
+}
+
+export function useNightMode(
+  config: NightModeConfig | undefined,
+  burnInProtection: boolean,
+): NightMode {
+  const night = useNightWindow(config);
+  const [awake, setAwake] = useState(false);
+  const [shift, setShift] = useState({ x: 0, y: 0 });
+  const wakeTimer = useRef<number | undefined>(undefined);
 
   const wake = useCallback(() => {
     if (!config?.enabled) return;
@@ -106,11 +125,19 @@ export function useNightMode(
   }, [burnInProtection]);
 
   const dimmed = night && !awake;
+  const clockOnly = dimmed && (config?.clockOnly ?? false);
 
   return {
     dimmed,
     awake: night && awake,
-    clockOnly: dimmed && (config?.clockOnly ?? false),
+    clockOnly,
+    starfield: clockOnly && (config?.starfield ?? false),
+    /*
+     * Auch waehrend einer Weckphase aktiv: Wer nachts kurz auf die Uhr tippt,
+     * braucht keine frisch gedrosselten Intervalle, die danach sofort wieder
+     * umgestellt werden. Jeder Wechsel setzt die Abrufe neu auf.
+     */
+    powerSave: night && (config?.powerSave ?? false),
     overlayOpacity: dimmed ? 1 - Math.min(1, Math.max(0.05, config?.dimLevel ?? 0.25)) : 0,
     shift,
     wake,

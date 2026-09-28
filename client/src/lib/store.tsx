@@ -18,6 +18,7 @@ import type {
 } from '@shared/types';
 import { api } from './api';
 import { usePolling, type PollingState } from '@/hooks/usePolling';
+import { useNightWindow } from '@/hooks/useNightMode';
 import { accents, fontPairings, skins } from '@/theme/tokens.js';
 import { deriveAccentShades, hexToRgbTriplet } from './utils';
 
@@ -35,6 +36,18 @@ const INTERVAL = {
   // Einkaufsliste/Notizen aendern sich nur durch Bedienung am Panel selbst.
   lists: 15_000,
 };
+
+/**
+ * Faktor, um den der Stromsparmodus die Abrufe nachts streckt.
+ *
+ * Vier statt eins: Sensoren fragen dann alle 60 statt alle 15 Sekunden, das
+ * Wetter alle vier Minuten. Vor einem dunklen Panel steht nachts niemand, und
+ * jeder Abruf weckt WLAN-Funkmodul und CPU des Pi aus dem Leerlauf. Nicht
+ * weiter gestreckt, damit die Anzeige beim Aufwachen nicht minutenlang alte
+ * Werte zeigt — beim Verlassen des Nachtfensters wird ohnehin sofort neu
+ * abgerufen, weil die geaenderte Intervalldauer den Abruf neu aufsetzt.
+ */
+const POWER_SAVE_FACTOR = 4;
 
 interface DashboardValue {
   config: PublicAppConfig | null;
@@ -110,12 +123,21 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     void reloadConfig();
   }, [reloadConfig]);
 
-  const calendar = usePolling(() => api.calendarEvents(), INTERVAL.calendar);
-  const weather = usePolling(() => api.weather(), INTERVAL.weather);
-  const trash = usePolling(() => api.trash(), INTERVAL.trash);
-  const homeAssistant = usePolling(() => api.homeAssistantStatus(), INTERVAL.homeAssistant);
-  const sensors = usePolling(() => api.sensors(), INTERVAL.sensors);
-  const lists = usePolling(() => api.lists(), INTERVAL.lists);
+  /*
+   * Stromsparmodus. Der Nachtzustand wird hier eigens berechnet statt aus der
+   * AppShell gereicht — die haengt unter diesem Provider, siehe
+   * useNightWindow().
+   */
+  const nightWindow = useNightWindow(config?.appearance.night);
+  const powerSave = nightWindow && (config?.appearance.night.powerSave ?? false);
+  const slow = powerSave ? POWER_SAVE_FACTOR : 1;
+
+  const calendar = usePolling(() => api.calendarEvents(), INTERVAL.calendar * slow);
+  const weather = usePolling(() => api.weather(), INTERVAL.weather * slow);
+  const trash = usePolling(() => api.trash(), INTERVAL.trash * slow);
+  const homeAssistant = usePolling(() => api.homeAssistantStatus(), INTERVAL.homeAssistant * slow);
+  const sensors = usePolling(() => api.sensors(), INTERVAL.sensors * slow);
+  const lists = usePolling(() => api.lists(), INTERVAL.lists * slow);
 
   // Theme-Modus und Hintergrund-Deckkraft als CSS-Variablen setzen —
   // so wirkt eine Aenderung in den Einstellungen sofort und ohne Neuladen.
@@ -123,8 +145,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     if (!config) return;
     const root = document.documentElement;
     root.style.setProperty('--backdrop-opacity', String(config.appearance.backgroundOpacity));
-    root.dataset.motion = config.appearance.reducedMotion ? 'reduced' : 'full';
-  }, [config]);
+    // Der Stromsparmodus haelt nachts jede Bewegung an — dieselbe Schraube,
+    // an der die Einstellung "Bewegungen reduzieren" dreht (siehe index.css).
+    root.dataset.motion = config.appearance.reducedMotion || powerSave ? 'reduced' : 'full';
+  }, [config, powerSave]);
 
   /*
    * Hell/Dunkel.

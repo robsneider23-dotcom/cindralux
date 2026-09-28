@@ -2,24 +2,35 @@ import { Moon } from "lucide-react";
 import type { NightMode } from "@/hooks/useNightMode";
 import { useClock } from "@/hooks/useClock";
 import { formatDateLong, formatWeekday } from "@/lib/format";
-import { useDashboard } from "@/lib/store";
+import { useDashboard, useDashboardConfig } from "@/lib/store";
 import { cx } from "@/lib/utils";
+import { Starfield } from "./night/Starfield";
 
 /**
  * Abdunklung während der Nachtabsenkung.
  *
  * Zwei Stufen: eine schwarze Ebene über dem Dashboard, und optional eine reine
- * Uhranzeige. Beide reagieren auf jede Berührung — das Wecken übernimmt
- * useNightMode, hier wird nur dargestellt.
+ * Uhranzeige — dann steht die Uhr mittig auf dem Sternenhimmel. Beide
+ * reagieren auf jede Berührung; das Wecken übernimmt useNightMode, hier wird
+ * nur dargestellt.
  */
 export function NightOverlay({ night }: { night: NightMode }) {
   const { trash } = useDashboard();
+  const config = useDashboardConfig();
   const now = useClock(false);
 
   if (!night.dimmed && !night.awake) return null;
 
   const urgentTrash =
     trash?.next?.isToday || trash?.next?.isTomorrow ? trash.next : null;
+
+  /*
+   * Resthelligkeit als Deckkraft. Dieselbe Rechnung wie für den Text darunter:
+   * Bei 40 % Resthelligkeit ist overlayOpacity 0.6, der Himmel also bei 0.4.
+   * Nach unten begrenzt, damit bei sehr starker Absenkung nicht eine schwarze
+   * Fläche stehen bleibt, auf der die Uhr zu schweben scheint.
+   */
+  const nightOpacity = Math.max(0.12, 1 - night.overlayOpacity);
 
   return (
     <>
@@ -32,9 +43,21 @@ export function NightOverlay({ night }: { night: NightMode }) {
       {/* Reine Uhranzeige */}
       {night.clockOnly && (
         <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-surface-900 transition-opacity duration-700">
+          {night.starfield && (
+            <div
+              className="absolute inset-0"
+              style={{ opacity: nightOpacity }}
+            >
+              <Starfield
+                still={config?.appearance.reducedMotion ?? false}
+                className="h-full w-full"
+              />
+            </div>
+          )}
+
           <div
-            className="flex flex-col items-center"
-            style={{ opacity: Math.max(0.12, 1 - night.overlayOpacity) }}
+            className="relative flex flex-col items-center"
+            style={{ opacity: nightOpacity }}
           >
             <span className="digits text-[clamp(5rem,17vw,13rem)] font-extralight leading-none tracking-tight text-zinc-200">
               {String(now.getHours()).padStart(2, "0")}
