@@ -1,234 +1,259 @@
 # CINDRALUX — Home Command Center
 
-*[Deutsch](README.md) · [English](README.en.md)*
+*English · [Deutsch](README.de.md)*
 
-> 🚧 **In aktiver Entwicklung.** Läuft stabil im Alltag auf einem echten Pi,
-> aber es kommen laufend neue Funktionen dazu und Struktur/API können sich
-> noch ändern. Kein „fertiges" 1.0 in dem Sinne, dass nichts mehr passiert —
-> siehe *Nächste Schritte* unten für den aktuellen Stand.
+> 🚧 **Actively developed.** Runs stably day-to-day on a real Pi, but new
+> features keep landing and structure/API may still shift. Not "finished" in
+> the sense that nothing more is happening — see *Next steps* below for the
+> current state.
 
-Lokales Touchscreen-Dashboard für einen Raspberry Pi im Chromium-Kiosk-Modus:
-Kalender aus mehreren Quellen, Uhrzeit, Wetter, Müllabholung, Smart-Home-Schnellaktionen
-und ein AI-Assistent — alles auf einem Bildschirm, ohne Cloud-Zwang.
+A local touchscreen dashboard for a Raspberry Pi running Chromium in kiosk
+mode: calendars from multiple sources, a clock, weather, trash pickup,
+smart-home quick actions and an AI assistant — all on one screen, with no
+cloud lock-in.
 
 ![Dashboard](docs/dashboard.png)
 
 ---
 
-## Warum Cindralux?
+## Why Cindralux?
 
-Familien-Kalender-Hubs und Smart Displays mit diesem Funktionsumfang werden
-normalerweise als Hardware-plus-Abo verkauft: einmal für den Bildschirm
-zahlen, danach dauerhaft weiterzahlen, damit der Kalender synchronisiert
-bleibt oder die „Premium"-Kacheln freigeschaltet sind. Cindralux läuft auf
-einem Raspberry Pi, den man ohnehin hat (oder für 40–80 € kauft), ist
-kostenlos und quelloffen, und jede Anbindung ist opt-in — nichts telefoniert
-nach Hause, außer man verbindet es selbst.
+Family calendar hubs and smart displays with this feature set are usually
+sold as hardware-plus-subscription products — pay once for the screen, then
+pay again, forever, to keep the calendar syncing or the "premium" widgets
+unlocked. Cindralux runs on a Raspberry Pi you already own (or a €40–80
+one), is free and open-source, and every integration is opt-in: nothing
+phones home unless you connect it yourself.
 
-**Eine kostenlose, selbst gehostete Alternative zu bezahlten Hubs wie:**
+**A free, self-hosted alternative to paid hubs like:**
 
-- **Skylight Calendar** — ein Familienkalender-Tablet ab rund 130 €, mit
-  optionalem Monatsabo für zusätzliche Funktionen.
-- **Hearth Display** — ein Wand-Familienhub, der im laufenden Abo verkauft
-  wird.
-- **Google Nest Hub Max / Amazon Echo Show** — leistungsfähige Smart
-  Displays, aber um die Cloud des jeweiligen Herstellers gebaut, mit
-  manchen Funktionen hinter eigenen Abos (Nest Aware, Alexa+).
+- **Skylight Calendar** — a $130+ family-calendar tablet with an optional
+  monthly plan for extra features.
+- **Hearth Display** — a wall-mounted family hub sold on a recurring
+  subscription.
+- **Google Nest Hub Max / Amazon Echo Show** — capable smart displays, but
+  built around their makers' clouds, with some features gated behind their
+  own subscriptions (Nest Aware, Alexa+).
 
-**Was direkt beim ersten Start mitkommt, ganz ohne Einrichtung oder Konto:**
-ein realistischer Demo-Kalender, ein Wetter-Fallback-Datensatz, fünf
-Platzhalter-Fotos für die Diashow, zehn Layout-Vorlagen fürs Dashboard und
-fünf Farb-und-Schrift-Design-Vorlagen, ein vollständig lokales
-Einkaufslisten-/Notizen-Panel und ein per WebAudio erzeugter Timer/Wecker,
-der keine Audiodatei braucht.
+**What ships in the box, ready to try immediately (no setup, no account):**
+a realistic demo calendar, a weather fallback dataset, five placeholder
+slideshow images, ten dashboard layout presets and five color-and-font
+theme presets, a fully local shopping list/notes panel, and a WebAudio-based
+timer/alarm system that needs no sound files.
 
-**Wohin sich das entwickelt:** ÖPNV-Abfahrten und Fahrzeit zur Arbeit, sowie
-ein Weckwort statt Knopfdruck für den Sprachmodus. Der Stand dazu steht
-unten unter *Nächste Schritte* — Issues und Pull Requests sind willkommen.
+**Where this is headed:** public-transport departures and commute time, and
+a wake word for voice mode instead of a button press. See *Next steps* at
+the bottom for the current state of each, and issues/PRs are welcome.
 
 ---
 
-## Schnellstart
+## Quick start
 
 ```bash
-npm install          # installiert Client und Server (npm workspaces)
-npm run dev          # startet beides: Frontend :5173, Backend :4000
+npm install          # installs client and server (npm workspaces)
+npm run dev          # starts both: frontend :5173, backend :4000
 ```
 
-> Der Block `allowScripts` in der `package.json` gibt esbuild sein
-> Installationsskript frei. npm ab Version 12 blockiert solche Skripte sonst,
-> und ohne esbuild starten weder Vite noch tsx.
+> The `allowScripts` block in `package.json` grants esbuild its install
+> script. npm 12+ blocks such scripts otherwise, and without esbuild neither
+> Vite nor tsx will start.
 
-Dann `http://localhost:5173` öffnen. Das Dashboard ist sofort mit realistischen
-Demodaten gefüllt — es muss nichts konfiguriert werden.
+Then open `http://localhost:5173`. The dashboard is immediately populated
+with realistic demo data — nothing needs to be configured first.
 
-### Einzeln starten
+### Run pieces individually
 
 ```bash
-npm run dev:client   # nur Vite-Dev-Server (:5173, proxyt /api auf :4000)
-npm run dev:server   # nur Express-API (:4000)
+npm run dev:client   # Vite dev server only (:5173, proxies /api to :4000)
+npm run dev:server   # Express API only (:4000)
 ```
 
-### Produktionsnah (ein einziger Prozess)
+### Production-like (one single process)
 
 ```bash
-npm run build        # baut das Frontend nach client/dist
-npm start            # Express liefert API und Frontend unter :4000 aus
+npm run build        # builds the frontend into client/dist
+npm start            # Express serves both API and frontend on :4000
 ```
 
-Diese Variante ist für den Pi gedacht: ein Prozess, eine Portnummer.
+This is the mode meant for the Pi: one process, one port.
 
-### Prüfen
+### Check
 
 ```bash
-npm run typecheck    # TypeScript für Client und Server
+npm run typecheck    # TypeScript for client and server
 ```
 
 ---
 
-## Projektstruktur
+## Project structure
 
 ```
 client/     React 18 + Vite + TypeScript + Tailwind
-  src/components/    Dashboard-Panels
-  src/theme/tokens.js  ← zentrale Theme-Datei (Farben, Schatten, Akzente)
-server/     Express + TypeScript (läuft über tsx, kein Build-Schritt nötig)
-  src/services/      Kalender, Wetter, Müll, Home Assistant, AI
-  src/routes/api.ts  alle Endpunkte
-shared/     types.ts — gemeinsames Datenmodell, reine Typen
-data/       config.json (Laufzeit), seeds/ (Demodaten), cache/
-assets/     cindralux/ — Logo, Wasserzeichen, Hintergründe
+  src/components/    dashboard panels
+  src/theme/tokens.js  ← central theme file (colors, shadows, accents)
+server/     Express + TypeScript (runs via tsx, no build step needed)
+  src/services/      calendar, weather, trash, Home Assistant, AI
+  src/routes/api.ts  all endpoints
+shared/     types.ts — shared data model, types only
+data/       config.json (runtime), seeds/ (demo data), cache/
+assets/     cindralux/ — logo, watermark, backgrounds
 ```
 
-`shared/types.ts` enthält bewusst **nur Typen**. Dadurch werden alle
-`import type`-Verweise beim Transpilieren entfernt und weder Vite noch tsx
-müssen `/shared` auflösen oder bündeln.
+`shared/types.ts` deliberately contains **types only**. That way every
+`import type` reference is stripped during transpilation, and neither Vite
+nor tsx ever need to resolve or bundle `/shared`.
 
 ---
 
-## Konfiguration
+## Configuration
 
-Alles ist über das **Einstellungs-Panel** (Zahnrad oben rechts) einstellbar.
-Gespeichert wird nach `data/config.json` — die Datei ist gitignored, weil sie
-Tokens enthält. Sie wird beim ersten Start automatisch mit Standardwerten angelegt.
+Everything is adjustable through the **Settings panel** (gear icon, top
+right). It's saved to `data/config.json` — that file is gitignored because it
+holds tokens. It's created automatically with default values on first run.
 
-Alternativ per Umgebungsvariable (gewinnt gegen die Datei — praktisch für eine
-systemd-Unit auf dem Pi, ohne Secrets in der JSON abzulegen):
+Alternatively, via environment variable (wins over the file — handy for a
+systemd unit on the Pi, without storing secrets in the JSON):
 
-| Variable | Bedeutung |
+| Variable | Meaning |
 | --- | --- |
 | `HA_BASE_URL` / `HA_TOKEN` | Home Assistant |
-| `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` | AI-Assistent |
-| `PORT` | API-Port (Standard 4000) |
-| `HOST` | Bind-Adresse (Standard 127.0.0.1; Netzwerkzugriff siehe [Zugriff und Betrieb](docs/security.md)) |
+| `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` | AI assistant |
+| `PORT` | API port (default 4000) |
+| `HOST` | bind address (default 127.0.0.1; remote access requires an SSH tunnel or authenticated HTTPS proxy; see [security](docs/security.md)) |
 
-Secrets werden nie an den Client ausgeliefert — die API meldet nur `hasToken`
-bzw. `hasApiKey`. Ein leeres Feld beim Speichern lässt einen bestehenden Wert
-unverändert; zum Löschen sendet das Panel den Sentinel `__clear__`.
+Secrets are never sent to the client — the API only reports `hasToken` or
+`hasApiKey`. Leaving a field empty when saving keeps the existing value
+unchanged; to actually clear it, the panel sends the sentinel `__clear__`.
 
 ---
 
-## Integrationen: was ist echt, was ist Mock?
+## Integrations: what's real, what's mocked?
 
-| Bereich | Status | Hinweis |
+| Area | Status | Note |
 | --- | --- | --- |
-| **Wetter** | **echt** | Open-Meteo, kein API-Key nötig — inkl. Stundenverlauf, Sonnenzeiten, Wind, Druck und UV. Fällt bei fehlendem Internet auf `data/seeds/weather.json` zurück, auch für das Detailfenster. |
-| **Müllabholung** | **echt** | Wahlweise eigene Regeln (Wochentag + Rhythmus + Ankerdatum) oder der ICS-Kalender des Entsorgers, per Adresse oder Datei. |
-| **Kalender** | **echt, sobald eine URL hinterlegt ist** | ICS/iCal inkl. Serienterminen, mit geführtem Dialog für Google-Kalender und Gruppierung nach Konto. Ohne URL liefert die Quelle Demodaten aus `data/seeds/calendar.json`. |
-| **Home Assistant** | **vorbereitet, standardmäßig Mock** | Ohne URL + Token schaltet das Dashboard simulierte Zustände. Mit Konfiguration gehen dieselben Aufrufe an die echte REST-API. |
-| **AI-Assistent** | **vorbereitet, standardmäßig lokal** | Ohne API-Key beantwortet der Server Fragen aus Kalender, Wetter und Müllplan — keine Platzhaltertexte, echte Daten. Mit Key geht es an eine OpenAI-kompatible API. |
-| **Sprachmodus** | **vorbereitet, braucht OpenAI-Key** | Gespräch per Mikrofon über die Realtime API (WebRTC). Nur bei OpenAI verfügbar. |
-| **Messwerte** | **echt, sobald HA verbunden ist** | Temperatur, Luftfeuchte, Fenster, Verbrauch. Ohne HA plausible Beispielwerte, die dem Tagesgang folgen. |
-| **Timer & Wecker** | **echt** | Vollständig lokal, unabhängig von HA und AI. |
-| **Fotos (Diashow)** | **echt** | Lokaler Bilderordner immer verfügbar; Google Fotos optional über den Picker (Auswahl in Googles eigenem Fenster). |
+| **Weather** | **real** | Open-Meteo, no API key needed — including the hourly forecast, sunrise/sunset, wind, pressure and UV. Falls back to `data/seeds/weather.json` when offline, including for the detail view. |
+| **Trash pickup** | **real** | Either your own rules (weekday + interval + anchor date) or your waste provider's ICS calendar, by address or file. |
+| **Calendar** | **real, as soon as a URL is set** | ICS/iCal including recurring events, with a guided dialog for Google Calendar and grouping by account. Without a URL the source serves demo data from `data/seeds/calendar.json`. |
+| **Home Assistant** | **wired up, mock by default** | Without a URL + token the dashboard shows simulated states. With configuration, the same calls go to the real REST API. |
+| **AI assistant** | **wired up, local by default** | Without an API key the server answers questions from calendar, weather and trash data — real data, not placeholder text. With a key it talks to an OpenAI-compatible API. |
+| **Voice mode** | **wired up, needs an OpenAI key** | Microphone conversation over the Realtime API (WebRTC). Only available with OpenAI. |
+| **Sensor readings** | **real, once HA is connected** | Temperature, humidity, windows, power draw. Without HA, plausible sample values that follow a daily curve. |
+| **Timers & alarms** | **real** | Fully local, independent of HA and AI. |
+| **Photos (slideshow)** | **real** | A local photo folder always works; Google Photos optional via the picker (selection happens in Google's own window). |
 
-### Was du wofür extern einrichten musst — Überblick
+### What you need to set up externally, for what — overview
 
-Nichts davon ist Pflicht: Ohne jede Einrichtung läuft das Dashboard sofort mit
-Wetter, Müllabholung nach eigenen Regeln, Demo-Kalender und lokalen Fotos.
-Jede Zeile unten ist ein **optionaler** Ausbauschritt.
+None of this is required: with zero setup the dashboard runs immediately
+with weather, trash pickup on your own rules, a demo calendar and local
+photos. Every row below is an **optional** add-on.
 
-| Funktion | Was extern nötig ist | Aufwand |
+| Feature | What's needed externally | Effort |
 | --- | --- | --- |
-| **Wetter** | nichts — Open-Meteo ohne Schlüssel | keiner |
-| **Müllabholung** | nichts (eigene Regeln) *oder* die ICS-Adresse/Datei deines Entsorgers | Adresse kopieren |
-| **Kalender per iCal** | die private iCal-Adresse aus Google/Nextcloud/iCloud/Outlook | Adresse kopieren |
-| **Kalender per Google-API** (empfohlen, fast live) | ein eigenes Google-Cloud-Projekt + OAuth-Client | ~10 Min, einmalig — [docs/google-kalender.md](docs/google-kalender.md) |
-| **Google Fotos in der Diashow** | dasselbe Google-Cloud-Projekt, zusätzlich Photos Picker API aktiviert | ~2 Min, einmalig — [docs/google-fotos.md](docs/google-fotos.md) |
-| **Home Assistant** | ein Long-Lived Access Token aus deiner eigenen HA-Instanz | ~1 Min |
-| **AI-Assistent (Text/Briefing)** | optional ein API-Key bei OpenAI oder einer OpenAI-kompatiblen API (LM Studio/Ollama laufen ganz ohne Internet) | wenige Minuten |
-| **Sprachmodus (Mikrofon)** | ein OpenAI-API-Key **mit Guthaben** — ein ChatGPT-Plus-Abo reicht dafür nicht | siehe unten |
-| **GPT Live** | nichts zwingend (öffnet chatgpt.com im Browser); optional ein Gerätebefehl für den Kiosk-Betrieb | keiner bis wenige Minuten |
-| **Spenden-Button** | nichts — reiner Link | keiner |
+| **Weather** | nothing — Open-Meteo, no key | none |
+| **Trash pickup** | nothing (own rules) *or* your provider's ICS address/file | copy an address |
+| **Calendar via iCal** | the private iCal address from Google/Nextcloud/iCloud/Outlook | copy an address |
+| **Calendar via Google API** (recommended, near-live) | your own Google Cloud project + OAuth client | ~10 min, one-time — [docs/google-kalender.md](docs/google-kalender.md) *(German)* |
+| **Google Photos in the slideshow** | the same Google Cloud project, with the Photos Picker API additionally enabled | ~2 min, one-time — [docs/google-fotos.md](docs/google-fotos.md) *(German)* |
+| **Home Assistant** | a Long-Lived Access Token from your own HA instance | ~1 min |
+| **AI assistant (text/briefing)** | optional: an API key from OpenAI or an OpenAI-compatible API (LM Studio/Ollama run with no internet at all) | a few minutes |
+| **Voice mode (microphone)** | an OpenAI API key **with credit** — a ChatGPT Plus subscription does not unlock this | see below |
+| **GPT Live** | nothing required (opens chatgpt.com in the browser); optionally a device command for kiosk use | none to a few minutes |
+| **Donate button** | nothing — it's just a link | none |
 
-Alle Zugangsdaten bleiben ausschließlich lokal in `data/config.json` auf
-diesem Gerät und werden nie an den Browser ausgeliefert.
+All credentials stay exclusively local in `data/config.json` on this device
+and are never sent to the browser.
 
-### Kalender anbinden
+### Connecting a calendar
 
-#### Google-Kalender über die API (empfohlen)
+#### Google Calendar via the API (recommended)
 
-Unter *Einstellungen → Kalender → Google Kalender* ein Google-Konto verbinden.
-Danach erscheinen alle Kalender des Kontos zur Auswahl; ein Tipp nimmt einen
-davon ins Dashboard auf.
+Under *Settings → Calendar → Google Calendar*, connect a Google account.
+All of that account's calendars then appear for selection; tapping one adds
+it to the dashboard.
 
-Vorteile gegenüber der iCal-Adresse: **nahezu live** statt bis zu 24 Stunden
-Verzögerung, alle Kalender eines Kontos auf einen Blick, und Google löst
-Serientermine mit `singleEvents=true` selbst auf — die gesamte RRULE-Behandlung
-entfällt.
+Advantages over the iCal address: **near-live** instead of up to 24 hours of
+delay, every calendar of an account visible at once, and Google resolves
+recurring events itself via `singleEvents=true` — no RRULE handling needed
+on this end.
 
-Preis dafür ist ein einmaliges Google-Cloud-Projekt (rund zehn Minuten).
-Schritt für Schritt: **[docs/google-kalender.md](docs/google-kalender.md)**.
+The cost is a one-time Google Cloud project (about ten minutes). Step by
+step: **[docs/google-kalender.md](docs/google-kalender.md)** *(German; an
+English walkthrough of the same clicks is below)*.
 
-Angefordert wird ausschließlich `calendar.readonly` — das Dashboard kann Termine
-lesen, nicht ändern. Client-Secret und Refresh-Token bleiben lokal in
-`data/config.json` und werden nie an den Client ausgeliefert.
+Only `calendar.readonly` is requested — the dashboard can read events, not
+change them. The client secret and refresh token stay local in
+`data/config.json` and are never sent to the client.
 
-#### Google-Kalender über die private iCal-Adresse (ohne Google-Projekt)
+**Quick English walkthrough** (same steps as the German doc):
 
-**So findest du den Link:**
+1. Open [console.cloud.google.com](https://console.cloud.google.com), sign in
+   with the Google account whose calendar you want to see, create a new
+   project (e.g. `Cindralux Dashboard`).
+2. Enable the **Google Calendar API** for that project (search for it, click
+   **Enable**).
+3. Under **APIs & Services → OAuth consent screen**: user type **External**,
+   fill in app name and your email as support/developer contact, skip
+   scopes, and under **Test users** add your own Google address — without
+   this, Google later refuses sign-in with "access blocked". The app can
+   stay in "Testing" status; that's enough (a test app's refresh token
+   expires after seven days — publish the app once if that's inconvenient,
+   no Google review is required as long as only you use it).
+4. Under **APIs & Services → Credentials**, create an **OAuth client ID**,
+   application type **Web application**, and add this exact redirect URI:
+   `http://127.0.0.1:4000/api/google/callback` (adjust the port if your
+   server runs elsewhere — the exact address is also shown in the dashboard
+   right above the connect button).
+5. In the dashboard: Settings → Calendar → paste **Client ID** and
+   **Client secret**, save, then tap **Connect with Google**, choose the
+   account, click through the "Google hasn't verified this app" warning
+   (**Advanced → Go to Cindralux Dashboard**), and confirm calendar access.
+6. Pick which of the account's calendars to show.
 
-> Google Kalender → den Kalender in der linken Liste auswählen →
-> **Einstellungen und Freigabe** → ganz nach unten zu **Kalender integrieren** →
-> Feld **Geheime Adresse im iCal-Format** kopieren.
+#### Google Calendar via the private iCal address (no Google project)
 
-Die Adresse endet auf `.ics`. Zwei Verwechslungen sind häufig — beide erkennt
-das Dashboard und sagt dir konkret, was falsch ist:
+**Finding the link:**
 
-- die Adresse der **Weboberfläche** (`…/calendar/u/0?cid=…`)
-- die **Einbettungs-Adresse** (`…/calendar/embed?src=…`)
+> Google Calendar → select the calendar in the left-hand list →
+> **Settings and sharing** → scroll down to **Integrate calendar** → copy the
+> **Secret address in iCal format** field.
 
-> ### Diese Adresse ist ein Geheimnis
+The address ends in `.ics`. Two mix-ups are common — the dashboard detects
+both and tells you exactly what's wrong:
+
+- the **web-interface** address (`…/calendar/u/0?cid=…`)
+- the **embed** address (`…/calendar/embed?src=…`)
+
+> ### This address is a secret
 >
-> Wer sie hat, kann deinen kompletten Kalender lesen — ohne Login, ohne
-> Einladung. Behandle sie wie ein Passwort:
+> Whoever has it can read your entire calendar — no login, no invitation
+> needed. Treat it like a password:
 >
-> - **niemals committen**, weitergeben oder in ein Ticket schreiben
-> - nicht in Screenshots oder Logs zeigen
-> - bei Verdacht in Google auf **Zurücksetzen** klicken; die alte Adresse wird
->   damit sofort ungültig
+> - **never commit it**, share it, or paste it into a ticket
+> - don't show it in screenshots or logs
+> - if you suspect it's leaked, click **Reset** in Google; the old address
+>   becomes invalid immediately
 >
-> Das Dashboard hält sich daran: Die Adresse wird ausschließlich serverseitig
-> benutzt und **verlässt den Server nie**. Der Browser erfährt nur, *dass* eine
-> hinterlegt ist, plus einen ungefährlichen Hinweis wie
-> `calendar.google.com/…/basic.ics`. Aus Fehlermeldungen und Logzeilen werden
-> Adressen vor der Ausgabe entfernt, und der Kalendercache speichert statt der
-> Adresse nur einen nicht umkehrbaren Kurz-Hash.
+> The dashboard holds up its end: the address is used **server-side only**
+> and **never leaves the server**. The browser only learns *that* one is set,
+> plus a harmless hint like `calendar.google.com/…/basic.ics`. Addresses are
+> stripped from error messages and log lines before they're written, and the
+> calendar cache stores only a one-way short hash instead of the address
+> itself.
 
-**Wo du sie einträgst** — zwei Wege, beide gleichwertig:
+**Where to enter it** — two equivalent ways:
 
-1. **Im Dashboard**: Zahnrad → *Kalender* → bei der Quelle die Adresse ins
-   Feld einfügen → *Speichern*. Danach zeigt das Feld nur noch
-   `•••••••••• (hinterlegt)`.
-2. **In der Datei** `data/config.json`. Der Server bemerkt Änderungen an dieser
-   Datei selbst und lädt sie neu — ein Neustart ist nicht nötig.
+1. **In the dashboard**: gear icon → *Calendar* → paste the address into the
+   source's field → *Save*. The field afterwards only shows
+   `•••••••••• (set)`.
+2. **In the file** `data/config.json`. The server notices changes to this
+   file itself and reloads it — no restart needed.
 
 ```json
 {
   "calendars": [
     {
       "id": "google-private",
-      "name": "Privat",
+      "name": "Private",
       "color": "#ff7a1a",
       "url": "YOUR_PRIVATE_ICS_URL",
       "enabled": true
@@ -237,519 +262,551 @@ das Dashboard und sagt dir konkret, was falsch ist:
 }
 ```
 
-`data/config.json` ist in `.gitignore` und enthält deine echten Daten.
-`data/config.example.json` liegt daneben, hat dieselbe Struktur und
-ausschließlich Platzhalter — die Datei gehört ins Repo.
+`data/config.json` is in `.gitignore` and holds your real data.
+`data/config.example.json` sits next to it, has the same structure and only
+placeholder values — that file belongs in the repo.
 
-**Phase 1 nutzt ICS.** Das genügt für ein Dashboard und braucht kein
-Google-Projekt. Der Preis ist die Aktualität: Google schreibt neue Termine oft
-erst nach Stunden in den Feed. Wer das nicht will, nimmt den OAuth-Weg oben —
-er ist bereits eingebaut und lässt sich jederzeit nachrüsten, ohne dass die
-ICS-Quellen verschwinden. Beide Wege laufen nebeneinander.
+**Phase 1 uses ICS.** That's enough for a dashboard and needs no Google
+project. The price is freshness: Google often takes hours to write new
+events into the feed. If that's not acceptable, use the OAuth route above —
+it's already built in and can be added at any time without the ICS sources
+disappearing. Both run side by side.
 
-#### Weitere ICS-Quellen
+#### More ICS sources
 
-In den Einstellungen unter *Kalender* auf **Google-Kalender** tippen. Der Dialog
-führt durch den Klickpfad in Google und prüft die Adresse, bevor er sie
-übernimmt: Er ruft den Feed einmal ab, bestätigt dass Termine ankommen und
-übernimmt den Kalendernamen direkt aus der Datei.
+In Settings under *Calendar*, tap **Google Calendar**. The dialog walks you
+through the exact click path in Google and validates the address before
+adopting it: it fetches the feed once, confirms events are coming through,
+and reads the calendar name straight from the file.
 
-Kalender werden nach **Konto** gruppiert — mehrere Google-Konten (privat,
-beruflich) lassen sich nebeneinander führen. Das Kontofeld ist ein freier Text
-und dient nur der Gruppierung.
+Calendars are grouped by **account** — several Google accounts (personal,
+work) can run side by side. The account field is free text, purely for
+grouping.
 
-Häufige Fehleingaben erkennt die Prüfung und benennt sie konkret: die
-Einbettungs-Adresse, die Adresse der Weboberfläche und die öffentliche statt der
-privaten Adresse führen jeweils zu einem eigenen Hinweis statt zu einem
-allgemeinen Fehler.
+The check recognizes common mistakes and names them specifically: the embed
+address, the web-interface address, and the public instead of the private
+address each get their own hint instead of a generic error.
 
-> **Zwei Dinge, die man wissen sollte.**
-> Die Privatadresse wirkt wie ein Passwort — wer sie kennt, kann den Kalender
-> lesen. Sie bleibt lokal in `data/config.json` und lässt sich in Google
-> jederzeit zurücksetzen.
-> Google aktualisiert iCal-Feeds außerdem nur träge: neue oder verschobene
-> Termine können bis zu 24 Stunden brauchen. Das ist eine Grenze von Google und
-> lässt sich vom Aktualisierungsintervall des Dashboards nicht beeinflussen. Wer
-> nahezu Live-Daten braucht, kommt an Google OAuth nicht vorbei — das wäre ein
-> eigener Ausbauschritt.
+> **Two things worth knowing.**
+> The private address acts like a password — whoever has it can read the
+> calendar. It stays local in `data/config.json` and can be reset in Google
+> at any time.
+> Google also updates iCal feeds sluggishly: new or moved events can take up
+> to 24 hours. That's a limitation of Google's, and the dashboard's refresh
+> interval can't influence it. If you need near-live data, there's no way
+> around Google OAuth — that would be a separate step.
 
-#### Andere Quellen
+#### Other sources
 
-**Andere ICS-URL** nimmt jede beliebige iCal-Adresse — Nextcloud, iCloud,
-Outlook, Vereins- oder Feiertagskalender. `webcal://` wird automatisch auf
-`https://` umgeschrieben.
+**Other ICS URL** accepts any iCal address — Nextcloud, iCloud, Outlook,
+club or public-holiday calendars. `webcal://` is automatically rewritten to
+`https://`.
 
-Der Kalenderdienst führt alle aktiven Quellen zusammen, löst Serientermine
-(`RRULE`) samt Ausnahmen (`EXDATE`) und Einzeländerungen (`RECURRENCE-ID`) auf
-und korrigiert die Sommerzeit-Verschiebung, die bei der Expansion von
-Wiederholungen sonst entsteht. Der Cache liegt in `data/cache/calendar.json`.
+The calendar service merges all active sources, resolves recurring events
+(`RRULE`) including exceptions (`EXDATE`) and single-instance overrides
+(`RECURRENCE-ID`), and corrects the daylight-saving shift that would
+otherwise occur when expanding recurrences. The cache lives in
+`data/cache/calendar.json`.
 
-### Home Assistant anbinden
+### Connecting Home Assistant
 
-1. In Home Assistant: Profil → Sicherheit → **Long-Lived Access Token** erzeugen.
-2. In den Einstellungen unter *Verbindungen* Basis-URL und Token eintragen.
-3. Auf *Home Assistant testen* tippen.
+1. In Home Assistant: profile → security → generate a **Long-Lived Access
+   Token**.
+2. In Settings under *Connections*, enter the base URL and token.
+3. Tap *Test Home Assistant*.
 
-Die Kacheln unter *Darstellung* verweisen auf `entity_id`s. Eine Toggle-Kachel
-ruft `turn_on`/`turn_off` je nach aktuellem Zustand, eine Szenen-Kachel löst
-einmalig aus.
+Tiles under *Appearance* reference `entity_id`s. A toggle tile calls
+`turn_on`/`turn_off` depending on the current state; a scene tile fires
+once.
 
-### Kalenderansichten
+### Calendar views
 
-Der Kalender kennt drei Ansichten, umschaltbar in seiner Kopfzeile:
+The calendar has three views, switchable in its header:
 
-| Ansicht | Zweck |
+| View | Purpose |
 | --- | --- |
-| **Tag** | Zeitschiene mit festem Stundenraster (58 px je Stunde). Termine liegen maßstäblich, eine Ember-Linie markiert *jetzt*. Pfeiltasten blättern durch die Tage. |
-| **Woche** | Die kompakte Liste der nächsten sieben Tage — gut zum Überfliegen. |
-| **Monat** | Rasterkalender mit farbigen Terminpunkten je Tag. Ein Tipp auf einen Tag springt in die Tagesansicht. |
+| **Day** | A timeline with a fixed hourly grid (58 px per hour). Events sit at true scale, an ember line marks *now*. Arrow buttons page through days. |
+| **Week** | The compact list of the next seven days — good for skimming. |
+| **Month** | A grid calendar with colored event dots per day. Tapping a day jumps to the day view. |
 
-Unter *Einstellungen → Kalender → Ansicht* legst du fest, welche Ansicht die
-**Standardansicht** ist und nach wie vielen Minuten ohne Bedienung der Kalender
-dorthin **zurückspringt** (Standard 5 Minuten, 0 schaltet es ab). Jede Bedienung
-setzt die Frist neu — ein Panel im Flur soll nicht auf der Ansicht stehen
-bleiben, die jemand vor Stunden geöffnet hat.
+Under *Settings → Calendar → View* you set which view is the **default view**
+and after how many idle minutes the calendar **snaps back** to it (default 5
+minutes, 0 disables it). Any interaction resets the timer — a panel in the
+hallway shouldn't stay stuck on whatever view someone opened hours ago.
 
-Die Tagesansicht nutzt bewusst eine **Pixel-Skala statt Prozent**: bei
-prozentualer Höhe schrumpft ein 15-Minuten-Termin auf wenige Pixel und sein
-Titel wird abgeschnitten. Mit fester Skala scrollt der Tag stattdessen.
+The day view deliberately uses a **pixel scale rather than percentages**: at
+a percentage-based height a 15-minute event shrinks to a few pixels and its
+title gets clipped. With a fixed scale, the day scrolls instead.
 
-### Abfuhrkalender des Entsorgers
+### Your waste provider's pickup calendar
 
-Unter *Einstellungen → Müll & Wetter → Abfuhrkalender* lässt sich zwischen
-**eigenen Regeln** und dem **Kalender des Entsorgers** umschalten.
+Under *Settings → Trash & Weather → Pickup calendar* you can switch between
+**your own rules** and **your provider's calendar**.
 
-Für den ICS-Weg entweder eine Adresse eintragen oder eine `.ics`-Datei hochladen
-(für Entsorger, die nur einen Download anbieten). Ist eine Adresse gesetzt, hat
-sie Vorrang. Der *Prüfen*-Knopf holt den Kalender und meldet, wie viele Termine
-und welche Tonnenarten gefunden wurden.
+For the ICS route, either enter an address or upload an `.ics` file (for
+providers that only offer a download). If an address is set, it takes
+priority. The *Check* button fetches the calendar and reports how many
+events and which bin types were found.
 
-Die Tonnenart wird aus der **Terminbezeichnung** erkannt — Entsorger benennen
-sie sehr unterschiedlich („Restmuell 2-woechentlich", „Restabfall", „Graue
-Tonne"). Deshalb wird auf Stichworte geprüft und vorher werden Umlaute
-normalisiert. Erkannt werden Restmüll, Bio, Papier, Gelber Sack, Glas und
-Sperrmüll; alles andere behält seine Originalbezeichnung.
+The bin type is recognized from the **event title** — providers name them
+very differently ("Restmuell 2-woechentlich", "Restabfall", "Graue Tonne").
+Keyword matching is used for this, with umlauts normalized first. Recognized
+types: general waste, bio waste, paper, yellow-bag recycling, glass and
+bulky waste; anything else keeps its original label.
 
-Die Adresse wird höchstens alle sechs Stunden neu abgerufen — Abfuhrkalender
-ändern sich selten.
+The address is refetched at most every six hours — pickup calendars rarely
+change.
 
-### Standort wählen
+### Choosing a location
 
-Unter *Einstellungen → Müll & Wetter → Wetter-Standort*:
+Under *Settings → Trash & Weather → Weather location*:
 
-- **Ortssuche** über die Open-Meteo-Geocoding-API (kein Schlüssel nötig).
-  Ortsnamen eingeben, aus der Trefferliste wählen — Koordinaten und Zeitzone
-  werden übernommen.
-- **„Hier"** fragt den Standort beim Browser ab und übersetzt ihn in einen
-  Ortsnamen. Funktioniert nur im sicheren Kontext (`localhost` oder HTTPS),
-  genau wie das Mikrofon.
-- Koordinaten und Zeitzone bleiben zusätzlich von Hand korrigierbar.
+- **Place search** via the Open-Meteo geocoding API (no key needed). Type a
+  place name, pick from the results — coordinates and time zone are
+  adopted automatically.
+- **"Here"** asks the browser for the current location and translates it
+  into a place name. Only works in a secure context (`localhost` or HTTPS),
+  same as the microphone.
+- Coordinates and time zone can also be corrected by hand.
 
-### Wetter-Detailfenster
+### Weather detail view
 
-Ein Tipp auf die Wetterkarte fährt ein Detailfenster mittig ein — mit allem, was
-auf der Karte keinen Platz hat:
+Tapping the weather card slides in a detail view, centered — with everything
+that doesn't fit on the card:
 
-- **Tagesverlauf über 24 Stunden.** Temperatur als Linie, Regenwahrscheinlichkeit
-  als Balken darunter. Bewusst **zwei übereinanderliegende Diagramme mit
-  gemeinsamer Zeitachse** statt einer zweiten y-Achse: zwei Größen mit
-  verschiedener Skala in einem Koordinatensystem sind praktisch immer
-  irreführend. Über das Diagramm streichen zeigt die Stundenwerte.
-- Sonnenauf- und -untergang
-- Wind mit Richtung und Böen, Luftfeuchte, Luftdruck, Bewölkung, UV-Index
-  (mit WHO-Stufe) und Niederschlagsmenge
-- Volle Wochenvorschau mit Temperaturspannen auf gemeinsamer Skala
+- **24-hour forecast.** Temperature as a line, chance of rain as bars
+  underneath. Deliberately **two stacked charts sharing one time axis**
+  instead of a second y-axis: two quantities on different scales in one
+  coordinate system are almost always misleading. Dragging across the chart
+  shows the hourly values.
+- Sunrise and sunset
+- Wind with direction and gusts, humidity, air pressure, cloud cover, UV
+  index (with WHO level) and precipitation amount
+- A full week's outlook with temperature ranges on a shared scale
 
-Die Diagrammfarben (Bernstein `#d97706`, Blau `#0284c7`) sind gegen die dunkle
-Fläche geprüft: Sie liegen im Helligkeitsband für dunkle Oberflächen und trennen
-sich auch bei Rot-Grün- und Blau-Gelb-Schwäche deutlich (ΔE > 23). Beide Reihen
-sind zusätzlich beschriftet — die Farbe allein trägt nie die Bedeutung. Dieselben
-Werte stehen für Screenreader als Tabelle im Markup.
+The chart colors (amber `#d97706`, blue `#0284c7`) were checked against the
+dark surface: they sit in the correct brightness band for dark backgrounds
+and stay clearly distinct under red-green and blue-yellow color-vision
+deficiency (ΔE > 23). Both series are also labeled — color alone never
+carries the meaning. The same values are also available to screen readers
+as a table in the markup.
 
-### Anordnung des Dashboards
+### Dashboard layout
 
-Unter *Einstellungen → Darstellung → Anordnung* legst du fest, welche Panels
-das Raster zeigt und wo sie stehen. Zehn Vorlagen decken die üblichen Fälle ab
-— jede mit einer kleinen Vorschau der Spaltenaufteilung:
+Under *Settings → Appearance → Layout* you decide which panels the grid
+shows and where they sit. Ten presets cover the common cases — each with a
+small preview of the column split:
 
-| Vorlage | Wofür |
+| Preset | For |
 | --- | --- |
-| **Standard** | Tagesplan und Müll links, Kalender mittig, Wetter rechts |
-| **Kalender groß** | Wandkalender: der Monat bekommt neun von zwölf Spalten |
-| **Zwei Spalten** | Nur Tagesplan und Kalender, ruhigste Variante |
-| **Tagesplan** | Was heute ansteht, groß; Kalender und Wetter als Beiwerk |
-| **Wetterstation** | Wetter vorn, dazu Messwerte aus dem Haus |
-| **Smart Home** | Schnellaktionen und Messwerte dauerhaft statt im Fenster |
-| **Küche** | Einkaufsliste offen, daneben Termine und Wetter |
-| **Nur Kalender** | Volle Breite für Termine, alles andere in der Startleiste |
-| **Alles auf einen Blick** | Vier schmale Spalten, dicht, nichts muss angetippt werden |
-| **Assistent** | Der AI-Assistent steht fest rechts |
+| **Standard** | today's agenda and trash on the left, calendar in the middle, weather on the right |
+| **Big calendar** | wall-calendar style: the month gets nine of twelve columns |
+| **Two columns** | just agenda and calendar, the calmest variant |
+| **Agenda** | today's agenda large; calendar and weather as supporting cast |
+| **Weather station** | weather up front, plus sensor readings from the house |
+| **Smart home** | quick actions and sensor readings permanent instead of in a window |
+| **Kitchen** | shopping list open, next to events and weather |
+| **Calendar only** | full width for events, everything else in the taskbar |
+| **Everything at a glance** | four narrow columns, dense, nothing needs tapping |
+| **Assistant** | the AI assistant sits fixed on the right |
 
-Reine Spiegelungen derselben Aufteilung sind bewusst nicht dabei — „Wetter mal
-links, mal rechts" ist keine eigene Anordnung, sondern Geschmack.
+Pure mirror images of the same layout are deliberately not included —
+"weather on the left instead of the right" isn't a distinct layout, it's
+taste.
 
-**Eigene Anordnung.** Wer es genauer will, wählt *Eigene* und stellt selbst
-zusammen: ein bis vier Spalten, deren Breiten und für jedes der acht Panels,
-in welcher Spalte es steht (oder ob es aus dem Raster verschwindet). Ziehen und
-Ablegen gibt es bewusst nicht — auf einem Touchpanel im Flur ist das mit
-fettigen Fingern eine Zumutung; stattdessen genügen Einzeltipps.
+**Custom layout.** For finer control, choose *Custom* and assemble it
+yourself: one to four columns, their widths, and for each of the eight
+panels which column it sits in (or whether it disappears from the grid
+entirely). Drag-and-drop is deliberately absent — on a hallway touch panel
+that's a chore with greasy fingers; individual taps are enough instead.
 
-Die Spaltensumme bleibt dabei immer zwölf: Wird eine Spalte breiter, gibt die
-breiteste andere ab. Ein ungültiges Raster kann so gar nicht erst entstehen.
-Abgewählte Panels sind nicht verloren — Smart Home, Messwerte, Assistent und
-Liste öffnen sich weiterhin über die Startleiste.
+The column widths always sum to twelve: widening one column takes width from
+whichever other column is currently widest. An invalid grid simply can't
+occur. Deselected panels aren't lost — Smart Home, sensor readings,
+Assistant and the list still open from the taskbar.
 
-### Startleiste: Smart Home, Zuhause, Assistent
+### Taskbar: Smart Home, House, Assistant
 
-Diese drei belegen keinen Platz mehr dauerhaft, sondern öffnen sich auf Tipp als
-Fenster über der **Startleiste** am unteren Rand. Dadurch bleibt oben deutlich
-mehr Raum für Kalender und Tagesübersicht — die Dinge, die man im Vorbeigehen
-liest, ohne etwas anzutippen.
+These three no longer occupy permanent space; they open as windows above the
+**taskbar** at the bottom on tap instead. That leaves noticeably more room up
+top for the calendar and today's agenda — the things you read in passing,
+without tapping anything.
 
-Die Knöpfe zeigen den Zustand mit: wie viele Geräte an sind, wie viele Messwerte
-auffällig sind, ob ein AI-Zugang hinterlegt ist. Rechts daneben laufen die
-Timer-Chips und der Knopf zum Timerstellen.
+The buttons show state at a glance: how many devices are on, how many sensor
+readings are notable, whether an AI connection is configured. The timer
+chips and the button to set a new timer run alongside, to the right.
 
-Alle Fenster liegen in einem **Portal an `<body>`**: `position: fixed` bezieht
-sich sonst nicht auf das Fenster, sobald ein Vorfahre eine `transform` trägt —
-und genau das macht der Einbrennschutz mit der gesamten Oberfläche.
+All windows live in a **portal attached to `<body>`**: `position: fixed`
+otherwise stops referring to the viewport once any ancestor carries a
+`transform` — and that's exactly what burn-in protection does to the entire
+surface.
 
-### Messwerte aufs Dashboard
+### Sensor readings on the dashboard
 
-Unter *Einstellungen → Zuhause* lassen sich beliebig viele Werte einrichten, die
-als **Zuhause-Leiste** über den Schnellaktionen erscheinen: Temperaturen,
-Luftfeuchte, Fensterkontakte, Stromverbrauch, PV-Ertrag, Anwesenheit.
+Under *Settings → House* you can set up any number of readings that appear
+as the **House bar** above the quick actions: temperatures, humidity, window
+contacts, power draw, solar yield, presence.
 
-Die `entity_id` wird **ausgewählt, nicht getippt**: Ist Home Assistant
-verbunden, holt die App die echte Entity-Liste samt aktueller Werte und bietet
-sie durchsuchbar an. Ohne Verbindung erscheint eine Beispielauswahl, sodass
-sich alles vorab einrichten lässt.
+The `entity_id` is **picked, not typed**: if Home Assistant is connected, the
+app fetches the real entity list with current values and offers it as a
+searchable list. Without a connection, a sample selection appears so
+everything can still be set up in advance.
 
-Binäre Zustände werden lesbar gemacht — aus `on` wird je nach Geräteklasse
-„offen", „läuft" oder „zuhause". Ein Wert in Alarmzustand (offenes Fenster)
-bekommt eine Ember-Kante und fällt aus der Entfernung sofort auf.
+Binary states are made readable — depending on device class, `on` becomes
+"open", "running" or "home". A reading in an alarm state (an open window)
+gets an ember-colored edge and stands out immediately from across the room.
 
-Standardmäßig sind fünf Werte aktiv; mehr passen bei 1024 × 600 nicht mehr
-lesbar nebeneinander. Weitere sind vorbereitet und lassen sich zuschalten.
+Five readings are active by default; more than that doesn't fit legibly
+side by side at 1024×600. More are wired up and can be enabled.
 
-### Timer & Wecker
+### Timers & alarms
 
-Vollständig lokal, ohne Home Assistant und ohne AI.
+Fully local, no Home Assistant and no AI involved.
 
-- **Per Touch:** das **+** rechts in der Zuhause-Leiste. Timer über Voreinstellungen
-  von 3 bis 60 Minuten, Wecker mit Uhrzeit und Wochentagen.
-- **Per Sprache:** „stell einen Timer auf zehn Minuten", „weck mich werktags um
-  Viertel vor sieben", „welche Timer laufen?", „lösch den Timer Nudeln".
-  Der Sprachassistent bekommt dafür vier Funktionen, die er selbst aufrufen kann.
-- Laufende Timer zählen als Chips in der Zuhause-Leiste herunter, in der letzten
-  Minute in Ember. Ein abgelaufener meldet sich im **Vollbild** mit Ton — ein
-  Küchentimer muss quer durch den Raum wahrnehmbar sein.
+- **By touch:** the **+** on the right of the House bar. Timers via presets
+  from 3 to 60 minutes, alarms with a time and weekdays.
+- **By voice:** "set a timer for ten minutes", "wake me up on weekdays at a
+  quarter to seven", "which timers are running?", "delete the pasta timer".
+  The voice assistant is given four functions for this that it can call
+  itself.
+- Running timers count down as chips in the House bar, turning ember-colored
+  in the final minute. An expired one announces itself **full-screen** with
+  sound — a kitchen timer needs to be noticeable from across the room.
 
-Der Klingelton wird per WebAudio erzeugt, es gibt also keine Audiodatei zu laden.
-Browser erlauben Ton erst nach einer Nutzerinteraktion; die erste Berührung des
-Panels schaltet ihn frei.
+The alert tone is generated via WebAudio, so there's no audio file to load.
+Browsers only allow sound after a user interaction; the first touch on the
+panel unlocks it.
 
-**Gestellte Wecker überleben einen Neustart** (`data/timers.json`), kurze Timer
-bewusst nicht — sie wären nach einem Neustart ohnehin abgelaufen.
+**Alarms you've set survive a restart** (`data/timers.json`); short timers
+deliberately do not — they'd have expired by the time of a restart anyway.
 
-### Fotos für die Diashow
+### Photos for the slideshow
 
-Der Ruhemodus (siehe *Nachtabsenkung und Einbrennschutz*) kann zwischen Uhr und
-Tagesübersicht eine Bilder-Diashow zeigen. Unter *Einstellungen → Ruhemodus →
-Bilder* gibt es zwei Quellen, die sich mischen lassen:
+Ambient mode (see *Night dimming and burn-in protection*) can show a photo
+slideshow between the clock and the daily overview. Under *Settings →
+Idle mode → Photos* there are two sources, which can be mixed:
 
-- **Lokaler Ordner** (`data/photos/` per Default, änderbar). Bilder einfach
-  hineinkopieren — jpg, png, webp, avif, gif und svg werden erkannt. Läuft
-  ohne Internet und ohne Konto, das ist die verlässliche Grundlage.
-- **Google Fotos** über die **Picker API**. Ein Tipp auf *Google Fotos
-  auswählen* öffnet Googles eigenes Auswahlfenster; was dort ausgewählt und
-  bestätigt wird, lädt das Dashboard herunter und legt es als normale Datei in
-  denselben Ordner. Danach unterscheidet sich ein Google-Bild aus Sicht der
-  Diashow nicht mehr von einem lokalen — inklusive der Möglichkeit, es einzeln
-  ab- oder wieder anzuwählen.
+- **Local folder** (`data/photos/` by default, changeable). Just copy
+  pictures into it — jpg, png, webp, avif, gif and svg are recognized. Works
+  with no internet and no account; this is the reliable baseline.
+- **Google Photos** via the **Picker API**. Tapping *Choose Google Photos*
+  opens Google's own selection window; whatever gets selected and confirmed
+  there is downloaded by the dashboard and stored as a regular file in the
+  same folder. From then on a Google photo is indistinguishable from a local
+  one as far as the slideshow is concerned — including the ability to
+  deselect or reselect it individually.
 
-  Google hat 2025 den automatischen Zugriff auf die ganze Mediathek
-  abgeschafft; der Picker ist der verbleibende Weg und verlangt bei jedem
-  Import eine bewusste Auswahl im eigenen Fenster — kein Hintergrund-Sync
-  eines Albums. Die Verbindung ist dieselbe wie beim Google-Kalender (ein
-  Google-Konto, ein OAuth-Client); Einrichtung:
-  **[docs/google-fotos.md](docs/google-fotos.md)**.
+  In 2025 Google discontinued automatic access to an entire library; the
+  picker is the remaining path and requires a conscious selection in its own
+  window on every import — no background sync of an album. The connection
+  is the same one used for Google Calendar (one Google account, one OAuth
+  client); setup: **[docs/google-fotos.md](docs/google-fotos.md)**
+  *(German; English summary below)*.
 
-In beiden Fällen entscheidet die Kachel-Auswahl in den Einstellungen, welche
-Bilder die Diashow tatsächlich zeigt — ohne jede Auswahl laufen alle.
+  **Quick English summary:** enable the **Google Photos Picker API** in the
+  same Google Cloud project used for the calendar (search for it in the
+  Cloud Console, click **Enable** — consent screen and OAuth client are
+  already in place if the calendar is already set up). If you'd connected
+  Google before this feature existed, disconnect and reconnect once (under
+  *Calendar → Google Calendar → Disconnect*, then *Connect with Google*
+  again) so the refresh token picks up the added
+  `photospicker.mediaitems.readonly` scope. Then, under *Appearance →
+  Photos*, tap **Choose Google Photos**, select images in Google's window,
+  confirm — the dashboard downloads them into the configured photo folder.
 
-**Bildausschnitt.** Ein Foto füllt den Bildschirm per `object-fit: cover` —
-ohne weitere Angabe also mittig zugeschnitten. Bei „Ausschnitt wählen" an
-jeder Kachel lässt sich ein heller Rahmen im tatsächlichen Seitenverhältnis
-des gerade genutzten Bildschirms über das Bild ziehen; die Diashow zeigt
-danach genau das, was im Rahmen lag. Ohne eigene Wahl bleibt es bei der
-Bildmitte.
+In both cases, the tile selection in Settings decides which photos the
+slideshow actually shows — with nothing selected, all of them play.
 
-**Ken Burns.** Der Übergang „Ken Burns" fährt nicht immer in dieselbe
-Richtung: neun Varianten (acht Richtungen hinein — auch diagonal — plus
-eine hinaus) wechseln bei jedem Bildwechsel zufällig durch.
+**Crop.** A photo fills the screen via `object-fit: cover` — a plain center
+crop unless told otherwise. "Choose crop" on each tile lets you drag a
+bright frame, sized to the actual aspect ratio of the screen you're using
+right now, over the photo; the slideshow then shows exactly what sat inside
+the frame. Without a choice, it stays centered.
 
-### Einkaufsliste & Notizen
+**Ken Burns.** The "Ken Burns" transition doesn't always pan the same way:
+nine variants (eight directions in — including diagonals — plus one out)
+rotate randomly with every photo change.
 
-Über den **„Liste"-Knopf** in der Startleiste öffnet sich ein Fenster mit zwei
-Reitern: Einkaufsliste und Notizen. Beide vollständig lokal
-(`data/lists.json`), ohne Home Assistant oder AI. Die Einkaufsliste hakt
-Einträge ab statt sie sofort zu löschen — erst der eigene
-„Erledigte löschen"-Knopf räumt auf, damit ein versehentliches Antippen nichts
-verschwinden lässt.
+### Shopping list & notes
+
+The **"List" button** in the taskbar opens a window with two tabs: shopping
+list and notes. Both fully local (`data/lists.json`), no Home Assistant or
+AI involved. The shopping list checks items off instead of deleting them
+right away — only its own "Delete completed" button cleans up, so an
+accidental tap never makes something vanish.
 
 ### Alexa
 
-**Bewusst nicht direkt integriert.** Dieses Dashboard spricht ausschließlich mit
-Home Assistant. Der Weg zu Alexa führt später über Home Assistant — Alexa Smart
-Home Skill, HA-Automationen, Node-RED oder Webhooks. Damit bleibt genau eine
-Integrationsstelle statt zweier paralleler Wege.
+**Deliberately not integrated directly.** This dashboard talks exclusively
+to Home Assistant. The path to Alexa runs through Home Assistant later on —
+the Alexa Smart Home skill, HA automations, Node-RED or webhooks. That keeps
+exactly one integration point instead of two parallel ones.
 
-### AI-Assistent
+### AI assistant
 
-Funktioniert mit jedem Server, der `POST /chat/completions` im OpenAI-Format
-versteht:
+Works with any server that understands `POST /chat/completions` in the
+OpenAI format:
 
-| Anbieter | Basis-URL |
+| Provider | Base URL |
 | --- | --- |
 | OpenAI | `https://api.openai.com/v1` |
 | LM Studio | `http://localhost:1234/v1` |
 | Ollama | `http://localhost:11434/v1` |
 
-Kalender, Wetter und Müllabholung werden als Kontext mitgeschickt, damit das
-Tagesbriefing die echte Lage beschreibt.
+Calendar, weather and trash pickup are sent along as context, so the daily
+briefing describes the actual situation.
 
-### Zwei Modi im AI-Bereich
+### Two modes in the AI area
 
-Der Assistent hat oben einen Umschalter:
+The assistant has a switch at the top:
 
-**1. Cindralux Assistant** — das eigene Panel: Textfeld, Tagesbriefing, „Was steht
-heute an?", Smart-Home-Vorschlag, Timer per Sprache und der Mikrofon-Knopf für
-den Sprachmodus. Nutzt eine OpenAI-kompatible API oder antwortet aus den lokalen
-Daten, wenn kein Key hinterlegt ist.
+**1. Cindralux Assistant** — the built-in panel: a text field, daily
+briefing, "What's on today?", smart-home suggestions, timers by voice, and
+the microphone button for voice mode. Uses an OpenAI-compatible API, or
+answers from local data when no key is set.
 
-**2. GPT Live** — ein großer Knopf, der chatgpt.com in einem **eigenen Fenster**
-öffnet.
+**2. GPT Live** — a large button that opens chatgpt.com in **its own
+window**.
 
-> **Warum nicht eingebettet?** chatgpt.com setzt `frame-ancestors`
-> beziehungsweise `X-Frame-Options`; ein iframe wird vom Browser blockiert. Es
-> gibt dafür keinen zulässigen Umweg, und inoffizielle Login-Hacks kämen nicht
-> in Frage. Ein eigenes Fenster ist der ehrliche Weg.
+> **Why not embedded?** chatgpt.com sets `frame-ancestors` /
+> `X-Frame-Options`; an iframe gets blocked by the browser. There's no
+> legitimate workaround for that, and unofficial login hacks were never on
+> the table. A separate window is the honest way to do it.
 
-Unter *Einstellungen → Verbindungen → GPT Live* stellst du ein, **wie** geöffnet
-wird:
+Under *Settings → Connections → GPT Live* you configure **how** it opens:
 
-| Modus | Verhalten |
+| Mode | Behavior |
 | --- | --- |
-| **Browserfenster** (Standard) | `window.open` aus der Seite heraus. Funktioniert ohne Einrichtung. Wird das Fenster von einem Popup-Blocker verschluckt, sagt die Oberfläche das. |
-| **Befehl auf dem Gerät** | Der Server startet einen konfigurierten Befehl, z. B. `brave --app=https://chatgpt.com`. Im Kiosk-Betrieb der zuverlässigere Weg, weil ein Popup dort sonst im selben Vollbildfenster landet. |
+| **Browser window** (default) | `window.open` from the page. Works with no setup. If a popup blocker swallows the window, the UI says so. |
+| **Command on the device** | The server launches a configured command, e.g. `brave --app=https://chatgpt.com`. The more reliable route in kiosk mode, since a popup there would otherwise land in the same full-screen window. |
 
-Zur Sicherheit: Der Befehl stammt **ausschließlich aus `data/config.json`**, nie
-aus der Anfrage — der Client löst nur aus. Gestartet wird ohne Shell, damit auch
-eine seltsame URL in der Konfiguration keine Befehlskette auslösen kann.
+For safety: the command comes **exclusively from `data/config.json`**, never
+from the request — the client only triggers it. It's launched without a
+shell, so that even a strange URL in the configuration can't trigger a
+command chain.
 
-### Sprachmodus (Mikrofon)
+### Voice mode (microphone)
 
-Der Mikrofon-Knopf im Assistenz-Panel startet ein echtes Gespräch über die
-**OpenAI Realtime API** — Sprache rein, Sprache raus, ohne Umweg über Text.
+The microphone button in the assistant panel starts a real conversation over
+the **OpenAI Realtime API** — speech in, speech out, no detour through text.
 
-> **Ein ChatGPT-Plus- oder Pro-Abo schaltet die API nicht frei.** Abo und API
-> sind bei OpenAI getrennte Produkte. Für den Sprachmodus brauchst du einen
-> API-Key von [platform.openai.com](https://platform.openai.com) mit Guthaben.
-> Realtime-Audio kostet je nach Modell grob 0,50–1 € pro Gesprächsstunde.
+> **A ChatGPT Plus or Pro subscription does not unlock the API.** The
+> subscription and the API are separate products at OpenAI. Voice mode needs
+> an API key from [platform.openai.com](https://platform.openai.com) with
+> credit on it. Realtime audio costs roughly €0.50–1 per hour of
+> conversation, depending on the model.
 
-**So läuft es ab:** Der Server stellt ein kurzlebiges Client-Token aus (wenige
-Minuten gültig), der Browser baut damit selbst eine WebRTC-Verbindung zu OpenAI
-auf. Der eigentliche API-Key verlässt den Pi nie. Ein Server-Relay wäre die
-Alternative, würde den Audiostrom aber ohne Sicherheitsgewinn durch den Pi
-schleifen und Latenz kosten — bei einem Sprachdialog der entscheidende Nachteil.
+**How it works:** the server issues a short-lived client token (valid for a
+few minutes), and the browser uses it to build its own WebRTC connection to
+OpenAI. The actual API key never leaves the Pi. A server-side relay would be
+the alternative, but it would route the audio stream through the Pi with no
+security benefit and add latency — the decisive downside for a voice
+conversation.
 
-Der Assistent bekommt dieselben Haushaltsdaten als Kontext wie der Textchat,
-aber eine eigene Stilanweisung: kurze gesprochene Sätze, keine Aufzählungen,
-Uhrzeiten natürlich ausgesprochen.
+The assistant gets the same household data as context as the text chat, but
+its own style instructions: short spoken sentences, no bullet lists, times
+spoken naturally.
 
-Zusätzlich zu den Timer- und Wecker-Funktionen steuert er die in `smartHomeActions`
-konfigurierten Geräte — „mach das Wohnzimmerlicht aus", „Film-Modus an". Welche Namen
-existieren, steht direkt in der Beschreibung des Werkzeugs; das Modell darf nur auswählen,
-was konfiguriert ist. Ohne konfigurierte Aktionen bleibt der Sprachmodus bei Timer und Wecker.
+On top of the timer and alarm functions, it controls the devices configured
+in `smartHomeActions` — "turn off the living room light", "movie mode on".
+Which names exist is stated directly in the tool's description; the model
+may only pick what's configured. Without configured actions, voice mode is
+limited to timers and alarms.
 
-Einstellbar unter *Verbindungen → Sprachmodus*: Modell, Stimme (10 Stimmen zur
-Auswahl) und das Transkriptionsmodell für den mitlaufenden Gesprächsverlauf.
+Configurable under *Connections → Voice mode*: model, voice (10 voices to
+choose from), and the transcription model for the running conversation
+transcript.
 
-**Mikrofon braucht einen sicheren Kontext.** `http://localhost` gilt als sicher,
-eine LAN-Adresse wie `http://192.168.1.50:4000` **nicht** — dort blockiert der
-Browser `getUserMedia`. Für den Zugriff vom Handy also entweder HTTPS einrichten
-oder Chromium mit
-`--unsafely-treat-insecure-origin-as-secure=http://192.168.1.50:4000` starten.
+**The microphone needs a secure context.** `http://localhost` counts as
+secure; a LAN address like `http://192.168.1.50:4000` does **not** — the
+browser blocks `getUserMedia` there. For access from a phone, either set up
+HTTPS or start Chromium with
+`--unsafely-treat-insecure-origin-as-secure=http://192.168.1.50:4000`.
 
-Im Kiosk-Modus verhindert `--use-fake-ui-for-media-stream`, dass Chromium bei
-jedem Start nach der Mikrofonerlaubnis fragt.
+In kiosk mode, `--use-fake-ui-for-media-stream` stops Chromium from asking
+for microphone permission on every launch.
 
-Die Endpunkte der Realtime-API stehen bewusst in der Konfiguration: OpenAI hat
-sie von Beta auf GA umgestellt, und der Code versucht beide Varianten. So lässt
-sich eine künftige Änderung ohne Codeänderung nachziehen.
+The Realtime API's endpoints are deliberately kept in configuration: OpenAI
+moved them from Beta to GA, and the code tries both variants. That way a
+future change can be followed without a code change.
 
 ---
 
 ## API
 
-| Methode | Pfad | Zweck |
+| Method | Path | Purpose |
 | --- | --- | --- |
-| GET | `/api/health` | Status inkl. Platzhalter für Pi-Systemwerte |
-| GET / PUT | `/api/config` | Konfiguration lesen / schreiben (Secrets maskiert) |
-| GET | `/api/calendar/events` | Zusammengeführte Termine (`?force=1` erzwingt Neuabruf) |
-| GET | `/api/google/status` | Verbindungsstand des Google-Kontos |
-| GET | `/api/google/auth-url` | Adresse des Zustimmungsdialogs |
-| GET | `/api/google/callback` | Weiterleitungsziel des OAuth-Ablaufs |
-| GET | `/api/google/calendars` | Kalenderliste des verbundenen Kontos |
-| POST | `/api/google/disconnect` | Verbindung trennen |
-| GET | `/api/photos` | Alle Bilder des Ordners samt Auswahlzustand |
-| GET | `/api/photos/active` | Nur die für die Diashow ausgewählten Bilder |
-| GET | `/api/photos/file/:name` | Ein Bild ausliefern |
-| POST | `/api/google/photos/session` | Google-Photos-Picker-Sitzung anlegen |
-| GET | `/api/google/photos/session/:id` | Nachfragen, ob die Auswahl im Picker-Fenster steht |
-| POST | `/api/google/photos/session/:id/import` | Ausgewählte Bilder herunterladen und in die lokale Bibliothek übernehmen |
-| DELETE | `/api/google/photos/session/:id` | Picker-Sitzung abbrechen / aufräumen |
-| POST | `/api/calendar/refresh` | Alle Quellen sofort neu laden |
-| POST | `/api/calendar/validate` | ICS-Adresse prüfen, Name und Terminzahl auslesen |
-| GET | `/api/trash/next` | Nächste Abholung + kommende Termine |
-| POST | `/api/trash/validate` | ICS-Abfuhrkalender prüfen |
-| GET | `/api/geo/search` | Ortssuche für den Wetter-Standort |
-| GET | `/api/geo/reverse` | Koordinaten in einen Ortsnamen übersetzen |
-| GET | `/api/weather` | Aktuelles Wetter + 7-Tage-Vorschau |
-| GET | `/api/home-assistant/status` | Verbindungs- und Entity-Zustände |
-| GET | `/api/home-assistant/entities` | Entity-Liste für die Auswahl in den Einstellungen |
-| GET | `/api/home-assistant/sensors` | Aufbereitete Messwerte fürs Dashboard |
-| POST | `/api/home-assistant/call-service` | Service-Call (`domain`, `service`, `entityId`, `serviceData`) |
-| POST | `/api/ai/chat` | Freie Frage an den Assistenten |
-| POST | `/api/ai/daily-briefing` | Tagesbriefing aus Kalender, Wetter, Müll |
-| POST | `/api/ai/realtime/session` | Kurzlebiges Token für den Sprachmodus (inkl. Werkzeuge) |
-| POST | `/api/ai/gpt-live/open` | Öffnet ChatGPT im Browser oder per Gerätebefehl |
-| GET / POST | `/api/timers` | Timer und Wecker lesen / anlegen |
-| POST | `/api/timers/:id/dismiss` | Klingeln bestätigen (Wecker rücken weiter) |
-| DELETE | `/api/timers/:id` | Timer oder Wecker löschen |
-| POST | `/api/test/{home-assistant,ai,realtime,calendar,weather}` | Verbindungstests für das Einstellungs-Panel |
+| GET | `/api/health` | status including placeholders for Pi system values |
+| GET / PUT | `/api/config` | read / write configuration (secrets masked) |
+| GET | `/api/calendar/events` | merged events (`?force=1` forces a refetch) |
+| GET | `/api/google/status` | connection status of the Google account |
+| GET | `/api/google/auth-url` | URL of the consent dialog |
+| GET | `/api/google/callback` | redirect target of the OAuth flow |
+| GET | `/api/google/calendars` | calendar list of the connected account |
+| POST | `/api/google/disconnect` | disconnect |
+| GET | `/api/photos` | all images in the folder, with selection state |
+| GET | `/api/photos/active` | only the images selected for the slideshow |
+| GET | `/api/photos/file/:name` | serve one image |
+| POST | `/api/google/photos/session` | create a Google Photos picker session |
+| GET | `/api/google/photos/session/:id` | poll whether a selection has been made in the picker window |
+| POST | `/api/google/photos/session/:id/import` | download selected images and add them to the local library |
+| DELETE | `/api/google/photos/session/:id` | cancel / clean up a picker session |
+| POST | `/api/calendar/refresh` | reload all sources immediately |
+| POST | `/api/calendar/validate` | validate an ICS address, read name and event count |
+| GET | `/api/trash/next` | next pickup + upcoming dates |
+| POST | `/api/trash/validate` | validate an ICS pickup calendar |
+| GET | `/api/geo/search` | place search for the weather location |
+| GET | `/api/geo/reverse` | translate coordinates into a place name |
+| GET | `/api/weather` | current weather + 7-day forecast |
+| GET | `/api/home-assistant/status` | connection and entity states |
+| GET | `/api/home-assistant/entities` | entity list for the settings picker |
+| GET | `/api/home-assistant/sensors` | processed sensor readings for the dashboard |
+| POST | `/api/home-assistant/call-service` | service call (`domain`, `service`, `entityId`, `serviceData`) |
+| POST | `/api/ai/chat` | free-form question to the assistant |
+| POST | `/api/ai/daily-briefing` | daily briefing from calendar, weather, trash |
+| POST | `/api/ai/realtime/session` | short-lived token for voice mode (incl. tools) |
+| POST | `/api/ai/gpt-live/open` | opens ChatGPT in the browser or via a device command |
+| GET / POST | `/api/timers` | read / create timers and alarms |
+| POST | `/api/timers/:id/dismiss` | acknowledge ringing (alarms advance) |
+| DELETE | `/api/timers/:id` | delete a timer or alarm |
+| POST | `/api/test/{home-assistant,ai,realtime,calendar,weather}` | connection tests for the settings panel |
 
 ---
 
 ## Design
 
-Die Oberfläche ist als Kontrollraum-Instrument gedacht, nicht als Karten-Dashboard:
-Hairline-Ränder, Innenschatten, Ember-Eckwinkel, feine Scanlines und prozedurale
-Körnung. Zahlen laufen durchgehend tabellarisch, damit die Uhr nicht zappelt.
+The interface is meant to feel like a control-room instrument, not a card
+dashboard: hairline borders, inset shadows, ember corner ticks, fine
+scanlines and procedural grain. Digits run tabular throughout, so the clock
+never jitters.
 
-**Zentrale Theme-Datei:** `client/src/theme/tokens.js`. Sie wird sowohl von
-`tailwind.config.js` als auch vom TypeScript-Code gelesen — Farben, Schatten,
-Kalenderpalette und Hintergrundliste stehen genau einmal.
+**Central theme file:** `client/src/theme/tokens.js`. It's read by both
+`tailwind.config.js` and the TypeScript code — colors, shadows, calendar
+palette and background list exist in exactly one place.
 
-Der Akzent liegt zur Laufzeit in der CSS-Variablen `--accent`, deshalb wirkt ein
-Wechsel des Theme-Modus sofort ohne Neubau.
+The accent lives at runtime in the CSS variable `--accent`, so switching the
+theme mode takes effect immediately, with no rebuild.
 
-### Farben & Schrift
+### Colors & typography
 
-Unter *Einstellungen → Darstellung → Farben & Schrift*:
+Under *Settings → Appearance → Colors & Typography*:
 
-- **Acht Akzentfarben** (Ember, Crimson, Graphit, Mint, Violett, Amber, Azurit,
-  Rose) plus **eigene Farbe** per Farbwähler — die vier nötigen Abstufungen
-  (hell/dunkel/kräftig) werden aus der einen Farbe per HSL berechnet.
-- **Sechs Schriftarten** (Standard/Inter, Space Grotesk, Sora, Manrope, Public
-  Sans, Outfit), unabhängig von der Farbe wählbar.
-- **Fünf fertige Design-Vorlagen** kombinieren beides mit einem Tipp (z. B.
-  Mint + Space Grotesk); Farbe und Schrift lassen sich danach trotzdem einzeln
-  weiter anpassen.
+- **Eight accent colors** (Ember, Crimson, Graphite, Mint, Violet, Amber,
+  Azurite, Rose) plus a **custom color** via a color picker — the four
+  required shades (light/dark/bold) are computed from that one color via
+  HSL.
+- **Six font pairings** (Standard/Inter, Space Grotesk, Sora, Manrope,
+  Public Sans, Outfit), selectable independently of the color.
+- **Five ready-made presets** combine both with a single tap (e.g. Mint +
+  Space Grotesk); color and font can still be adjusted individually
+  afterwards.
 
-Beides läuft über CSS-Variablen (`--font-sans`/`--font-mono` wie `--accent`) —
-ein Wechsel greift sofort, ohne Neuladen.
+Both run over CSS variables (`--font-sans`/`--font-mono`, same as `--accent`)
+— a change applies immediately, with no reload.
 
-### Nachtabsenkung und Einbrennschutz
+### Night dimming and burn-in protection
 
-Unter *Einstellungen → Darstellung*:
+Under *Settings → Appearance*:
 
-- **Nachtabsenkung** dunkelt das Panel in einem einstellbaren Zeitfenster ab
-  (Standard 22–6 Uhr). Jede Berührung weckt es für eine einstellbare Dauer voll
-  auf. Optional zeigt es nachts **nur die Uhr** — groß, stark gedimmt, mit Datum
-  und einer anstehenden Müllabholung, damit man nachts nicht doch das Dashboard
-  sucht.
-- **Einbrennschutz** verschiebt die Oberfläche im Minutentakt um wenige Pixel
-  entlang zweier Sinuskurven unterschiedlicher Periode. Ein statisches Dashboard
-  brennt sich sonst in viele Displays ein.
+- **Night dimming** darkens the panel during a configurable time window
+  (default 23:00–05:00, 40 % remaining brightness). Any touch wakes it to full
+  brightness for a configurable duration — a touch, not mere movement in front
+  of the panel.
+- **Clock only at night** (on by default) hides the dashboard and centers the
+  time and date on the screen, along with an upcoming trash pickup. The
+  slideshow stops while it is on: a full-screen image changing every few
+  seconds lights up the room at night.
+- **Starfield** (on by default) puts a slowly twinkling night sky behind the
+  clock, with the occasional shooting star, instead of a black surface. It
+  draws to a canvas at ten frames per second — barely measurable on a Pi 4.
+  Requires *clock only at night*.
+- **Power saving** (on by default) stretches every poll to four times its
+  interval at night (sensors to 60 seconds instead of 15) and stops all motion
+  in the dashboard, like *reduce motion*. The starfield keeps running. Leaving
+  the night window triggers an immediate refresh, so nothing is stale in the
+  morning.
+- **Burn-in protection** shifts the interface by a few pixels every minute
+  along two sine curves of different periods. A static dashboard would
+  otherwise burn into many displays over time.
 
-> Die Absenkung dunkelt **das Bild** ab — die Hintergrundbeleuchtung lässt sich
-> aus dem Browser nicht steuern. Für echtes Abschalten des Displays auf dem Pi:
-> `xset dpms force off` per cron, oder auf neueren Systemen
-> `wlr-randr --output HDMI-A-1 --off`. Das gehört ins Pi-Setup, nicht in die App.
+> Dimming darkens **the image** — the backlight itself can't be controlled
+> from the browser. For actually turning the display off on the Pi:
+> `xset dpms force off` via cron, or on newer systems
+> `wlr-randr --output HDMI-A-1 --off`. That belongs in the Pi setup, not in
+> the app.
 
 ### Touchscreen
 
-- Alle Bedienflächen mindestens 46–64 px hoch
-- Zustand wird über `:active` gezeigt, nicht über `:hover`
-- Kein Text-Markieren beim Wischen, kein Gummiband-Scroll
-- Das Dashboard scrollt nie als Ganzes — nur einzelne Panels intern
-- Einstellungen als Vollbild-Overlay: keine Browser-Navigation nötig
+- Every tappable surface is at least 46–64 px tall
+- State is shown via `:active`, not `:hover`
+- No text selection while swiping, no rubber-band scrolling
+- The dashboard as a whole never scrolls — only individual panels scroll
+  internally
+- Settings appear as a full-screen overlay: no browser navigation needed
 
-### Auflösungen
+### Resolutions
 
-Getestet im Querformat bei **1024×600**, **1280×800** und **1920×1080**.
-Neben den Breiten-Breakpoints gibt es eine Höhen-Variante `short`
-(`max-height: 720px`), die auf flachen Panels Polster, Kachelhöhen und
-Schriftgrößen zurücknimmt. Bei 1024 × 600 passt nicht alles gleichzeitig —
-dort greifen zwei bewusste Entscheidungen:
+Tested in landscape at **1024×600**, **1280×800** and **1920×1080**. Besides
+the width breakpoints there's a height variant `short`
+(`max-height: 720px`) that pulls back padding, tile heights and font sizes
+on flat panels. At 1024×600 not everything fits at once — two deliberate
+decisions apply there:
 
-- Die Wettervorschau wird zu **einer kompakten Zeile** statt eines
-  Temperaturbalken-Diagramms.
-- Der Assistent verliert das **Textfeld** und behält Sprache plus
-  Schnellaktionen. Auf einem 1024 × 600-Touchpanel verdeckt die
-  Bildschirmtastatur ohnehin das halbe Dashboard.
+- The weather forecast collapses to **one compact row** instead of a
+  temperature bar chart.
+- The assistant loses its **text field** and keeps voice plus quick actions.
+  On a 1024×600 touch panel the on-screen keyboard covers half the
+  dashboard anyway.
 
-### Eigene Cindralux-Assets
+### Custom Cindralux assets
 
-Dateien in `assets/cindralux/` ersetzen — Namen beibehalten, dann ändert sich im
-Code nichts. Details und Maße stehen in `assets/cindralux/README.md`.
+Replace files in `assets/cindralux/` — keep the same filenames and nothing
+in the code needs to change. Details and dimensions are in
+`assets/cindralux/README.md`.
 
-### Kiosk verlassen
+### Exiting the kiosk
 
-Unter *Einstellungen → System → Kiosk beenden* schließt Chromium und legt eine
-Sentinel-Datei an (`data/.exit-kiosk`); das Kiosk-Skript sieht sie beim
-nächsten Schleifendurchlauf und startet Chromium **nicht** automatisch neu —
-man landet auf dem bloßen Desktop. Kein `sudo` nötig, weil nichts Systemweites
-angefasst wird. Zurück zum Kiosk: das Skript erneut ausführen oder den Pi neu
-starten.
+Under *Settings → System → Exit kiosk*, Chromium closes and a sentinel file
+is created (`data/.exit-kiosk`); the kiosk script sees it on its next loop
+iteration and does **not** relaunch Chromium automatically — you land on the
+bare desktop. No `sudo` needed, since nothing system-wide is touched. Back
+to kiosk mode: run the script again, or reboot the Pi.
 
-### Rechtliches & Unterstützung
+### Legal & support
 
-Unten in der Einstellungs-Seitenleiste stehen Datenschutzerklärung und
-Haftungsausschluss (öffnen als eigenes Fenster) sowie ein kleiner
-Spenden-Link. Alle drei sind reiner Text bzw. ein Link — keine Anbindung an
-einen Dienst, kein Tracking.
+At the bottom of the settings sidebar sit a privacy notice and a disclaimer
+(each opens as its own window), plus a small donation link. All three are
+plain text or a plain link — no connection to any service, no tracking.
 
 ---
 
-## Auf dem Raspberry Pi
+## On the Raspberry Pi
 
-Schritt für Schritt: **[docs/raspberry-pi.md](docs/raspberry-pi.md)** — Node,
-Dienst, Kiosk-Autostart, Mikrofon, Bildschirm nachts. Die fertigen Dateien
-liegen in [`deploy/`](deploy/).
+Step by step: **[docs/raspberry-pi.md](docs/raspberry-pi.md)** *(German)* —
+Node, the service, kiosk autostart, microphone, dimming the screen at night.
+The finished files live in [`deploy/`](deploy/).
 
-Kurzfassung: `npm install && npm run build`, dann läuft alles als **ein**
-Prozess (`npm start`) auf Port 4000 — Frontend und API zusammen.
+Short version: `npm install && npm run build`, then everything runs as
+**one** process (`npm start`) on port 4000 — frontend and API together.
 
-> `node_modules` nicht vom Rechner auf den Pi kopieren: Die enthaltenen
-> Programmdateien sind für x86 gebaut. Auf dem Pi neu installieren.
+> Don't copy `node_modules` from your computer to the Pi: the binaries it
+> contains are built for x86. Install fresh on the Pi instead.
 
-## Nächste Schritte
+## Next steps
 
-Home-Assistant-Zustände laufen über WebSocket statt Polling
-(`services/homeAssistantSocket.ts`) — eine dauerhafte Verbindung statt eines
-REST-Requests je Kachel/Sensor bei jedem Client-Poll, REST bleibt Fallback,
-solange die Verbindung noch nicht steht. Live gegen eine echte HA-Instanz
-getestet.
+Home Assistant state now runs over a WebSocket instead of polling
+(`services/homeAssistantSocket.ts`) — one persistent connection instead of a
+REST request per tile/sensor on every client poll; REST remains the
+fallback while the connection isn't up yet. Tested live against a real HA
+instance.
 
-Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl und ein
-Ken-Burns-Effekt mit neun wechselnden Fahrtrichtungen statt einer festen sind
-ebenfalls fertig (siehe *Fotos für die Diashow*).
+A movable crop frame per photo in the slideshow picker, and a Ken Burns
+effect with nine alternating pan directions instead of one fixed zoom-in,
+are done too (see *Photos for the slideshow*).
 
-Offen:
+Open:
 
-- ÖPNV-Abfahrten und Fahrzeit zur Arbeit.
-- Weckwort statt Knopfdruck (z. B. openWakeWord lokal auf dem Pi) — braucht
-  zuerst ein Mikrofon am Pi, das noch nicht geklärt ist.
+- Public-transport departures and commute time to work.
+- A wake word instead of a button press (e.g. openWakeWord running locally
+  on the Pi) — needs a microphone on the Pi first, which isn't sorted out
+  yet.
