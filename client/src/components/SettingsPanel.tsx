@@ -37,6 +37,7 @@ import type {
   SlideshowOrder,
 } from "@shared/types";
 import { api } from "@/lib/api";
+import { WalkHint } from "./TransitPanel";
 import { useDashboard } from "@/lib/store";
 import { backgrounds, calendarPalette } from "@/theme/tokens.js";
 import { cx, uid } from "@/lib/utils";
@@ -52,6 +53,7 @@ import {
 import { AddGoogleCalendarDialog } from "./settings/AddGoogleCalendarDialog";
 import { EntityPicker } from "./settings/EntityPicker";
 import { LocationPicker } from "./settings/LocationPicker";
+import { StopPicker } from "./settings/StopPicker";
 import { GoogleCalendarSetup } from "./settings/GoogleCalendarSetup";
 import { LayoutEditor } from "./settings/LayoutEditor";
 import { ThemeEditor } from "./settings/ThemeEditor";
@@ -379,6 +381,7 @@ export function SettingsPanel({
         idle: draft.idle,
         photos: draft.photos,
         weather: draft.weather,
+        transit: draft.transit,
         appearance: draft.appearance,
         layout: draft.layout,
         calendarRefreshMinutes: draft.calendarRefreshMinutes,
@@ -1127,6 +1130,100 @@ function TrashWeatherSettings({ draft, update }: PaneProps) {
           <TestButton label="Wetter testen" run={api.testWeather} />
         </div>
       </Section>
+
+      <Section
+        title="Abfahrten & Arbeitsweg"
+        description="Nahverkehr aus den offiziellen Fahrplandaten — kein Konto, kein API-Key nötig."
+      >
+        <div className="mb-4">
+          <Toggle
+            label="Abfahrten anzeigen"
+            hint="Das Panel lässt sich danach unter Darstellung ins Raster legen."
+            checked={draft.transit.enabled}
+            onChange={(enabled) =>
+              update({ transit: { ...draft.transit, enabled } })
+            }
+          />
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <StopPicker
+            label="Haltestelle"
+            hint="Die Haltestelle, deren Abfahrten das Panel zeigt."
+            selectedName={draft.transit.stopName}
+            onSelect={(stop) =>
+              update({
+                transit: { ...draft.transit, stopId: stop.id, stopName: stop.name },
+              })
+            }
+            onClear={() =>
+              update({ transit: { ...draft.transit, stopId: "", stopName: "" } })
+            }
+          />
+
+          <StopPicker
+            label="Ziel für die Fahrzeit (optional)"
+            hint="Ohne Ziel zeigt das Panel nur die Abfahrtstafel."
+            selectedName={draft.transit.destinationName}
+            onSelect={(stop) =>
+              update({
+                transit: {
+                  ...draft.transit,
+                  destinationId: stop.id,
+                  destinationName: stop.name,
+                },
+              })
+            }
+            onClear={() =>
+              update({
+                transit: { ...draft.transit, destinationId: "", destinationName: "" },
+              })
+            }
+          />
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <Field label="Wie viele Abfahrten">
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={draft.transit.maxDepartures}
+              onChange={(event) =>
+                update({
+                  transit: {
+                    ...draft.transit,
+                    maxDepartures: Math.min(
+                      20,
+                      Math.max(1, Math.round(Number(event.target.value) || 6)),
+                    ),
+                  },
+                })
+              }
+              className="field digits"
+            />
+          </Field>
+
+          <Field label={`Fußweg zur Haltestelle — ${draft.transit.walkMinutes} min`}>
+            <input
+              type="range"
+              min={0}
+              max={30}
+              value={draft.transit.walkMinutes}
+              onChange={(event) =>
+                update({
+                  transit: {
+                    ...draft.transit,
+                    walkMinutes: Number(event.target.value),
+                  },
+                })
+              }
+              className="slider"
+            />
+            <WalkHint minutes={draft.transit.walkMinutes} />
+          </Field>
+        </div>
+      </Section>
     </>
   );
 }
@@ -1866,6 +1963,7 @@ const WINDOW_LABELS: Array<{ id: WindowId; label: string }> = [
   { id: "calendar", label: "Kalender" },
   { id: "weather", label: "Wetter" },
   { id: "trash", label: "Müllabholung" },
+  { id: "transit", label: "Abfahrten" },
   { id: "smarthome", label: "Smart Home" },
   { id: "sensors", label: "Zuhause" },
   { id: "assistant", label: "Assistent" },
@@ -1900,6 +1998,7 @@ const STANDARD_BACKDROPS: Record<WindowId, BackdropStyle> = {
   calendar: "grid",
   weather: "drift",
   trash: "breathe",
+  transit: "timeline",
   smarthome: "pulse",
   sensors: "sweep",
   assistant: "orbit",

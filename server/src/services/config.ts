@@ -84,6 +84,20 @@ export const DEFAULT_CONFIG: AppConfig = {
     longitude: 13.405,
     timezone: 'Europe/Berlin',
   },
+  /*
+   * Leer ausgeliefert: Eine Haltestelle laesst sich nicht sinnvoll raten, und
+   * eine falsche waere schlimmer als gar keine. Das Panel zeigt stattdessen
+   * einen Einrichtungshinweis, bis in den Einstellungen eine gewaehlt wurde.
+   */
+  transit: {
+    enabled: false,
+    stopId: '',
+    stopName: '',
+    destinationId: '',
+    destinationName: '',
+    maxDepartures: 6,
+    walkMinutes: 5,
+  },
   homeAssistant: {
     baseUrl: '',
     token: '',
@@ -301,6 +315,9 @@ export const DEFAULT_CONFIG: AppConfig = {
       calendar: 'grid',
       weather: 'drift',
       trash: 'breathe',
+      // Zeitachse: dieselbe Bewegung wie bei der Tagesuebersicht, und eine
+      // Abfahrtstafel ist nichts anderes als eine Zeitachse.
+      transit: 'timeline',
       smarthome: 'pulse',
       sensors: 'sweep',
       assistant: 'orbit',
@@ -387,6 +404,7 @@ function merge(base: AppConfig, patch: Partial<AppConfig> | null): AppConfig {
     trash: { ...base.trash, ...patch.trash },
     calendarView: { ...base.calendarView, ...patch.calendarView },
     weather: { ...base.weather, ...patch.weather },
+    transit: { ...base.transit, ...patch.transit },
     homeAssistant: { ...base.homeAssistant, ...patch.homeAssistant },
     google: { ...base.google, ...patch.google },
     ai: {

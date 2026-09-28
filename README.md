@@ -391,6 +391,33 @@ deficiency (ΔE > 23). Both series are also labeled — color alone never
 carries the meaning. The same values are also available to screen readers
 as a table in the markup.
 
+### Departures and the commute
+
+Under *Settings → Trash & weather → Departures & commute*. The panel shows the
+next departures from a stop and, if a destination is set, the next connection
+to it.
+
+Data comes from [Transitous](https://transitous.org), a freely operated MOTIS
+instance running on Germany's official nationwide timetable data (DELFI) — no
+account, no API key, the same reasoning as Open-Meteo for the weather.
+
+- **Stop** and **destination** are searched, not typed: behind them sits an
+  identifier like `de-DELFI_de:09263:2600` that nobody enters by hand. The
+  search covers all of Europe and is fuzzy, so every result carries its region
+  — a search for "Straubing" also returns the Austrian "Stübing".
+- **Walking time to the stop** greys out departures you can no longer catch.
+  They stay visible rather than disappearing: hidden entirely, the board looked
+  as though nothing was running.
+- **Delays** only appear when there is a real-time report. Without one the
+  field stays empty rather than inventing punctuality.
+
+The service absorbs two quirks of the source. Several regional associations
+report the same service to the nationwide dataset, which put the same train in
+the list twice — same line, same direction, one minute apart. And the reported
+mode of transport is unreliable as long as the configuration points at a bus
+bay rather than the station; a regional train then counts as a bus. So the line
+number decides as well: "RE50" is not a bus, whatever the field says.
+
 ### Dashboard layout
 
 Under *Settings → Appearance → Layout* you decide which panels the grid
@@ -804,9 +831,12 @@ A movable crop frame per photo in the slideshow picker, and a Ken Burns
 effect with nine alternating pan directions instead of one fixed zoom-in,
 are done too (see *Photos for the slideshow*).
 
+Departures and commute time are done too — from Germany's official nationwide
+timetable data, with no account and no API key (see *Departures and the
+commute*).
+
 Open:
 
-- Public-transport departures and commute time to work.
 - A wake word instead of a button press (e.g. openWakeWord running locally
   on the Pi) — needs a microphone on the Pi first, which isn't sorted out
   yet.

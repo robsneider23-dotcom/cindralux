@@ -476,6 +476,107 @@ export interface WeatherConfig {
   timezone: string;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Naahverkehr                                                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Abfahrten an einer Haltestelle und die naechste Verbindung zur Arbeit.
+ *
+ * Quelle ist Transitous (MOTIS auf den offiziellen DELFI-Fahrplandaten):
+ * kein API-Schluessel, keine Registrierung — dieselbe Ueberlegung wie bei
+ * Open-Meteo fuers Wetter. Haltestellen werden ueber ihre DELFI-Kennung
+ * angesprochen, die die Suche in den Einstellungen liefert.
+ */
+export interface TransitConfig {
+  enabled: boolean;
+  /** DELFI-Kennung der Haltestelle, z.B. "de-DELFI_de:09263:2600". */
+  stopId: string;
+  /** Angezeigter Name — die Kennung allein sagt niemandem etwas. */
+  stopName: string;
+  /** Ziel fuer die Fahrzeit zur Arbeit. Leer = nur Abfahrtstafel. */
+  destinationId: string;
+  destinationName: string;
+  /** Wie viele Abfahrten die Tafel zeigt. */
+  maxDepartures: number;
+  /**
+   * Fussweg zur Haltestelle in Minuten.
+   *
+   * Eine Abfahrt in zwei Minuten ist bei acht Minuten Fussweg keine
+   * Information, sondern eine Enttaeuschung. Das Panel setzt alles darunter
+   * ab — angezeigt wird es weiterhin, nur eben als nicht mehr erreichbar.
+   */
+  walkMinutes: number;
+}
+
+export type TransitMode =
+  | 'bus'
+  | 'tram'
+  | 'subway'
+  | 'suburban'
+  | 'regional'
+  | 'longdistance'
+  | 'ferry'
+  | 'other';
+
+export interface TransitDeparture {
+  id: string;
+  /** Linienbezeichnung, z.B. "RE50" oder "5". */
+  line: string;
+  /** Richtung, wie sie am Fahrzeug steht. */
+  headsign: string;
+  mode: TransitMode;
+  /** Fahrplanmaessige Abfahrt, ISO. */
+  plannedTime: string;
+  /** Tatsaechliche Abfahrt inklusive Echtzeit, ISO. */
+  time: string;
+  /** Verspaetung in Minuten, negativ bei verfruehter Abfahrt. */
+  delayMinutes: number;
+  /** Es lag eine Echtzeitmeldung vor — sonst ist `time` nur der Fahrplan. */
+  realtime: boolean;
+  /** Minuten ab jetzt bis zur Abfahrt. */
+  inMinutes: number;
+  /** Mit dem eingestellten Fussweg noch zu schaffen. */
+  reachable: boolean;
+  platform?: string;
+  cancelled: boolean;
+}
+
+/** Eine Verbindung von der Haltestelle zum eingestellten Ziel. */
+export interface TransitJourney {
+  id: string;
+  /** ISO. */
+  departure: string;
+  /** ISO. */
+  arrival: string;
+  durationMinutes: number;
+  transfers: number;
+  /** Linien der Reihe nach, z.B. ["RE50", "5"]. */
+  lines: string[];
+  inMinutes: number;
+  reachable: boolean;
+}
+
+export interface TransitResponse {
+  /** Es ist eine Haltestelle eingestellt. Ohne sie zeigt das Panel einen Hinweis. */
+  configured: boolean;
+  stopName: string;
+  destinationName: string;
+  departures: TransitDeparture[];
+  journeys: TransitJourney[];
+  /** Abruf fehlgeschlagen; die Daten sind aelter oder leer. */
+  stale: boolean;
+  error?: string;
+}
+
+/** Ein Suchtreffer aus der Haltestellensuche in den Einstellungen. */
+export interface TransitStopSuggestion {
+  id: string;
+  name: string;
+  /** Ort/Region zur Unterscheidung gleichnamiger Haltestellen. */
+  region?: string;
+}
+
 export interface HomeAssistantConfig {
   baseUrl: string;
   /** Long-Lived Access Token. Wird nach aussen nur maskiert ausgeliefert. */
@@ -673,6 +774,7 @@ export interface NightModeConfig {
 export type DashboardPanelId =
   | 'agenda'
   | 'trash'
+  | 'transit'
   | 'calendar'
   | 'weather'
   | 'smarthome'
@@ -716,6 +818,7 @@ export type WindowId =
   | 'calendar'
   | 'weather'
   | 'trash'
+  | 'transit'
   | 'smarthome'
   | 'sensors'
   | 'assistant'
@@ -806,6 +909,7 @@ export interface AppConfig {
   trash: TrashConfig;
   calendarView: CalendarViewConfig;
   weather: WeatherConfig;
+  transit: TransitConfig;
   homeAssistant: HomeAssistantConfig;
   google: GoogleConfig;
   ai: AiConfig;

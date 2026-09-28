@@ -14,6 +14,7 @@ import type {
   PublicAppConfig,
   SensorReading,
   TrashResponse,
+  TransitResponse,
   WeatherSummary,
 } from '@shared/types';
 import { api } from './api';
@@ -30,6 +31,12 @@ const INTERVAL = {
   // sonst bekaeme der Client trotzdem nur alle 10 Minuten neue Werte.
   weather: 60_000,
   trash: 30 * 60_000,
+  /*
+   * Abfahrten veralten schnell — eine Tafel, die eine Minute nachgeht, zeigt
+   * einen Bus an, der schon weg ist. Der Server cacht 20 Sekunden, mehrere
+   * Clients kosten die Quelle also nichts zusaetzliches.
+   */
+  transit: 30_000,
   homeAssistant: 20_000,
   sensors: 15_000,
   // Timer haben einen eigenen, schneller tickenden Kontext — siehe timersStore.tsx.
@@ -88,6 +95,7 @@ const ConfigContext = createContext<PublicAppConfig | null>(null);
 const CalendarContext = createContext<PollingState<CalendarEventsResponse> | null>(null);
 const WeatherContext = createContext<PollingState<WeatherSummary> | null>(null);
 const TrashContext = createContext<PollingState<TrashResponse> | null>(null);
+const TransitContext = createContext<PollingState<TransitResponse> | null>(null);
 
 export const useDashboardConfig = () => useContext(ConfigContext);
 export function useCalendarData() {
@@ -102,6 +110,12 @@ export function useWeatherData() {
 }
 export function useTrashData() {
   const value = useContext(TrashContext);
+  if (!value) throw new Error('DashboardProvider fehlt');
+  return value;
+}
+
+export function useTransitData() {
+  const value = useContext(TransitContext);
   if (!value) throw new Error('DashboardProvider fehlt');
   return value;
 }
@@ -135,6 +149,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const calendar = usePolling(() => api.calendarEvents(), INTERVAL.calendar * slow);
   const weather = usePolling(() => api.weather(), INTERVAL.weather * slow);
   const trash = usePolling(() => api.trash(), INTERVAL.trash * slow);
+  const transit = usePolling(() => api.transit(), INTERVAL.transit * slow);
   const homeAssistant = usePolling(() => api.homeAssistantStatus(), INTERVAL.homeAssistant * slow);
   const sensors = usePolling(() => api.sensors(), INTERVAL.sensors * slow);
   const lists = usePolling(() => api.lists(), INTERVAL.lists * slow);
@@ -275,10 +290,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       calendar.reload(),
       weather.reload(),
       trash.reload(),
+      transit.reload(),
       homeAssistant.reload(),
       sensors.reload(),
     ]);
-  }, [reloadConfig, calendar.reload, weather.reload, trash.reload, homeAssistant.reload, sensors.reload]);
+  }, [reloadConfig, calendar.reload, weather.reload, trash.reload, transit.reload, homeAssistant.reload, sensors.reload]);
 
   const value = useMemo<DashboardValue>(
     () => ({
@@ -329,7 +345,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       <ConfigContext.Provider value={config}>
         <CalendarContext.Provider value={calendar}>
           <WeatherContext.Provider value={weather}>
-            <TrashContext.Provider value={trash}>{children}</TrashContext.Provider>
+            <TrashContext.Provider value={trash}>
+              <TransitContext.Provider value={transit}>{children}</TransitContext.Provider>
+            </TrashContext.Provider>
           </WeatherContext.Provider>
         </CalendarContext.Provider>
       </ConfigContext.Provider>

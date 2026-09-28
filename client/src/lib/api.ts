@@ -32,6 +32,8 @@ import type {
   PublicAppConfig,
   RealtimeSessionResponse,
   TrashResponse,
+  TransitResponse,
+  TransitStopSuggestion,
   WeatherSummary,
   InputDevices,
 } from '@shared/types';
@@ -115,6 +117,10 @@ export const api = {
   reverseGeocode: async (lat: number, lon: number) =>
     (await request<{ result: GeoResult | null }>(`/geo/reverse?lat=${lat}&lon=${lon}`)).result,
   weather: (force = false) => request<WeatherSummary>(`/weather${force ? '?force=1' : ''}`),
+
+  transit: () => request<TransitResponse>('/transit'),
+  transitStops: (query: string) =>
+    request<TransitStopSuggestion[]>(`/transit/stops?query=${encodeURIComponent(query)}`),
 
   homeAssistantStatus: () => request<HomeAssistantStatus>('/home-assistant/status'),
   entities: (force = false) =>

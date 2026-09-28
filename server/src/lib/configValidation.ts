@@ -12,7 +12,7 @@ const url = text.refine((value) => {
   if (!value || value === '__clear__') return true;
   try { safeHttpUrl(value.replace(/^webcal:\/\//i, 'https://'), true); return true; } catch { return false; }
 }, 'Ungültige HTTP(S)-Adresse.');
-const panel = z.enum(['agenda', 'trash', 'calendar', 'weather', 'smarthome', 'sensors', 'assistant', 'lists']);
+const panel = z.enum(['agenda', 'trash', 'transit', 'calendar', 'weather', 'smarthome', 'sensors', 'assistant', 'lists']);
 const arrays: Record<string, z.ZodType> = {
   calendars: z.array(z.object({
     id, name: text, color, url: url.optional().default(''), enabled: z.boolean(),
@@ -56,6 +56,7 @@ const bounds: Record<string, [number, number]> = {
   'appearance.backgroundOpacity': [0, 1], 'appearance.night.dimLevel': [0.05, 1],
   'appearance.night.startHour': [0, 23], 'appearance.night.endHour': [0, 23],
   'appearance.night.wakeSeconds': [5, 86400], 'idle.afterSeconds': [15, 86400], 'idle.slideshow.intervalSeconds': [3, 86400],
+  'transit.maxDepartures': [1, 20], 'transit.walkMinutes': [0, 120],
 };
 
 function schema(reference: unknown, path = ''): z.ZodType {
@@ -66,7 +67,7 @@ function schema(reference: unknown, path = ''): z.ZodType {
   if (typeof reference === 'number') {
     const [min, max] = bounds[path] ?? [0, 100000];
     const numeric = z.number().finite().min(min).max(max);
-    return ['appearance.night.startHour', 'appearance.night.endHour'].includes(path) ? numeric.int() : numeric;
+    return ['appearance.night.startHour', 'appearance.night.endHour', 'transit.maxDepartures', 'transit.walkMinutes'].includes(path) ? numeric.int() : numeric;
   }
   if (typeof reference === 'string') {
     if (/(?:baseUrl|sessionUrl|callUrl|icsUrl)$/.test(path) || path === 'ai.gptLive.url') return url;

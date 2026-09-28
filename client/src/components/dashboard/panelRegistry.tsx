@@ -1,4 +1,4 @@
-import { Activity, CalendarDays, House, ListChecks, Sparkles, Sun, Trash2 } from "lucide-react";
+import { Activity, Bus, CalendarDays, House, ListChecks, Sparkles, Sun, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { DashboardPanelId } from "@shared/types";
 import { Panel } from "../Panel";
@@ -10,6 +10,7 @@ import { SmartHomePanel } from "../SmartHomePanel";
 import { TodayAgenda } from "../TodayAgenda";
 import { TrashPickupCard } from "../TrashPickupCard";
 import { WeatherCard } from "../WeatherCard";
+import { TransitPanel } from "../TransitPanel";
 
 /**
  * Was sich ins Dashboard-Raster legen laesst.
@@ -49,6 +50,13 @@ export const PANEL_DEFINITIONS: PanelDefinition[] = [
     icon: <CalendarDays size={14} strokeWidth={1.7} />,
     grow: true,
     render: (className) => <CalendarTimeline className={className} />,
+  },
+  {
+    id: "transit",
+    label: "Abfahrten",
+    icon: <Bus size={14} strokeWidth={1.7} />,
+    grow: true,
+    render: (className) => <TransitPanel className={className} />,
   },
   {
     id: "weather",

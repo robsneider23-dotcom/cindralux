@@ -50,6 +50,7 @@ import {
   redirectUri,
 } from '../services/google.ts';
 import { getWeather, invalidateWeatherCache } from '../services/weather.ts';
+import { getTransit, searchStops } from '../services/transit.ts';
 import {
   callService,
   getStatus,
@@ -449,6 +450,25 @@ api.get(
   '/weather',
   route(async (req, res) => {
     res.json(await getWeather(req.query.force === '1'));
+  }),
+);
+
+/* -------------------------------------------------------------------------- */
+/* Naahverkehr                                                                 */
+/* -------------------------------------------------------------------------- */
+
+api.get(
+  '/transit',
+  route(async (_req, res) => {
+    res.json(await getTransit());
+  }),
+);
+
+api.get(
+  '/transit/stops',
+  route(async (req, res) => {
+    // Die Suche laeuft nur beim Einrichten — eine kurze Anfrage genuegt.
+    res.json(await searchStops(String(req.query.query ?? '').slice(0, 120)));
   }),
 );
 

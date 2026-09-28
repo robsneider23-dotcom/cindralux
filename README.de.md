@@ -366,6 +366,36 @@ sich auch bei Rot-Grün- und Blau-Gelb-Schwäche deutlich (ΔE > 23). Beide Reih
 sind zusätzlich beschriftet — die Farbe allein trägt nie die Bedeutung. Dieselben
 Werte stehen für Screenreader als Tabelle im Markup.
 
+### Abfahrten und Arbeitsweg
+
+Unter *Einstellungen → Müll & Wetter → Abfahrten & Arbeitsweg*. Das Panel
+zeigt die nächsten Abfahrten einer Haltestelle und, wenn ein Ziel eingestellt
+ist, die nächste Verbindung dorthin.
+
+Die Daten kommen von [Transitous](https://transitous.org), einer frei
+betriebenen MOTIS-Instanz auf den offiziellen bundesweiten Fahrplandaten
+(DELFI) — kein Konto, kein API-Schlüssel, dieselbe Überlegung wie bei
+Open-Meteo fürs Wetter.
+
+- **Haltestelle** und **Ziel** werden gesucht, nicht eingetippt: Dahinter
+  steckt eine Kennung wie `de-DELFI_de:09263:2600`, die niemand von Hand
+  einträgt. Die Suche geht durch ganz Europa und ist unscharf, deshalb steht
+  neben jedem Treffer die Region — eine Suche nach „Straubing" liefert auch
+  das österreichische „Stübing".
+- **Fußweg zur Haltestelle** setzt Abfahrten ab, die nicht mehr zu schaffen
+  sind. Sie verschwinden nicht, sondern werden blass: Ganz ausgeblendet wirkte
+  die Tafel, als führe gerade nichts.
+- **Verspätungen** erscheinen nur, wenn eine Echtzeitmeldung vorliegt. Ohne
+  sie steht dort bewusst nichts statt einer erfundenen Pünktlichkeit.
+
+Zwei Eigenheiten der Datenquelle fängt der Dienst selbst ab: Mehrere Verbünde
+melden denselben Kurs an den bundesweiten Datensatz, wodurch derselbe Zug
+doppelt in der Liste stand — gleiche Linie, gleiche Richtung, eine Minute
+Versatz. Und die gemeldete Verkehrsmittelart ist unzuverlässig, solange in der
+Konfiguration ein Bussteig statt der Station steht; dann gilt auch ein
+Regionalzug als Bus. Deshalb entscheidet zusätzlich die Liniennummer: „RE50"
+ist kein Bus, egal was das Feld sagt.
+
 ### Anordnung des Dashboards
 
 Unter *Einstellungen → Darstellung → Anordnung* legst du fest, welche Panels
@@ -759,8 +789,11 @@ Verschiebbarer Bildausschnitt pro Foto in der Diashow-Auswahl und ein
 Ken-Burns-Effekt mit neun wechselnden Fahrtrichtungen statt einer festen sind
 ebenfalls fertig (siehe *Fotos für die Diashow*).
 
+Abfahrten und Fahrzeit zur Arbeit sind ebenfalls fertig — aus den offiziellen
+bundesweiten Fahrplandaten, ohne Konto und ohne API-Schlüssel (siehe
+*Abfahrten und Arbeitsweg*).
+
 Offen:
 
-- ÖPNV-Abfahrten und Fahrzeit zur Arbeit.
 - Weckwort statt Knopfdruck (z. B. openWakeWord lokal auf dem Pi) — braucht
   zuerst ein Mikrofon am Pi, das noch nicht geklärt ist.

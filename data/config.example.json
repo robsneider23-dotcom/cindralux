@@ -95,6 +95,15 @@
     "longitude": 13.405,
     "timezone": "Europe/Berlin"
   },
+  "transit": {
+    "enabled": false,
+    "stopId": "",
+    "stopName": "",
+    "destinationId": "",
+    "destinationName": "",
+    "maxDepartures": 6,
+    "walkMinutes": 5
+  },
   "homeAssistant": {
     "baseUrl": "http://homeassistant.local:8123",
     "token": "YOUR_HA_LONG_LIVED_TOKEN"
