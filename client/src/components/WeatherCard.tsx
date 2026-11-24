@@ -89,7 +89,7 @@ export function WeatherCard({ className }: { className?: string }) {
                 {formatTemp(weather.temperature)}
               </span>
 
-              <span className="digits shrink-0 text-2xs leading-none">
+              <span className="weather-hilo digits shrink-0 text-2xs leading-none">
                 <span className="text-signal-warn">
                   {formatTemp(weather.high)}
                 </span>

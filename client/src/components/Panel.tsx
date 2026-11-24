@@ -84,15 +84,15 @@ export function Panel({
         className={cx("panel panel-collapsed flex shrink-0 flex-col", className, "!flex-none")}
       >
         <header className="panel-head relative z-10 !border-b-0 !py-3">
-          <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex shrink-0 items-center gap-2.5">
             <span
               className="h-3.5 w-[2px] shrink-0 rounded-full"
               style={{ background: marker }}
             />
             {icon && <span className="shrink-0 text-zinc-400">{icon}</span>}
-            <h2 className="label truncate text-zinc-200">{title}</h2>
+            <h2 className="label text-zinc-200">{title}</h2>
           </div>
-          <div className="truncate text-xs text-zinc-400">{collapsed}</div>
+          <div className="min-w-0 truncate text-right text-xs text-zinc-400">{collapsed}</div>
         </header>
       </section>
     );
@@ -124,7 +124,7 @@ export function Panel({
       {backdropStyle && <PanelBackdrop variant={backdropStyle} />}
 
       <header className="panel-head relative z-10">
-        <div className="flex min-w-0 items-center gap-2.5">
+        <div className="flex min-w-0 shrink-0 items-center gap-2.5">
           <span
             className="h-3.5 w-[2px] shrink-0 rounded-full"
             style={{ background: marker }}

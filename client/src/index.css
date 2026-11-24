@@ -245,6 +245,10 @@
     .weather-panel .weather-extra { display: none; }
   }
 
+  @container weather (max-width: 360px) {
+    .weather-panel .weather-hilo { display: none; }
+  }
+
   @container weather (max-width: 440px) {
     .weather-panel .weather-apparent { display: none; }
   }

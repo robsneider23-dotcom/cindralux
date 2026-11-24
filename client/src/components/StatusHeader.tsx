@@ -1,4 +1,4 @@
-import { Cpu, Settings2, Thermometer, Wind } from "lucide-react";
+import { Cpu, Settings2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { HealthResponse } from "@shared/types";
 import { api } from "@/lib/api";
@@ -76,26 +76,17 @@ export function StatusHeader({
       {weather && (
         <>
           <span className="hidden h-11 w-px shrink-0 bg-gradient-to-b from-transparent via-white/10 to-transparent xl:block" />
-          <div className="hidden min-w-0 shrink items-center gap-3 xl:flex">
+          <div className="hidden shrink-0 items-center gap-3 xl:flex">
             <WeatherGlyph icon={weather.icon} size={32} />
             <div className="min-w-0 leading-none">
               <div className="digits text-[clamp(1.2rem,1.9vw,1.6rem)] font-light text-zinc-100">
                 {formatTemp(weather.temperature)}
               </div>
-              <div className="mt-1.5 hidden max-w-[9rem] truncate text-3xs text-zinc-500 2xl:block">
+              <div className="mt-1.5 max-w-[9rem] truncate text-3xs text-zinc-400">
                 {weather.description}
               </div>
             </div>
-            <div className="hidden flex-col gap-1.5 2xl:flex">
-              <span className="digits flex items-center gap-1.5 text-3xs text-zinc-500">
-                <Thermometer size={12} strokeWidth={1.5} />
-                {formatTemp(weather.low)} / {formatTemp(weather.high)}
-              </span>
-              <span className="digits flex items-center gap-1.5 text-3xs text-zinc-500">
-                <Wind size={12} strokeWidth={1.5} />
-                {weather.windSpeed} km/h
-              </span>
-            </div>
+
           </div>
         </>
       )}

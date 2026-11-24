@@ -253,11 +253,6 @@ export function CalendarTimeline({ className }: { className?: string }) {
             </span>
           )}
 
-          {view === "woche" && (
-            <span className="digits hidden text-3xs text-zinc-600 2xl:inline">
-              {total} Termine
-            </span>
-          )}
 
           <button
             type="button"
