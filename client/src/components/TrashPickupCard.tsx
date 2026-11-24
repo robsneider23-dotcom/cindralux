@@ -137,7 +137,7 @@ export function TrashPickupCard({ className }: { className?: string }) {
             {formatDateShort(`${first.date}T12:00:00`)}
           </div>
           {!urgent && (
-            <div className="digits mt-1 text-3xs text-zinc-600">
+            <div className="digits mt-1 text-2xs text-zinc-400">
               in {first.daysUntil} Tagen
             </div>
           )}
@@ -168,7 +168,7 @@ export function TrashPickupCard({ className }: { className?: string }) {
                   <span className="min-w-0 flex-1 truncate text-2xs text-zinc-400">
                     {group.map((pickup) => pickup.label).join(" · ")}
                   </span>
-                  <span className="digits shrink-0 text-3xs text-zinc-600">
+                  <span className="digits shrink-0 text-2xs text-zinc-400">
                     {formatWeekday(`${entry.date}T12:00:00`).slice(0, 2)}
                     {"  "}
                     {formatDateShort(`${entry.date}T12:00:00`)}

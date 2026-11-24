@@ -121,15 +121,18 @@ html[data-skin='schema'] .panel {
   border-radius: 0; background: rgb(var(--surface-700) / 0.4);
   border: 1px solid rgb(var(--accent) / 0.24); box-shadow: none;
 }
-html[data-skin='phosphor'] .panel::before, html[data-skin='phosphor'] .panel::after,
+/* Phosphor ohne Eckklammern: auf dem Kiosk war das bei elf Kacheln zu viel
+   Ornament neben Rahmen, Scanlines und Hintergrundmuster. */
 html[data-skin='schema'] .panel::before, html[data-skin='schema'] .panel::after {
   content: ''; position: absolute; width: 12px; height: 12px; border-color: rgb(var(--accent)); z-index: 1;
 }
-html[data-skin='phosphor'] .panel::before, html[data-skin='schema'] .panel::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
-html[data-skin='phosphor'] .panel::after, html[data-skin='schema'] .panel::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
-html[data-skin='phosphor'] .panel-head, html[data-skin='schema'] .panel-head {
+html[data-skin='schema'] .panel::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+html[data-skin='schema'] .panel::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+html[data-skin='schema'] .panel-head {
   border-bottom-style: dashed; background: transparent;
 }
+html[data-skin='phosphor'] .panel-head { background: transparent; }
+html[data-skin='phosphor'] .panel { border-color: rgb(var(--accent) / 0.16); }
 
 /* Broadsheet & Ikebana: keine Kachel-Box, nur eine Trennlinie unterm Kopf. */
 html[data-skin='broadsheet'] .panel, html[data-skin='ikebana'] .panel {

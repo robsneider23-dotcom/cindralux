@@ -248,6 +248,15 @@
     .weather-panel .weather-apparent { display: none; }
   }
 
+  /*
+   * Sind alle wachsenden Kacheln einer Spalte eingeklappt (leer), uebernimmt
+   * die naechste Kachel mit Inhalt den Platz — sonst klafft unten ein Loch.
+   */
+  .dash-col:not(:has(> .flex-1:not(.panel-collapsed))) > .panel:not(.panel-collapsed) {
+    flex: 1 1 0%;
+    min-height: 0;
+  }
+
   /* Ruhige, leicht angehobene Flächen; Akzente bleiben bei den Inhalten. */
   .panel {
     position: relative;
@@ -267,11 +276,11 @@
   }
 
   .label {
-    @apply text-2xs uppercase tracking-label text-zinc-500 font-medium;
+    @apply text-2xs uppercase tracking-label text-zinc-400 font-medium;
   }
 
   .label-dim {
-    @apply text-3xs uppercase tracking-wide2 text-zinc-500;
+    @apply text-3xs uppercase tracking-wide2 text-zinc-400;
   }
 
   /* Alle Zahlen laufen tabellarisch, damit die Uhr nicht zappelt. */

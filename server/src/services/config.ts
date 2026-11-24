@@ -29,7 +29,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       id: 'restmuell',
       kind: 'restmuell',
       label: 'Restmüll',
-      color: '#a1a1aa',
+      color: '#e4e4e7',
       weekday: 3,
       everyNWeeks: 2,
       anchorDate: '2026-01-07',

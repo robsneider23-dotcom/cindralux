@@ -81,8 +81,8 @@ export default {
         wide2: '0.1em',
       },
       fontSize: {
-        '2xs': ['0.6875rem', { lineHeight: '0.95rem' }],
-        '3xs': ['0.625rem', { lineHeight: '0.85rem' }],
+        '2xs': ['0.75rem', { lineHeight: '1.05rem' }],
+        '3xs': ['0.6875rem', { lineHeight: '0.95rem' }],
       },
       boxShadow: shadows,
       transitionTimingFunction: {

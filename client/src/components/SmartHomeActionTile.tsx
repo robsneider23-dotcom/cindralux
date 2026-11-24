@@ -135,7 +135,7 @@ export function SmartHomeActionTile({
         {action.kind === "toggle" ? (
           <span
             className={cx(
-              "mt-1 flex h-6 w-11 shrink-0 items-center rounded-full border px-[3px] transition-all duration-300 ease-calm",
+              "mt-1 flex h-8 w-14 shrink-0 items-center rounded-full border px-[4px] transition-all duration-300 ease-calm",
               isOn ? "justify-end" : "justify-start",
             )}
             style={{
@@ -146,15 +146,15 @@ export function SmartHomeActionTile({
             }}
           >
             <span
-              className="block h-[18px] w-[18px] rounded-full transition-colors duration-300"
+              className="block h-[22px] w-[22px] rounded-full transition-colors duration-300"
               style={{
-                background: isOn ? accent : "#3f3f46",
+                background: isOn ? accent : "#71717a",
                 boxShadow: isOn ? `0 0 12px ${withAlpha(accent, 0.9)}` : "none",
               }}
             />
           </span>
         ) : (
-          <span className="mt-1.5 text-3xs uppercase tracking-wide2 text-zinc-600 transition-colors group-active:text-accent-soft">
+          <span className="mt-1.5 text-2xs uppercase tracking-wide2 text-zinc-400 transition-colors group-active:text-accent-soft">
             Szene
           </span>
         )}
@@ -171,14 +171,14 @@ export function SmartHomeActionTile({
         </div>
         {/* Zusatzzeile entfaellt auf flachen Schirmen — dort zaehlt nur das Label. */}
         <div className="mt-1 flex items-center gap-1.5 short:hidden">
-          <span className="truncate text-3xs text-zinc-500">
+          <span className="truncate text-2xs text-zinc-400">
             {unavailable
               ? "Nicht erreichbar"
               : (action.hint ?? `${action.domain}.${action.service}`)}
           </span>
           {mock && !unavailable && (
             <span
-              className="shrink-0 text-3xs text-zinc-700"
+              className="shrink-0 text-3xs text-zinc-500"
               title="Simulationsmodus"
             >
               sim

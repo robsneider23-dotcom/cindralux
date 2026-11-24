@@ -59,7 +59,7 @@ export function DashboardPage() {
             key={`${index}-${spalte.panels.join("-")}`}
             className={cx(
               SPAN_KLASSE[Math.min(12, Math.max(1, spalte.span))],
-              "flex min-h-0 min-w-0 flex-col gap-2.5",
+              "dash-col flex min-h-0 min-w-0 flex-col gap-2.5",
             )}
           >
             {spalte.panels.map((panelId) => {

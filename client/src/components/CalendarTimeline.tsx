@@ -319,9 +319,13 @@ export function CalendarTimeline({ className }: { className?: string }) {
         />
       ) : (
         <div className="px-3 pb-3 pt-2">
-          {days.map((day) => (
-            <DaySection key={day.key} day={day} now={now} />
-          ))}
+          {groupFreeDays(days).map((entry) =>
+            "free" in entry ? (
+              <FreeDaysRow key={entry.free[0]?.key} days={entry.free} now={now} />
+            ) : (
+              <DaySection key={entry.day.key} day={entry.day} now={now} />
+            ),
+          )}
         </div>
       )}
 
@@ -395,7 +399,7 @@ export function CalendarTimeline({ className }: { className?: string }) {
                       boxShadow: `0 0 7px ${withAlpha(color, 0.7)}`,
                     }}
                   />
-                  <span className="text-3xs text-zinc-500">{feed.name}</span>
+                  <span className="text-2xs text-zinc-400">{feed.name}</span>
                   {feed.state === "error" && (
                     <TriangleAlert
                       size={10}
@@ -426,6 +430,52 @@ export function CalendarTimeline({ className }: { className?: string }) {
   );
 }
 
+type DayEntry = { day: DayBucket } | { free: DayBucket[] };
+
+/**
+ * Aufeinanderfolgende freie Tage zu einer Zeile zusammenfassen. Sonst steht
+ * in einer ruhigen Woche fuenfmal "frei" untereinander und die wenigen
+ * echten Termine gehen zwischen den Ueberschriften unter.
+ */
+function groupFreeDays(days: DayBucket[]): DayEntry[] {
+  const entries: DayEntry[] = [];
+  for (const day of days) {
+    const empty = day.allDay.length === 0 && day.timed.length === 0;
+    const last = entries[entries.length - 1];
+    if (empty && last && "free" in last) last.free.push(day);
+    else entries.push(empty ? { free: [day] } : { day });
+  }
+  return entries;
+}
+
+function dayLabel(date: Date, now: Date): string {
+  const label = relativeDayLabel(date, now);
+  return `${label} ${formatDateShort(date)}`;
+}
+
+function FreeDaysRow({ days, now }: { days: DayBucket[]; now: Date }) {
+  const first = days[0];
+  const last = days[days.length - 1];
+  if (!first || !last) return null;
+  const includesToday = days.some((day) => toDateKey(now) === day.key);
+
+  return (
+    <div className="mb-1 flex items-center gap-2.5 px-1 py-2">
+      <span
+        className={cx(
+          "digits text-xs font-medium uppercase tracking-wide2",
+          includesToday ? "text-accent-soft" : "text-zinc-400",
+        )}
+      >
+        {dayLabel(first.date, now)}
+        {days.length > 1 && ` – ${dayLabel(last.date, now)}`}
+      </span>
+      <span className="hair ml-1 flex-1" />
+      <span className="text-xs text-zinc-500">frei</span>
+    </div>
+  );
+}
+
 function DaySection({ day, now }: { day: DayBucket; now: Date }) {
   const isToday = toDateKey(now) === day.key;
   const empty = day.allDay.length === 0 && day.timed.length === 0;
@@ -436,18 +486,18 @@ function DaySection({ day, now }: { day: DayBucket; now: Date }) {
       <div className="sticky top-0 z-10 -mx-1 flex items-center gap-2.5 bg-gradient-to-b from-surface-900/95 to-surface-900/80 px-1 py-1.5 backdrop-blur-sm">
         <span
           className={cx(
-            "text-2xs font-medium uppercase tracking-wide2",
-            isToday ? "text-accent-soft" : "text-zinc-400",
+            "text-xs font-medium uppercase tracking-wide2",
+            isToday ? "text-accent-soft" : "text-zinc-300",
           )}
         >
           {relativeDayLabel(day.date, now)}
         </span>
-        <span className="digits text-3xs text-zinc-600">
+        <span className="digits text-xs text-zinc-400">
           {formatDateShort(day.date)}
         </span>
         <span className="hair ml-1 flex-1" />
         {!empty && (
-          <span className="digits text-3xs text-zinc-700">
+          <span className="digits text-2xs text-zinc-500">
             {day.allDay.length + day.timed.length}
           </span>
         )}
@@ -490,10 +540,10 @@ function AllDayRow({ event }: { event: CalendarEvent }) {
       >
         Ganztägig
       </span>
-      <span className="min-w-0 flex-1 truncate text-sm text-zinc-100">
+      <span className="min-w-0 flex-1 truncate text-base text-zinc-100">
         {event.title}
       </span>
-      <span className="shrink-0 text-3xs text-zinc-500">
+      <span className="shrink-0 text-2xs text-zinc-400">
         {event.calendarName}
       </span>
     </div>
@@ -532,13 +582,13 @@ function TimedRow({
       <div className="digits w-[5.6rem] shrink-0 pt-px text-right">
         <div
           className={cx(
-            "text-2xs leading-tight",
+            "text-xs leading-tight",
             running ? "text-zinc-100" : "text-zinc-300",
           )}
         >
           {formatTime(start)}
         </div>
-        <div className="text-3xs leading-tight text-zinc-600">
+        <div className="text-2xs leading-tight text-zinc-500">
           {formatTime(end)}
         </div>
       </div>
@@ -548,14 +598,14 @@ function TimedRow({
       <div className="min-w-0 flex-1">
         <div
           className={cx(
-            "truncate text-sm leading-tight",
+            "truncate text-base leading-tight",
             past ? "text-zinc-500" : "text-zinc-100",
             running && "font-medium",
           )}
         >
           {event.title}
         </div>
-        <div className="mt-0.5 flex items-center gap-2 text-3xs text-zinc-600">
+        <div className="mt-0.5 flex items-center gap-2 text-2xs text-zinc-400">
           <span className="truncate">{event.calendarName}</span>
           {event.location && (
             <>

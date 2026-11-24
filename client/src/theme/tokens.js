@@ -229,7 +229,7 @@ export const calendarPalette = [
 
 /** Farben der Muelltonnen-Arten. */
 export const trashPalette = {
-  restmuell: '#a1a1aa',
+  restmuell: '#e4e4e7',
   bio: '#84cc16',
   papier: '#38bdf8',
   'gelber-sack': '#fbbf24',

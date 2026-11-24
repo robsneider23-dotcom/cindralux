@@ -53,6 +53,11 @@ export function TodayAgenda({ className }: { className?: string }) {
       }
       bodyClassName="flex flex-col"
       scroll
+      collapsed={
+        !loading && !error && calendar !== null && events.length === 0
+          ? "Keine Termine heute"
+          : undefined
+      }
     >
       {(loading && calendar === null) ? (
         <LoadingState text="Lade Termine …" />
@@ -157,9 +162,9 @@ function AgendaRow({
         style={{ background: event.calendarColor, opacity: past ? 0.5 : 1 }}
       />
 
-      <span className="digits w-[3.2rem] shrink-0 text-2xs text-zinc-400">
+      <span className="digits w-[3.4rem] shrink-0 text-xs text-zinc-300">
         {event.allDay ? (
-          <span className="text-zinc-600">ganzt.</span>
+          <span className="text-zinc-400">ganzt.</span>
         ) : (
           formatTime(event.start)
         )}
@@ -168,7 +173,7 @@ function AgendaRow({
       <span className="min-w-0 flex-1">
         <span
           className={cx(
-            "block truncate text-sm leading-tight",
+            "block truncate text-base leading-tight",
             past
               ? "text-zinc-500 line-through decoration-zinc-700"
               : "text-zinc-200",
@@ -176,7 +181,7 @@ function AgendaRow({
         >
           {event.title}
         </span>
-        <span className="mt-0.5 flex items-center gap-1.5 text-3xs text-zinc-600">
+        <span className="mt-0.5 flex items-center gap-1.5 text-2xs text-zinc-400">
           <span className="truncate">{event.calendarName}</span>
           {!event.allDay && (
             <>

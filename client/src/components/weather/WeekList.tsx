@@ -1,6 +1,6 @@
 import { CloudRain, Compass } from "lucide-react";
 import type { WeatherSummary } from "@shared/types";
-import { formatWeekday, toDateKey } from "@/lib/format";
+import { formatWeekday, formatWeekdayShort, toDateKey } from "@/lib/format";
 import { cx } from "@/lib/utils";
 import { WeatherGlyph } from "../WeatherGlyph";
 
@@ -42,11 +42,17 @@ export function WeekList({
             <span
               className={cx(
                 "shrink-0 text-2xs",
-                card ? "w-[4.5rem] 2xl:w-20" : "w-24",
+                card ? "w-[3.2rem] text-xs" : "w-24",
                 isToday ? "text-accent-soft" : "text-zinc-300",
               )}
             >
-              {isToday ? "Heute" : formatWeekday(`${day.date}T12:00:00`)}
+              {/* In der schmalen Spalte kurze Tagesnamen — sonst bleibt fuer
+                  den Spannenbalken keine Breite uebrig und er verschwindet. */}
+              {isToday
+                ? "Heute"
+                : card
+                  ? formatWeekdayShort(`${day.date}T12:00:00`)
+                  : formatWeekday(`${day.date}T12:00:00`)}
             </span>
 
             <WeatherGlyph icon={day.icon} size={20} strokeWidth={1.3} className="shrink-0" />
@@ -57,12 +63,12 @@ export function WeekList({
               </span>
             )}
 
-            <span className={cx("digits shrink-0 text-right text-2xs text-signal-info", card ? "w-7 2xl:w-10" : "w-10")}>
+            <span className={cx("digits shrink-0 text-right text-xs text-signal-info", card ? "w-8 2xl:w-10" : "w-10")}>
               {Math.round(day.min)}°
             </span>
 
             {/* Temperaturspanne */}
-            <span className="relative h-1.5 min-w-0 flex-1 rounded-full bg-white/[0.05]">
+            <span className="relative h-1.5 min-w-[2.5rem] flex-1 rounded-full bg-white/[0.08]">
               <span
                 className="absolute inset-y-0 rounded-full"
                 style={{
@@ -73,7 +79,7 @@ export function WeekList({
               />
             </span>
 
-            <span className={cx("digits shrink-0 text-2xs text-signal-warn", card ? "w-7 2xl:w-10" : "w-10")}>
+            <span className={cx("digits shrink-0 text-xs text-signal-warn", card ? "w-8 2xl:w-10" : "w-10")}>
               {Math.round(day.max)}°
             </span>
 

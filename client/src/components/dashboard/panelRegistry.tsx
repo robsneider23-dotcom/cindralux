@@ -11,6 +11,29 @@ import { TodayAgenda } from "../TodayAgenda";
 import { TrashPickupCard } from "../TrashPickupCard";
 import { WeatherCard } from "../WeatherCard";
 import { TransitPanel } from "../TransitPanel";
+import { useDashboard } from "@/lib/store";
+
+/**
+ * Messwerte als Dashboard-Kachel. Liefert kein einziger Sensor einen Wert
+ * (Home Assistant nicht erreichbar), klappt die Kachel auf eine Zeile
+ * zusammen — vier leere Kacheln mit Strich helfen niemandem.
+ */
+function SensorsCard({ className }: { className: string }) {
+  const { sensors } = useDashboard();
+  const allOffline = sensors.length > 0 && sensors.every((sensor) => !sensor.available);
+  return (
+    <Panel
+      title="Zuhause"
+      icon={<Activity size={13} strokeWidth={1.6} />}
+      backdrop="sensors"
+      className={className}
+      scroll
+      collapsed={allOffline ? "Sensoren nicht verbunden" : undefined}
+    >
+      <SensorPanel />
+    </Panel>
+  );
+}
 
 /**
  * Was sich ins Dashboard-Raster legen laesst.
@@ -84,17 +107,7 @@ export const PANEL_DEFINITIONS: PanelDefinition[] = [
     label: "Messwerte",
     icon: <Activity size={14} strokeWidth={1.7} />,
     grow: true,
-    render: (className) => (
-      <Panel
-        title="Zuhause"
-        icon={<Activity size={13} strokeWidth={1.6} />}
-        backdrop="sensors"
-        className={className}
-        scroll
-      >
-        <SensorPanel />
-      </Panel>
-    ),
+    render: (className) => <SensorsCard className={className} />,
   },
   {
     id: "lists",

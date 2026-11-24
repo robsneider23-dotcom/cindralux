@@ -43,7 +43,7 @@ export function SensorPanel() {
 
   if (sensors.length === 0) {
     return (
-      <p className="px-6 py-14 text-center text-2xs uppercase tracking-wide2 text-zinc-600">
+      <p className="px-6 py-14 text-center text-2xs uppercase tracking-wide2 text-zinc-400">
         Noch keine Messwerte eingerichtet — Einstellungen → Zuhause
       </p>
     );
@@ -56,7 +56,7 @@ export function SensorPanel() {
   return (
     <div className="p-4">
       {mock && (
-        <p className="mb-3 text-3xs leading-relaxed text-zinc-600">
+        <p className="mb-3 text-2xs leading-relaxed text-zinc-400">
           Home Assistant ist nicht verbunden — die Werte sind plausible Beispiele, die dem
           Tagesgang folgen.
         </p>
@@ -87,7 +87,6 @@ function SensorTile({ sensor }: { sensor: SensorReading }) {
         sensor.alert
           ? 'border-transparent bg-accent/[0.1]'
           : 'border-white/[0.07] bg-white/[0.015]',
-        !sensor.available && 'opacity-40',
       )}
       style={
         sensor.alert
@@ -109,17 +108,22 @@ function SensorTile({ sensor }: { sensor: SensorReading }) {
         className={cx('mb-3', sensor.alert ? 'text-accent' : 'text-zinc-500')}
       />
 
-      <div
-        className={cx(
-          'digits text-[clamp(1.3rem,2.2vw,1.7rem)] font-light leading-none',
-          sensor.alert ? 'text-accent-soft' : 'text-zinc-50',
-        )}
-      >
-        {sensor.display}
-      </div>
+      {sensor.available ? (
+        <div
+          className={cx(
+            'digits text-[clamp(1.3rem,2.2vw,1.7rem)] font-light leading-none',
+            sensor.alert ? 'text-accent-soft' : 'text-zinc-50',
+          )}
+        >
+          {sensor.display}
+        </div>
+      ) : (
+        // Kein "—" und keine Entitaets-ID: beides liest sich aus der Distanz
+        // wie ein Fehler im Dashboard statt wie ein fehlender Sensor.
+        <div className="text-xs leading-tight text-zinc-400">nicht verbunden</div>
+      )}
 
-      <div className="mt-2 truncate text-2xs text-zinc-400">{sensor.label}</div>
-      <div className="digits mt-1 truncate text-3xs text-zinc-700">{sensor.entityId}</div>
+      <div className="mt-2 truncate text-xs text-zinc-300">{sensor.label}</div>
     </div>
   );
 }

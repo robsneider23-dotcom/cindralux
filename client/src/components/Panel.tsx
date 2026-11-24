@@ -22,6 +22,13 @@ interface PanelProps {
   activateLabel?: string;
   /** Fenster-Kennung; der Stil kommt aus den Einstellungen. */
   backdrop?: WindowId;
+  /**
+   * Eingeklappt: nur die Kopfzeile mit diesem Hinweis rechts (z.B. "Keine
+   * Termine heute"). Fuer leere Kacheln — eine grosse leere Flaeche nimmt
+   * den Kacheln mit Inhalt den Platz weg. Die Spalte gibt den Platz dann an
+   * die Nachbarn (siehe .dash-col in index.css).
+   */
+  collapsed?: ReactNode;
 }
 
 /**
@@ -39,6 +46,7 @@ export function Panel({
   onActivate,
   activateLabel,
   backdrop,
+  collapsed,
 }: PanelProps) {
   const backdropStyle = useWindowBackdrop(backdrop);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -69,6 +77,26 @@ export function Panel({
   }, [scroll, children]);
 
   const marker = accent ?? "rgb(var(--accent))";
+
+  if (collapsed) {
+    return (
+      <section
+        className={cx("panel panel-collapsed flex shrink-0 flex-col", className, "!flex-none")}
+      >
+        <header className="panel-head relative z-10 !border-b-0 !py-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span
+              className="h-3.5 w-[2px] shrink-0 rounded-full"
+              style={{ background: marker }}
+            />
+            {icon && <span className="shrink-0 text-zinc-400">{icon}</span>}
+            <h2 className="label truncate text-zinc-200">{title}</h2>
+          </div>
+          <div className="truncate text-xs text-zinc-400">{collapsed}</div>
+        </header>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -101,8 +129,8 @@ export function Panel({
             className="h-3.5 w-[2px] shrink-0 rounded-full"
             style={{ background: marker }}
           />
-          {icon && <span className="shrink-0 text-zinc-500">{icon}</span>}
-          <h2 className="label truncate text-zinc-300">{title}</h2>
+          {icon && <span className="shrink-0 text-zinc-400">{icon}</span>}
+          <h2 className="label truncate text-zinc-200">{title}</h2>
         </div>
         {meta ? (
           <div className="label-dim shrink-0 whitespace-nowrap">{meta}</div>
@@ -135,7 +163,7 @@ export function EmptyState({ icon, text }: { icon?: ReactNode; text: string }) {
   return (
     <div className="my-auto flex flex-col items-center gap-2.5 px-6 py-8 text-center">
       {icon && <span className="text-zinc-700">{icon}</span>}
-      <p className="text-2xs uppercase tracking-wide2 text-zinc-600">{text}</p>
+      <p className="text-2xs uppercase tracking-wide2 text-zinc-400">{text}</p>
     </div>
   );
 }
@@ -156,7 +184,7 @@ export function LoadingState({ text = "Lade …" }: { text?: string }) {
           />
         ))}
       </span>
-      <p className="text-2xs uppercase tracking-wide2 text-zinc-600">{text}</p>
+      <p className="text-2xs uppercase tracking-wide2 text-zinc-400">{text}</p>
     </div>
   );
 }

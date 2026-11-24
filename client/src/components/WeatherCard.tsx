@@ -48,10 +48,8 @@ export function WeatherCard({ className }: { className?: string }) {
         activateLabel="Wetterdetails öffnen"
         meta={
           <span className="flex min-w-0 items-center gap-1.5">
-            <MapPin size={11} strokeWidth={1.6} className="shrink-0" />
-            <span className="truncate" title={weather.locationName}>{weather.locationName}</span>
             {weather.source === "seed" && (
-              <span className="text-signal-warn">· Demo</span>
+              <span className="text-signal-warn">Demo</span>
             )}
             <ChevronRight
               size={12}
@@ -95,7 +93,7 @@ export function WeatherCard({ className }: { className?: string }) {
                 <span className="text-signal-warn">
                   {formatTemp(weather.high)}
                 </span>
-                <span className="mx-1 text-zinc-700">/</span>
+                <span className="mx-1 text-zinc-500">/</span>
                 <span className="text-signal-info">
                   {formatTemp(weather.low)}
                 </span>
@@ -118,7 +116,7 @@ export function WeatherCard({ className }: { className?: string }) {
             </div>
 
             <div className="mt-2 flex items-baseline gap-2 short:mt-1">
-              <span className="truncate text-sm text-zinc-400 short:text-2xs">
+              <span className="truncate text-base text-zinc-300 short:text-2xs">
                 {weather.description}
               </span>
               <span className="weather-apparent digits hidden shrink-0 text-3xs text-zinc-600 2xl:block">
@@ -126,6 +124,13 @@ export function WeatherCard({ className }: { className?: string }) {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Ort unter den Werten statt im Kopf: dort war er in der schmalen
+            Spalte nach zehn Zeichen abgeschnitten. */}
+        <div className="mt-2 flex items-start gap-1.5 px-4 text-2xs leading-snug text-zinc-400">
+          <MapPin size={12} strokeWidth={1.6} className="mt-0.5 shrink-0" />
+          <span className="line-clamp-2">{weather.locationName}</span>
         </div>
 
         <div className="hair mx-4 my-3 short:my-1.5" />

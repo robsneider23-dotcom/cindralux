@@ -1,4 +1,4 @@
-import { Activity, House, ListChecks, Plus, Sparkles } from 'lucide-react';
+import { Activity, House, ListChecks, Sparkles, Timer } from 'lucide-react';
 import { useState } from 'react';
 import { useDashboard } from '@/lib/store';
 import { cx } from '@/lib/utils';
@@ -9,6 +9,7 @@ import { ListsPanel } from './ListsPanel';
 import { OverlayFrame } from './OverlayFrame';
 import { TimerChips } from './TimerChips';
 import { TimerQuickAdd } from './TimerQuickAdd';
+import { presetColumns } from '@/lib/layouts';
 
 type Launcher = 'smarthome' | 'zuhause' | 'assistent' | 'listen' | null;
 
@@ -32,9 +33,18 @@ export function LauncherBar({ className }: { className?: string }) {
   const aiReady = config?.ai.hasApiKey ?? false;
   const openShoppingItems = (lists?.shopping ?? []).filter((item) => !item.done).length;
 
+  // Was schon als Kachel im Raster steht, braucht keinen zweiten Knopf hier
+  // unten — sonst steht z.B. Smart Home doppelt auf dem Bildschirm.
+  const layout = config?.layout;
+  const inGrid = new Set(
+    (layout?.preset === 'custom' ? (layout.custom ?? []) : presetColumns(layout?.preset ?? 'standard'))
+      .flatMap((column) => column.panels),
+  );
+
   return (
     <>
       <section className={cx('panel flex shrink-0 items-stretch gap-1 p-1.5', className)}>
+        {!inGrid.has('smarthome') && (
         <LauncherButton
           icon={<House size={22} strokeWidth={1.5} />}
           label="Smart Home"
@@ -46,7 +56,9 @@ export function LauncherBar({ className }: { className?: string }) {
           badge={activeTiles > 0 ? activeTiles : undefined}
           onClick={() => setOpen('smarthome')}
         />
+        )}
 
+        {!inGrid.has('sensors') && (
         <LauncherButton
           icon={<Activity size={22} strokeWidth={1.5} />}
           label="Zuhause"
@@ -55,14 +67,18 @@ export function LauncherBar({ className }: { className?: string }) {
           badgeAlert={alerts > 0}
           onClick={() => setOpen('zuhause')}
         />
+        )}
 
+        {!inGrid.has('assistant') && (
         <LauncherButton
           icon={<Sparkles size={22} strokeWidth={1.5} />}
           label="Assistent"
-          hint={aiReady ? config?.ai.model : 'lokale Antworten'}
+          hint={aiReady ? 'Fragen oder sprechen' : 'lokale Antworten'}
           onClick={() => setOpen('assistent')}
         />
+        )}
 
+        {!inGrid.has('lists') && (
         <LauncherButton
           icon={<ListChecks size={22} strokeWidth={1.5} />}
           label="Liste"
@@ -70,18 +86,19 @@ export function LauncherBar({ className }: { className?: string }) {
           badge={openShoppingItems > 0 ? openShoppingItems : undefined}
           onClick={() => setOpen('listen')}
         />
+        )}
 
-        {/* Timer rechts, außerhalb der Startknöpfe */}
-        <div className="flex shrink-0 items-center gap-2 border-l border-white/[0.055] px-3 short:px-2">
+        <LauncherButton
+          icon={<Timer size={22} strokeWidth={1.5} />}
+          label="Timer"
+          hint="Timer oder Wecker stellen"
+          onClick={() => setTimerDialog(true)}
+        />
+
+        {/* Laufende Timer rechts; der Knopf zum Stellen steht jetzt beschriftet
+            in der Leiste. TimerChips zeichnet nichts, solange keiner laeuft. */}
+        <div className="flex shrink-0 items-center gap-2 px-2 empty:hidden">
           <TimerChips />
-          <button
-            type="button"
-            onClick={() => setTimerDialog(true)}
-            aria-label="Timer oder Wecker stellen"
-            className="touchable flex h-11 w-11 min-h-0 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.025] text-zinc-400 active:border-accent/50 active:bg-accent/15 active:text-accent-soft short:h-9 short:w-9"
-          >
-            <Plus size={19} strokeWidth={1.8} />
-          </button>
         </div>
       </section>
 
@@ -181,7 +198,7 @@ function LauncherButton({
           {label}
         </span>
         {hint && (
-          <span className="mt-1 block truncate text-3xs text-zinc-500 short:hidden">{hint}</span>
+          <span className="mt-1 block truncate text-2xs text-zinc-400 short:hidden">{hint}</span>
         )}
       </span>
       {badge !== undefined && (

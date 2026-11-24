@@ -8,7 +8,7 @@ import type { TrashKind } from '../../../shared/types.ts';
  * Gleiche Werte wie in client/src/theme/tokens.js.
  */
 export const trashPalette: Record<TrashKind, string> = {
-  restmuell: '#a1a1aa',
+  restmuell: '#e4e4e7',
   bio: '#84cc16',
   papier: '#38bdf8',
   'gelber-sack': '#fbbf24',
