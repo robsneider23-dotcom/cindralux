@@ -2455,6 +2455,42 @@ function IdleSettings({ draft, update }: PaneProps) {
           </Field>
         </div>
 
+        <div className="mt-4">
+          <Toggle
+            label="Nur zu bestimmten Zeiten"
+            checked={idle.scheduleEnabled}
+            onChange={(scheduleEnabled) => setIdle({ scheduleEnabled })}
+          />
+          {idle.scheduleEnabled && (
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <Field label="Von (Uhr)" hint="Volle Stunde, 0–23.">
+                <input
+                  type="number"
+                  min={0}
+                  max={23}
+                  value={idle.startHour}
+                  onChange={(event) =>
+                    setIdle({ startHour: Math.min(23, Math.max(0, Math.round(Number(event.target.value) || 0))) })
+                  }
+                  className="field digits w-28"
+                />
+              </Field>
+              <Field label="Bis (Uhr)" hint="Darf über Mitternacht gehen, z. B. 22 bis 4.">
+                <input
+                  type="number"
+                  min={0}
+                  max={23}
+                  value={idle.endHour}
+                  onChange={(event) =>
+                    setIdle({ endHour: Math.min(23, Math.max(0, Math.round(Number(event.target.value) || 0))) })
+                  }
+                  className="field digits w-28"
+                />
+              </Field>
+            </div>
+          )}
+        </div>
+
         <div className="mt-4 grid gap-2.5 lg:grid-cols-3">
           <Toggle
             label="Uhrzeit zeigen"

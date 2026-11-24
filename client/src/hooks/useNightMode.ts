@@ -29,7 +29,7 @@ export interface NightMode {
 }
 
 /** Liegt `hour` im Fenster von start bis end? Das Fenster darf Mitternacht überspannen. */
-function inWindow(hour: number, start: number, end: number): boolean {
+export function inWindow(hour: number, start: number, end: number): boolean {
   if (start === end) return false;
   return start < end ? hour >= start && hour < end : hour >= start || hour < end;
 }

@@ -284,6 +284,9 @@ export const DEFAULT_CONFIG: AppConfig = {
     enabled: true,
     // Zwei Minuten: lang genug, dass es beim Bedienen nicht stoert.
     afterSeconds: 120,
+    scheduleEnabled: false,
+    startHour: 22,
+    endHour: 4,
     showClock: true,
     showWeather: true,
     showAgenda: true,

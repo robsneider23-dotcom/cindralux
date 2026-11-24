@@ -3,7 +3,7 @@ import { StatusHeader } from "./StatusHeader";
 import { CindraluxBackground } from "./CindraluxBackground";
 import { NightOverlay } from "./NightOverlay";
 import { TimerOverlay } from "./TimerOverlay";
-import { useNightMode } from "@/hooks/useNightMode";
+import { inWindow, useNightMode } from "@/hooks/useNightMode";
 import { useIdle } from "@/hooks/useIdle";
 import { IdleScreen } from "./idle/IdleScreen";
 import { useDashboardConfig } from "@/lib/store";
@@ -30,8 +30,23 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const config = useDashboardConfig();
+  // Ruhemodus optional nur im eingestellten Zeitfenster (z.B. 22–4 Uhr);
+  // tagsueber bleibt dann das Dashboard stehen.
+  const [idleWindowOpen, setIdleWindowOpen] = useState(true);
+  useEffect(() => {
+    const cfg = config?.idle;
+    const check = () =>
+      setIdleWindowOpen(
+        !cfg?.scheduleEnabled ||
+          inWindow(new Date().getHours(), cfg.startHour, cfg.endHour),
+      );
+    check();
+    const timer = window.setInterval(check, 30_000);
+    return () => window.clearInterval(timer);
+  }, [config?.idle]);
+
   const { idle, wake } = useIdle(
-    config?.idle.enabled ?? false,
+    (config?.idle.enabled ?? false) && idleWindowOpen,
     config?.idle.afterSeconds ?? 120,
   );
   const tastatur = useOnScreenKeyboard(config?.appearance.onScreenKeyboard);

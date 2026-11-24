@@ -1125,6 +1125,13 @@ export interface IdleConfig {
   enabled: boolean;
   /** Sekunden ohne Bedienung, bis der Ruhemodus beginnt. */
   afterSeconds: number;
+  /**
+   * Ruhemodus nur in einem Zeitfenster (Stunden 0–23, darf ueber Mitternacht
+   * gehen, z.B. 22–4). Aus = rund um die Uhr wie bisher.
+   */
+  scheduleEnabled: boolean;
+  startHour: number;
+  endHour: number;
   showClock: boolean;
   showWeather: boolean;
   showAgenda: boolean;
