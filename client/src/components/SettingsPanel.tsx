@@ -2097,6 +2097,21 @@ function AppearanceSettings({ draft, update }: PaneProps) {
       </Section>
 
       <Section
+        title="Größe der Oberfläche"
+        description="Vergrößert Schrift, Abstände und Kacheln gemeinsam. Für kleine Bildschirme mit hoher Auflösung „Groß“ oder „Sehr groß“ wählen."
+      >
+        <SegmentedControl<string>
+          value={String(appearance.uiScale ?? 1)}
+          onChange={(value) => set({ uiScale: Number(value) })}
+          options={[
+            { value: "1", label: "Normal" },
+            { value: "1.15", label: "Groß" },
+            { value: "1.3", label: "Sehr groß" },
+          ]}
+        />
+      </Section>
+
+      <Section
         title="Farben & Schrift"
         description="Fünfzehn Design-Richtungen als fertige Gesamtpakete, oder darunter acht Akzentfarben plus eigene Farbe und sechs Schriftarten einzeln kombiniert."
       >

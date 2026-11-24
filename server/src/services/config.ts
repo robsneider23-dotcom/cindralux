@@ -338,6 +338,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     burnInProtection: true,
     onScreenKeyboard: 'auto',
     colorScheme: 'dark',
+    uiScale: 1,
   },
   calendarRefreshMinutes: 15,
 };

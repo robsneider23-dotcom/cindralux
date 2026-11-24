@@ -870,6 +870,11 @@ export interface AppearanceConfig {
   onScreenKeyboard: OnScreenKeyboardMode;
   /** Helles oder dunkles Design. */
   colorScheme: ColorScheme;
+  /**
+   * Vergroesserung der ganzen Oberflaeche (1 = normal). Kleine Displays mit
+   * hoher Aufloesung (z.B. 10" mit 1920x1200) wirken sonst winzig.
+   */
+  uiScale: number;
 }
 
 export type OnScreenKeyboardMode = 'off' | 'auto' | 'always';

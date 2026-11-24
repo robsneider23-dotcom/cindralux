@@ -53,7 +53,7 @@ const enums: Record<string, [string, ...string[]]> = {
 const bounds: Record<string, [number, number]> = {
   calendarRefreshMinutes: [1, 1440], 'calendarView.autoReturnMinutes': [0, 1440],
   'weather.latitude': [-90, 90], 'weather.longitude': [-180, 180],
-  'appearance.backgroundOpacity': [0, 1], 'appearance.night.dimLevel': [0.05, 1],
+  'appearance.backgroundOpacity': [0, 1], 'appearance.uiScale': [0.8, 1.6], 'appearance.night.dimLevel': [0.05, 1],
   'appearance.night.startHour': [0, 23], 'appearance.night.endHour': [0, 23],
   'appearance.night.wakeSeconds': [5, 86400], 'idle.afterSeconds': [15, 86400], 'idle.slideshow.intervalSeconds': [3, 86400],
   'transit.maxDepartures': [1, 20], 'transit.walkMinutes': [0, 120],

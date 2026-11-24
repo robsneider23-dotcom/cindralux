@@ -134,16 +134,17 @@
    * gesamte Text im Dashboard und im Ruhebildschirm ist in rem oder
    * clamp(...rem...) gesetzt — diese eine Stelle skaliert beides mit.
    */
+  /* --ui-scale kommt aus appearance.uiScale (store.tsx). */
   html {
-    font-size: 21px;
+    font-size: calc(21px * var(--ui-scale, 1));
   }
 
   /* Kompakte Kiosk-Displays behalten Platz fuer den naechsten Termin. */
   @media (max-width: 1280px) {
-    html { font-size: 18px; }
+    html { font-size: calc(18px * var(--ui-scale, 1)); }
   }
   @media (max-width: 1100px) and (max-height: 720px) {
-    html { font-size: 16px; }
+    html { font-size: calc(16px * var(--ui-scale, 1)); }
   }
 
   body {

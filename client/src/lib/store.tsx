@@ -176,6 +176,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
    * Fehlen sie (Wetter noch nicht geladen, Demo-Modus), greift ersatzweise
    * das Nachtfenster aus den Einstellungen.
    */
+  // Groesse der Oberflaeche: alles ist in rem gesetzt, eine Variable genuegt.
+  useEffect(() => {
+    const scale = config?.appearance.uiScale ?? 1;
+    document.documentElement.style.setProperty('--ui-scale', String(scale));
+  }, [config?.appearance.uiScale]);
+
   useEffect(() => {
     if (!config) return;
     const { colorScheme, night, skin: skinId } = config.appearance;
