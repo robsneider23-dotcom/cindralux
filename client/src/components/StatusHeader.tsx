@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import type { HealthResponse } from "@shared/types";
 import { api } from "@/lib/api";
 import { useDashboard } from "@/lib/store";
-import { formatTemp } from "@/lib/format";
+import { formatTemp, formatTimeInZone } from "@/lib/format";
+import { useClock } from "@/hooks/useClock";
 import { ClockPanel } from "./ClockPanel";
 import { ConnectionStatusPill, type StatusTone } from "./ConnectionStatusPill";
 import { WeatherGlyph } from "./WeatherGlyph";
@@ -99,6 +100,8 @@ export function StatusHeader({
         </>
       )}
 
+      <WorldClocks />
+
       {/* Verbindungszustaende — rechtsbuendig. Home Assistant und AI sind in
           die Einstellungen gewandert (dort stehen sie ohnehin direkt neben
           ihrer Konfiguration); System bleibt hier fuer den Blick auf einen. */}
@@ -122,5 +125,32 @@ export function StatusHeader({
         </button>
       </div>
     </header>
+  );
+}
+
+/** Kleine Zweitzeitzonen neben dem Wetter — bewusst leise, die Hauptuhr bleibt vorn. */
+const HEADER_WORLD_CLOCKS: { name: string; timezone: string }[] = [
+  { name: "New York", timezone: "America/New_York" },
+  { name: "Kiew", timezone: "Europe/Kyiv" },
+];
+
+function WorldClocks() {
+  const now = useClock(false);
+  return (
+    <>
+      <span className="hidden h-11 w-px shrink-0 bg-gradient-to-b from-transparent via-white/10 to-transparent xl:block" />
+      <div className="hidden shrink-0 flex-col gap-1.5 xl:flex">
+        {HEADER_WORLD_CLOCKS.map((city) => (
+          <div key={city.timezone} className="flex items-baseline gap-2.5 leading-none">
+            <span className="w-[4.6rem] text-3xs uppercase tracking-wide2 text-zinc-400">
+              {city.name}
+            </span>
+            <span className="digits text-sm text-zinc-200">
+              {formatTimeInZone(now, city.timezone)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
