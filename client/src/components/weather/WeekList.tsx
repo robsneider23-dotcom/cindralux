@@ -33,8 +33,8 @@ export function WeekList({
           <div
             key={day.date}
             className={cx(
-              "flex items-center rounded-lg px-2.5",
-              card ? "gap-1.5 2xl:gap-3" : "gap-3",
+              "flex items-center rounded-lg px-2",
+              card ? "gap-1.5" : "gap-3",
               card ? "py-3" : "py-2",
               isToday && "bg-accent/[0.07]",
             )}
@@ -42,7 +42,7 @@ export function WeekList({
             <span
               className={cx(
                 "shrink-0 text-2xs",
-                card ? "w-[3.2rem] text-xs" : "w-24",
+                card ? "w-[2.7rem] text-xs" : "w-24",
                 isToday ? "text-accent-soft" : "text-zinc-300",
               )}
             >
@@ -63,12 +63,12 @@ export function WeekList({
               </span>
             )}
 
-            <span className={cx("digits shrink-0 text-right text-xs text-signal-info", card ? "w-8 2xl:w-10" : "w-10")}>
+            <span className={cx("digits shrink-0 text-right text-xs text-signal-info", card ? "w-8" : "w-10")}>
               {Math.round(day.min)}°
             </span>
 
             {/* Temperaturspanne */}
-            <span className="relative h-1.5 min-w-[2.5rem] flex-1 rounded-full bg-white/[0.08]">
+            <span className="relative h-1.5 min-w-[1.5rem] flex-1 rounded-full bg-white/[0.08]">
               <span
                 className="absolute inset-y-0 rounded-full"
                 style={{
@@ -79,7 +79,7 @@ export function WeekList({
               />
             </span>
 
-            <span className={cx("digits shrink-0 text-xs text-signal-warn", card ? "w-8 2xl:w-10" : "w-10")}>
+            <span className={cx("digits shrink-0 text-xs text-signal-warn", card ? "w-7" : "w-10")}>
               {Math.round(day.max)}°
             </span>
 
