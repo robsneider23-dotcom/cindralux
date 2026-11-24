@@ -86,7 +86,7 @@ export function WeekList({
             <span
               className={cx(
                 "digits w-14 shrink-0 items-center justify-end gap-1 text-3xs text-zinc-500",
-                card ? "hidden 2xl:flex" : "hidden sm:flex",
+                card ? "hidden" : "hidden sm:flex",
               )}
             >
               <CloudRain size={11} strokeWidth={1.6} />
