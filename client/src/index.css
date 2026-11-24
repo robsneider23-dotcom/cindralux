@@ -257,6 +257,10 @@
     min-height: 0;
   }
 
+  /* Weitere Mülltermine nur, wenn die Karte den Platz der Spalte bekommt. */
+  .trash-extra { display: none; }
+  .dash-col:not(:has(> .flex-1:not(.panel-collapsed))) .trash-extra { display: flex; }
+
   /* Ruhige, leicht angehobene Flächen; Akzente bleiben bei den Inhalten. */
   .panel {
     position: relative;

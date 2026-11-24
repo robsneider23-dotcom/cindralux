@@ -124,7 +124,7 @@ export function ConnectionStatusPill({
           {label}
         </span>
         {detail && (
-          <span className="hidden max-w-[11rem] truncate text-3xs text-zinc-600 2xl:block">
+          <span className="hidden max-w-[14rem] truncate text-3xs text-zinc-400 2xl:block">
             {detail}
           </span>
         )}

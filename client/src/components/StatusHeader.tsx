@@ -41,7 +41,6 @@ export function StatusHeader({
   const sysDetail = health
     ? [
         `RAM ${health.system.memoryUsedPercent} %`,
-        `Last ${health.system.loadAverage.toFixed(2)}`,
         health.system.temperatureC !== null ? `${health.system.temperatureC.toFixed(0)} °C` : null,
       ]
         .filter(Boolean)

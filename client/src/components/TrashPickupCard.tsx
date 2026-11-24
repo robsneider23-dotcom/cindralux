@@ -59,7 +59,10 @@ export function TrashPickupCard({ className }: { className?: string }) {
     );
   }
 
-  const groups = groupSameDay(trash.upcoming).slice(0, 3);
+  // Mehr als die zwei Folgetermine laden: Steht die Karte allein in ihrer
+  // Spalte (alles andere eingeklappt), fuellt sie den Platz mit weiteren
+  // Terminen statt mit leerer Flaeche — siehe .trash-extra in index.css.
+  const groups = groupSameDay(trash.upcoming).slice(0, 10);
   const nextGroup = groups[0] ?? [];
   const first = nextGroup[0] as TrashPickup;
   const urgent = first.isToday || first.isTomorrow;
@@ -148,13 +151,16 @@ export function TrashPickupCard({ className }: { className?: string }) {
       {laterGroups.length > 0 && (
         <>
           <div className="hair mx-4" />
-          <div className="flex-1 px-4 py-2.5">
-            {laterGroups.map((group) => {
+          <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-2.5">
+            {laterGroups.map((group, index) => {
               const entry = group[0] as TrashPickup;
               return (
                 <div
                   key={entry.date}
-                  className="flex items-center gap-3 py-1.5"
+                  className={cx(
+                    "flex items-center gap-3 py-1.5",
+                    index >= 2 && "trash-extra",
+                  )}
                 >
                   <div className="flex shrink-0 gap-1">
                     {group.map((pickup) => (
